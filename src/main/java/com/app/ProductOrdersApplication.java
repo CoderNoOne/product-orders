@@ -1,0 +1,72 @@
+package com.app;
+
+import com.app.application.service.EmailService;
+import com.app.application.service.MailTemplates;
+import com.app.domain.entity.Role;
+import com.app.domain.entity.User;
+import com.app.domain.enums.ProductOrderStatus;
+import com.app.domain.repository.RoleRepository;
+import com.app.domain.repository.UserRepository;
+import com.app.infrastructure.dto.ProducerDto;
+import com.app.infrastructure.dto.ProductDto;
+import com.app.infrastructure.dto.ProductOrderDto;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
+
+import javax.crypto.SecretKey;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import static j2html.TagCreator.tr;
+
+@SpringBootApplication
+public class ProductOrdersApplication {
+
+    public static void main(String[] args) {
+        ConfigurableApplicationContext ctx = SpringApplication.run(ProductOrdersApplication.class, args);
+
+        RoleRepository roleRepository = ctx.getBean("roleRepositoryImpl", RoleRepository.class);
+
+        UserRepository userRepository = ctx.getBean("userRepositoryImpl", UserRepository.class);
+
+//        userRepository.save(User.builder()
+//                .username("adminShop")
+//                .password("adminShop")
+//                .email("sd@gmail.com")
+//                .role(roleRepository.findByName("ROLE_ADMIN_SHOP").get())
+//                .build());
+
+//        roleRepository.save(Role.builder()
+//                .name("ROLE_ADMIN_SHOP")
+//                .build());
+//
+//        roleRepository.save(Role.builder()
+//                .name("ROLE_ADMIN_PRODUCT")
+//                .build());
+//
+//        roleRepository.save(Role.builder()
+//                .name("ROLE_USER_MANAGER")
+//                .build());
+//
+//        roleRepository.save(Role.builder()
+//                .name("ROLE_USER_CUSTOMER")
+//                .build());
+    }
+
+    @Bean
+    public SecretKey secretKey() {
+        return Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    }
+
+    @Bean
+    public List<String> allowedRoles(@Value("${allowedRoles}") List<String> allowedRoles) {
+        return allowedRoles;
+    }
+}

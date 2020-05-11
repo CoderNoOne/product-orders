@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<createProductDto>
+    <name>gowno</name>
+    <price>2000.00</price>
+    <categoryName>Electronics</categoryName>
+    <producerId>1</producerId>
+</createProductDto>
