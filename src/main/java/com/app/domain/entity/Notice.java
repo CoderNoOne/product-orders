@@ -5,10 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @NoArgsConstructor
@@ -17,13 +14,13 @@ import javax.persistence.Table;
 @Table(name = "notices")
 public class Notice extends BaseEntity {
 
+    @Column(nullable = false)
     private String content;
 
-    @OneToOne
-    @JoinColumn(name = "product_order_id", referencedColumnName = "id")
-    private ProductOrder order;
+    @Column(nullable = false)
+    private String tittle;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "meeting_id")
     private Meeting meeting;
 }

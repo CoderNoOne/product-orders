@@ -1,13 +1,11 @@
 package com.app.domain.entity;
 
+import com.app.domain.enums.Gender;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 
 @Entity
@@ -22,6 +20,9 @@ public class Customer extends User {
     private Manager manager;
 
     private Integer age;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
     public Manager getManager() {
         return manager;

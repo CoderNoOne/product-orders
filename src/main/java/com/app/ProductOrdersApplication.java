@@ -1,15 +1,9 @@
 package com.app;
 
-import com.app.application.service.EmailService;
-import com.app.application.service.MailTemplates;
 import com.app.domain.entity.Role;
 import com.app.domain.entity.User;
-import com.app.domain.enums.ProductOrderStatus;
 import com.app.domain.repository.RoleRepository;
 import com.app.domain.repository.UserRepository;
-import com.app.infrastructure.dto.ProducerDto;
-import com.app.infrastructure.dto.ProductDto;
-import com.app.infrastructure.dto.ProductOrderDto;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,12 +13,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 import javax.crypto.SecretKey;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-
-import static j2html.TagCreator.tr;
 
 @SpringBootApplication
 public class ProductOrdersApplication {
@@ -36,16 +25,18 @@ public class ProductOrdersApplication {
 
         UserRepository userRepository = ctx.getBean("userRepositoryImpl", UserRepository.class);
 
-//        userRepository.save(User.builder()
-//                .username("adminShop")
-//                .password("adminShop")
-//                .email("sd@gmail.com")
-//                .role(roleRepository.findByName("ROLE_ADMIN_SHOP").get())
-//                .build());
 
-//        roleRepository.save(Role.builder()
-//                .name("ROLE_ADMIN_SHOP")
-//                .build());
+        roleRepository.save(Role.builder()
+                .name("ROLE_ADMIN_MANAGER")
+                .build());
+
+        userRepository.save(User.builder()
+                .username("adminManager")
+                .password("adminManager")
+                .email("mrzodeczko@gmail.com")
+                .role(roleRepository.findByName("ROLE_ADMIN_MANAGER").get())
+                .build());
+
 //
 //        roleRepository.save(Role.builder()
 //                .name("ROLE_ADMIN_PRODUCT")
@@ -69,4 +60,5 @@ public class ProductOrdersApplication {
     public List<String> allowedRoles(@Value("${allowedRoles}") List<String> allowedRoles) {
         return allowedRoles;
     }
+
 }

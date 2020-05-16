@@ -12,9 +12,7 @@ import java.util.Objects;
 // @RequiredArgsConstructor
 public interface Mappers {
 
-    // osobiscie wole zeby mapper mapowal a nie bawils sie w interakcje
-    // z db
-    // private final UserRepository
+
 
     static User fromDtoToEntity(RegisterUserDto registerUserDto) {
         return registerUserDto == null ? null : User

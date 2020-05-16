@@ -79,6 +79,7 @@ public class ProductOrderService {
                             productOrder.setDeliveryAddress(savedAddress);
                         });
 
+        // TODO: 16.05.2020 remove assigning customer-manager
         Customer customer = customerRepository.findByUsername(username)
                 .orElseThrow(() -> new NotFoundException("No user with username: " + username));
 

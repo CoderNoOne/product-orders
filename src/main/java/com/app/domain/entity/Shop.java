@@ -76,4 +76,8 @@ public class Shop extends BaseEntity {
     public BigDecimal getBudget() {
         return budget;
     }
+
+    public String getName() {
+        return name;
+    }
 }

@@ -6,6 +6,7 @@ import com.app.infrastructure.security.dto.TokensDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,6 +20,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TokenManager {
 
     @Value("${jwt.access-token.expiration-time-ms}")
@@ -121,6 +123,7 @@ public class TokenManager {
                 .claim(refreshTokenAccessTokenKey, accessTokenExpirationTimeMillis)
                 .compact();
 
+
         return TokensDto
                 .builder()
                 .accessToken(accessToken)
@@ -149,17 +152,7 @@ public class TokenManager {
         }
 
         Long userId = getId(accessToken);
-//        return userRepository
-//                .findOne(userId)
-//                .map(userFromDb -> new UsernamePasswordAuthenticationToken(
-//                        userFromDb.getUsername(),
-//                        null,
-//                        userFromDb
-//                                .getRoles()
-//                                .stream()
-//                                .map(role -> new SimpleGrantedAuthority(role.getName()))
-//                                .collect(Collectors.toList())))
-//                .orElseThrow(() -> new SecurityException("no user with id " + userId));
+
         return userRepository
                 .findOne(userId)
                 .map(userFromDb -> new UsernamePasswordAuthenticationToken(
@@ -174,19 +167,16 @@ public class TokenManager {
             throw new SecurityException("token is null");
         }
 
-        System.out.println("-------------------------------------------------------");
-        System.out.println(token);
-        System.out.println("-------------------------------------------------------");
+            return Jwts
+                    .parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
 
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
     }
 
-    private Long getId(String token) {
+    public Long getId(String token) {
         return Long.parseLong(getClaims(token).getSubject());
     }
 

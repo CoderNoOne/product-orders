@@ -1,10 +1,16 @@
 package com.app.application.service;
 
+import com.app.application.dto.RegisterCustomerDto;
+import com.app.application.dto.RegisterManagerDto;
 import com.app.application.dto.RegisterUserDto;
 import com.app.application.exception.RegisterUserException;
 import com.app.application.mappers.Mappers;
+import com.app.application.validators.impl.RegisterCustomerDtoValidator;
+import com.app.application.validators.impl.RegisterManagerDtoValidator;
 import com.app.application.validators.impl.RegisterUserValidator;
+import com.app.domain.entity.Customer;
 import com.app.domain.entity.Role;
+import com.app.domain.repository.ManagerRepository;
 import com.app.domain.repository.RoleRepository;
 import com.app.domain.entity.User;
 import com.app.domain.repository.UserRepository;
@@ -23,31 +29,51 @@ public class SecurityService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final RegisterUserValidator registerUserValidator;
+    private final RegisterCustomerDtoValidator registerCustomerDtoValidator;
+    private final RegisterManagerDtoValidator registerManagerDtoValidator;
     private final PasswordEncoder passwordEncoder;
+    private final ManagerRepository managerRepository;
 
-    public Long register(RegisterUserDto registerUserDto) {
+    public Long registerCustomer(RegisterCustomerDto registerCustomerDto) {
 
-        var errors = registerUserValidator.validate(registerUserDto);
+        var errors = registerCustomerDtoValidator.validate(registerCustomerDto);
 
-        if (registerUserValidator.hasErrors()) {
+        if (registerCustomerDtoValidator.hasErrors()) {
             throw new RegisterUserException(Validations.createErrorMessage(errors));
         }
 
-        Role role = roleRepository.findByName("ROLE_" + registerUserDto.getRole())
-                .orElseThrow(() ->
-                        new RegisterUserException(Validations.createErrorMessage(
-                                Map.of("Role", "Role is incorrect"))));
+        var customer = registerCustomerDto.toEntity();
 
-        User user = Mappers.fromDtoToEntity(registerUserDto);
-        user.setRole(role);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        managerRepository.findOneWithLeastCustomers()
+                .ifPresent(
+                        manager -> {
+                            Objects.requireNonNull(customer).setManager(manager);
+                            manager.getCustomers().add(customer);
+                        }
+                );
 
-        return userRepository.save(
-                Objects.equals(role.getName(), "ROLE_USER_CUSTOMER") ?
-                        Mappers.fromUserToCustomer(user, registerUserDto.getAge())
-                        : Mappers.fromUserToManager(user)).getId();
+        return saveUser(customer);
 
     }
 
+    public Long registerManager(RegisterManagerDto registerManagerDto) {
+
+        var errors = registerManagerDtoValidator.validate(registerManagerDto);
+
+        if (registerManagerDtoValidator.hasErrors()) {
+            throw new RegisterUserException(Validations.createErrorMessage(errors));
+        }
+
+        return saveUser(registerManagerDto.toEntity());
+
+    }
+
+    private Long saveUser(User user) {
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        roleRepository.findByName(user.getRole().getName()).ifPresent(user::setRole);
+
+        return userRepository.save(user).getId();
+    }
 }

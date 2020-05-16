@@ -85,7 +85,7 @@ public class ProductOrderController { /*USER_CUSTOMER*/
         return new ResponseEntity<>(body, HttpStatus.OK);
     }
 
-    @GetMapping(headers = "FILTER=GENERAL")
+    @GetMapping(headers = "GENERAL")
     public ResponseEntity<ResponseData<List<ProductOrderDto>>> getFiltered(
             @AuthenticationPrincipal String username,
             RequestEntity<ProductOrderFilteringCriteriaDto> requestEntity) {
@@ -99,7 +99,7 @@ public class ProductOrderController { /*USER_CUSTOMER*/
 
     }
 
-    @GetMapping(headers = "FILTER=KEYWORD")
+    @GetMapping(headers = "KEYWORD")
     public ResponseEntity<ResponseData<List<ProductOrderDto>>> getFilteredByKeyWord(
             @AuthenticationPrincipal String username,
             RequestEntity<KeywordDto> requestEntity) {
@@ -125,6 +125,8 @@ public class ProductOrderController { /*USER_CUSTOMER*/
         return new ResponseEntity<>(body, HttpStatus.CREATED);
 
     }
+
+//    post /id/meeting
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseData<Void>> cancelProductOrder(

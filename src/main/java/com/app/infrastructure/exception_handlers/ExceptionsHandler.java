@@ -7,12 +7,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.StaleObjectStateException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-@ControllerAdvice
+@RestControllerAdvice
 @Slf4j
-public class ExceptionsHandler {
+public class ExceptionsHandler  {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ResponseData<String>> handleNotFoundException(NotFoundException exception) {
@@ -123,4 +124,29 @@ public class ExceptionsHandler {
                         .build(),
                 HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(AppAuthenticationFilterException.class)
+    public ResponseEntity<ResponseData<String>> handleAppAuthenticationFilterException(AppAuthenticationFilterException exception) {
+
+        log.error(exception.getMessage());
+
+        return new ResponseEntity<>(
+                ResponseData.<String>builder()
+                        .error(exception.getMessage())
+                        .build(),
+                HttpStatus.BAD_REQUEST);
+    }
+
+//    @ExceptionHandler(SecurityException.class)
+//    public ResponseEntity<ResponseData<String>> handleSecurityException(SecurityException exception) {
+//
+//        log.error(exception.getMessage());
+//
+//        return new ResponseEntity<>(
+//                ResponseData.<String>builder()
+//                        .error(exception.getMessage())
+//                        .build(),
+//                HttpStatus.BAD_REQUEST);
+//    }
+
 }

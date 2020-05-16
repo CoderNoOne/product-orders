@@ -20,7 +20,17 @@ public class Manager extends User {
             inverseJoinColumns = @JoinColumn(name = "customer_id", referencedColumnName = "id"))
     private List<Customer> customers;
 
+    private boolean enabled;
+
     public List<Customer> getCustomers() {
         return customers;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean getEnabled() {
+        return enabled;
     }
 }
