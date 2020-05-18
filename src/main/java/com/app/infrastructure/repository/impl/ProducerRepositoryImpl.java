@@ -39,4 +39,9 @@ public class ProducerRepositoryImpl implements ProducerRepository {
     public Optional<Producer> findByNameWithFetchedGuarantees(String name) {
         return jpaProducerRepository.findByNameIs(name);
     }
+
+    @Override
+    public List<Producer> findAllByTrade(String trade) {
+        return jpaProducerRepository.findAllByTradeName(trade);
+    }
 }

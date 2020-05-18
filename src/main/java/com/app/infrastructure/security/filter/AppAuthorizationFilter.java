@@ -44,7 +44,7 @@ public class AppAuthorizationFilter extends BasicAuthenticationFilter {
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+            FilterChain chain) throws IOException {
 
         String accessToken = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (Objects.nonNull(accessToken)) {

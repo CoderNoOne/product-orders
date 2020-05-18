@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,10 +24,10 @@ public class ShopController {
     private final ShopService shopService;
 
     @GetMapping
-    public ResponseEntity<ResponseData<List<ShopDto>>> getAll() throws InterruptedException {
+    public ResponseEntity<ResponseData<List<ShopDto>>> getAll(@RequestParam(name = "productInStore", required = false) Long id) {
 
         var body = ResponseData.<List<ShopDto>>builder()
-                .data(shopService.getAllShops())
+                .data(Objects.isNull(id) ? shopService.getAllShops() : shopService.getAllShopsWithProductInStore(id))
                 .build();
 
         return ResponseEntity.ok(body);
@@ -110,5 +111,12 @@ public class ShopController {
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+//    @GetMapping
+//    public ResponseEntity<List<ResponseData<List<ShopDto>>>> getAllShopWithProductInStore(@RequestParam(name = "productInStore") Long productId){
+//
+//        return null;
+//    }
+
 }
 

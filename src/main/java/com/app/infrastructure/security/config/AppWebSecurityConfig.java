@@ -120,20 +120,28 @@ public class AppWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
 
                 .authorizeRequests()
-                .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/swagger-resources/configuration/ui", "/swagger-ui.html").permitAll()
                 .antMatchers("/security/**").permitAll()
-                .antMatchers("/products/**").hasRole("ADMIN_PRODUCT")
-                .antMatchers("/shops/**").hasRole("ADMIN_SHOP")
-                .antMatchers(HttpMethod.GET, "/shops").hasAnyRole("USER_CUSTOMER", "USER_MANAGER")
-                .antMatchers("/stocks/**").hasRole("USER_MANAGER")
-                .antMatchers("/customer/**").hasRole("USER_CUSTOMER")
-                .antMatchers("/actuator/**").hasRole("ADMIN_ACTUATOR")
-//                .antMatchers("/health").permitAll()/*.hasRole("ADMIN_ACTUATOR")*/
-                .antMatchers("/swagger-ui/**", "/swagger/**", "/v3/**").permitAll()/*.hasRole("ADMIN_ACTUATOR")*/
+                .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/swagger-resources/configuration/ui", "/swagger-ui.html").permitAll()
+                .antMatchers("/swagger-ui/**", "/swagger/**", "/v3/**").permitAll()
+
+                .antMatchers(HttpMethod.GET, "/shops**").hasAnyRole("USER_CUSTOMER", "USER_MANAGER", "ADMIN_SHOP")
+                .antMatchers(HttpMethod.GET, "/products**").hasAnyRole("USER_CUSTOMER", "ADMIN_PRODUCT")
+                .antMatchers(HttpMethod.GET, "/producers**").hasAnyRole("USER_CUSTOMER", "ADMIN_PRODUCT")
+                .antMatchers(HttpMethod.GET, "/trades**").hasAnyRole("USER_CUSTOMER", "ADMIN_PRODUCT")
+                .antMatchers(HttpMethod.GET, "/meetings**", "/meetings/**").hasAnyRole("USER_MANAGER", "USER_CUSTOMER")
+
                 .antMatchers("/customer/productOrderProposals/**").hasRole("USER_CUSTOMER")
+                .antMatchers("/customer/**").hasRole("USER_CUSTOMER")
+
+                .antMatchers("/stocks/**", "/meetings/**").hasRole("USER_MANAGER")
                 .antMatchers("/manager/productOrderProposals/**").hasRole("USER_MANAGER")
+                .antMatchers("/shops/**", "/shops**").hasRole("ADMIN_SHOP")
+                .antMatchers("/products/**", "/products**").hasRole("ADMIN_PRODUCT")
+                .antMatchers("/actuator/**").hasRole("ADMIN_ACTUATOR")
                 .antMatchers("/managers/**").hasRole("ADMIN_MANAGER")
                 .anyRequest().authenticated()
+
+
                 .and()
                 .addFilter(new AppAuthenticationFilter(authenticationManager(), tokenManager, rememberMeServiceImpl))
                 .addFilter(new AppAuthorizationFilter(authenticationManager(), tokenManager, userRepository));

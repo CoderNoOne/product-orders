@@ -51,7 +51,7 @@ public class CreateManagerDtoValidator extends AbstractValidator<CreateManagerDt
     }
 
     private boolean isUsernameValid(String username) {
-        return username.length() > 5;
+        return username.length() >= 5 && username.length() <= 30;
     }
 
     private boolean isEmailAvailable(String email) {

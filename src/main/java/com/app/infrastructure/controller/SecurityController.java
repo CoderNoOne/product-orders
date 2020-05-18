@@ -29,7 +29,6 @@ public class SecurityController {
         var body = ResponseData
                 .<Long>builder()
                 .data(securityService.registerCustomer(registerCustomerDto))
-//                .data(securityService.registerCustomer(registerUserDto))
                 .build();
 
         return new ResponseEntity<>(body, HttpStatus.CREATED);
@@ -41,7 +40,6 @@ public class SecurityController {
         var body = ResponseData
                 .<Long>builder()
                 .data(securityService.registerManager(registerManagerDto))
-//                .data(securityService.registerCustomer(registerUserDto))
                 .build();
 
         return new ResponseEntity<>(body, HttpStatus.CREATED);

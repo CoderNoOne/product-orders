@@ -1,5 +1,7 @@
 package com.app.application.service;
 
+import com.app.domain.entity.Manager;
+import com.app.domain.entity.User;
 import com.app.domain.repository.UserRepository;
 import com.app.infrastructure.exception.NotFoundException;
 import com.app.infrastructure.exception.NullReferenceException;
@@ -25,5 +27,17 @@ public class UserService {
         return userRepository.findEmailByUsername(username)
                 .orElseThrow(() -> new NotFoundException("No user with username: " + username));
 
+    }
+
+    public User getUserForUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException("No user with username: " + username));
+
+    }
+
+    public boolean isManager(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException("No user with username: " + username))
+                instanceof Manager;
     }
 }

@@ -5,6 +5,7 @@ import com.app.domain.enums.ProposalStatus;
 import com.app.domain.generic.BaseEntity;
 import com.app.infrastructure.dto.ProductOrderProposalDto;
 import com.app.infrastructure.dto.createShop.ProductInfo;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.scheduling.annotation.EnableAsync;
 
@@ -16,6 +17,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "product_orders_proposal")
 @SuperBuilder
+@NoArgsConstructor
 public class ProductOrderProposal extends BaseEntity {
 
     @ManyToOne

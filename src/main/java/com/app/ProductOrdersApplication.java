@@ -20,23 +20,13 @@ public class ProductOrdersApplication {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(ProductOrdersApplication.class, args);
-
-        RoleRepository roleRepository = ctx.getBean("roleRepositoryImpl", RoleRepository.class);
-
-        UserRepository userRepository = ctx.getBean("userRepositoryImpl", UserRepository.class);
-
-
-        roleRepository.save(Role.builder()
-                .name("ROLE_ADMIN_MANAGER")
-                .build());
-
-        userRepository.save(User.builder()
-                .username("adminManager")
-                .password("adminManager")
-                .email("mrzodeczko@gmail.com")
-                .role(roleRepository.findByName("ROLE_ADMIN_MANAGER").get())
-                .build());
-
+//
+//        RoleRepository roleRepository = ctx.getBean("roleRepositoryImpl", RoleRepository.class);
+//
+//        UserRepository userRepository = ctx.getBean("userRepositoryImpl", UserRepository.class);
+//
+//
+//        System.out.println(userRepository.findByUsername("Michael").get().getRole().getName());
 //
 //        roleRepository.save(Role.builder()
 //                .name("ROLE_ADMIN_PRODUCT")

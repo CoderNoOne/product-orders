@@ -44,20 +44,17 @@ public class RegisterManagerDtoValidator extends AbstractValidator<RegisterManag
             errors.put("password", "password is not correct");
         }
 
-
         return errors;
 
     }
 
     private boolean validateEmail(String email) {
-        return
-                Objects.nonNull(email) && EmailValidator.getInstance().isValid(email) &&
-                        userRepository.findByEmail(email).isEmpty();
+        return Objects.nonNull(email) && EmailValidator.getInstance().isValid(email);
     }
 
     private boolean validateUsername(String username) {
         return Objects.nonNull(username) &&
-                userRepository.findByUsername(username).isEmpty();
+                username.length() >= 5 && username.length() <= 30;
     }
 
     private boolean validatePasswords(String password, String passwordConfirmation) {
@@ -65,7 +62,7 @@ public class RegisterManagerDtoValidator extends AbstractValidator<RegisterManag
     }
 
     private boolean isUsernameAvailable(String username) {
-        return userRepository.findByUsername(username).isPresent();
+        return userRepository.findByUsername(username).isEmpty();
     }
 
     private boolean isEmailAvailable(String email) {

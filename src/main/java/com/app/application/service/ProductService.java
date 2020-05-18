@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -202,5 +203,34 @@ public class ProductService {
                 });
 
         return productIdWrapper.get();
+    }
+
+    public List<ProductDto> getProductsByCategory(String category) {
+
+        if (Objects.isNull(category)) {
+            throw new NullReferenceException("Category is null");
+        }
+
+        return productRepository.findAllByCategory(category)
+                .stream()
+                .map(Product::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<ProductDto> getFilteredProducts(String category, String producer, BigDecimal minPrice, BigDecimal maxPrice) {
+
+        if (Objects.nonNull(minPrice) && Objects.nonNull(maxPrice) && minPrice.compareTo(maxPrice) > 0) {
+            throw new ValidationException(Validations.createErrorMessage(Map.of("Price", "Min price is higher than max price")));
+        }
+
+        return productRepository.findAll()
+                .stream()
+                .filter(product -> !Objects.nonNull(producer) || Objects.equals(product.getProducer().getName(), producer))
+                .filter(product -> !Objects.nonNull(category) || Objects.equals(product.getCategory().getName(), category))
+                .filter(product -> !Objects.nonNull(minPrice) || product.getPrice().compareTo(minPrice) >= 0)
+                .filter(product -> !Objects.nonNull(maxPrice) || product.getPrice().compareTo(maxPrice) <= 0)
+                .map(Product::toDto)
+                .collect(Collectors.toList());
+
     }
 }

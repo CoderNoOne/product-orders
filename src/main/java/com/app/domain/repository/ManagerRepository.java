@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface ManagerRepository extends CrudRepository<Manager, Long> {
 
     Optional<Manager> findOneWithLeastCustomers();
+
+    Optional<Manager> findByUsername(String username);
 }

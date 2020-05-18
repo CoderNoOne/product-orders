@@ -79,17 +79,8 @@ public class ProductOrderService {
                             productOrder.setDeliveryAddress(savedAddress);
                         });
 
-        // TODO: 16.05.2020 remove assigning customer-manager
         Customer customer = customerRepository.findByUsername(username)
-                .orElseThrow(() -> new NotFoundException("No user with username: " + username));
-
-        if (Objects.isNull(customer.getManager())) {
-            Manager manager = managerRepository.findOneWithLeastCustomers().orElseThrow(
-                    () -> new NotFoundException("No managers available"));
-
-            customer.setManager(manager);
-            manager.getCustomers().add(customer);
-        }
+                .orElseThrow(() -> new NotFoundException("No customer with username: " + username));
 
         productOrder.setDiscount(calculateDiscount(product, productOrder.getQuantity(), customer));
 

@@ -18,7 +18,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ProductOrderProposalService {
+public class CustomerProductOrderProposalService {
 
     private final ProductOrderProposalRepository productOrderProposalRepository;
     private final CustomerRepository customerRepository;
@@ -34,8 +34,8 @@ public class ProductOrderProposalService {
             throw new ValidationException(Validations.createErrorMessage(errors));
         }
 
-        var user = customerRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("No  user with username: " +
-                username));
+        var user = customerRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException("No  user with username: " + username));
 
         var productOrderProposal = createProductOrderProposalByCustomerDto.toEntity();
         productOrderProposal.setCustomer(user);

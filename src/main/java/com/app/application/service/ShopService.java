@@ -97,7 +97,7 @@ public class ShopService {
     }
 
 
-    public List<ShopDto> getAllShops() throws InterruptedException {
+    public List<ShopDto> getAllShops() {
 
         return shopRepository.findAll()
                 .stream()

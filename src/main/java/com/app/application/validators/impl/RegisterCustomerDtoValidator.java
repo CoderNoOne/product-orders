@@ -59,7 +59,7 @@ public class RegisterCustomerDtoValidator extends AbstractValidator<RegisterCust
     }
 
     private boolean isUsernameAvailable(String username) {
-        return userRepository.findByUsername(username).isPresent();
+        return userRepository.findByUsername(username).isEmpty();
     }
 
     private boolean isEmailAvailable(String email) {
@@ -76,7 +76,7 @@ public class RegisterCustomerDtoValidator extends AbstractValidator<RegisterCust
     }
 
     private boolean validateUsername(String username) {
-        return Objects.nonNull(username) && username.length() > 5 && username.length() < 30;
+        return Objects.nonNull(username) && username.length() >= 5 && username.length() <= 30;
 
     }
 

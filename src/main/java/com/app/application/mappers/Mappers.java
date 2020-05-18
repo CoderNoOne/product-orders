@@ -1,6 +1,5 @@
 package com.app.application.mappers;
 
-import com.app.application.dto.RegisterUserDto;
 import com.app.domain.entity.Customer;
 import com.app.domain.entity.Manager;
 import com.app.domain.entity.User;
@@ -14,15 +13,15 @@ public interface Mappers {
 
 
 
-    static User fromDtoToEntity(RegisterUserDto registerUserDto) {
-        return registerUserDto == null ? null : User
-                .builder()
-                .username(registerUserDto.getUsername())
-                .email(registerUserDto.getEmail())
-                .password(registerUserDto.getPassword())
-//                .roles(new HashSet<>())
-                .build();
-    }
+//    static User fromDtoToEntity(RegisterUserDto registerUserDto) {
+//        return registerUserDto == null ? null : User
+//                .builder()
+//                .username(registerUserDto.getUsername())
+//                .email(registerUserDto.getEmail())
+//                .password(registerUserDto.getPassword())
+////                .roles(new HashSet<>())
+//                .build();
+//    }
 
     static Customer fromUserToCustomer(User user, Integer age) {
         return Objects.isNull(user) ?

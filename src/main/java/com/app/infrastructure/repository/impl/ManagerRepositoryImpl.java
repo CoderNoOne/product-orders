@@ -37,4 +37,9 @@ public class ManagerRepositoryImpl implements ManagerRepository {
     public Manager save(Manager manager) {
         return jpaManagerRepository.save(manager);
     }
+
+    @Override
+    public Optional<Manager> findByUsername(String username) {
+        return jpaManagerRepository.findByUsername(username);
+    }
 }

@@ -14,7 +14,9 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 
 @RequestMapping("/products")
@@ -26,10 +28,16 @@ public class ProductController { /*ADMIN_PRODUCT*/
     private final ShopService shopService;
 
     @GetMapping
-    public ResponseEntity<ResponseData<List<ProductDto>>> getAll() {
+    public ResponseEntity<ResponseData<List<ProductDto>>> getProducts(
+            @RequestParam(name = "category", required = false) String category,
+            @RequestParam(name = "producer", required = false) String producer,
+            @RequestParam(name = "minPrice", required = false) BigDecimal minPrice,
+            @RequestParam(name = "maxPrice", required = false) BigDecimal maxPrice
+
+    ) {
 
         var body = ResponseData.<List<ProductDto>>builder()
-                .data(productService.getAllProducts())
+                .data(productService.getFilteredProducts(category, producer, minPrice, maxPrice))
                 .build();
 
         return ResponseEntity.ok(body);
@@ -47,7 +55,7 @@ public class ProductController { /*ADMIN_PRODUCT*/
     }
 
     @PostMapping(
-            consumes = {"application/xml", "application/json"})
+            consumes = {"application/json", "application/xml"})
     public ResponseEntity<ResponseData<Long>> add(
             RequestEntity<CreateProductDto> requestEntity) {
 
