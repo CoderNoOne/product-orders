@@ -47,7 +47,7 @@ public class ManagerUpdateProductOrderProposalDto {
                                         : null
                                 )
                                 .build() : null)
-                .discount(discount)
+//                .discount(discount)
                 .remarks(Objects.nonNull(remarks) ? remarks : new ArrayList<>())
                 .build();
     }

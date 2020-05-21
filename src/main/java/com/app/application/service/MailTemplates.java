@@ -259,4 +259,10 @@ public interface MailTemplates {
     static String generateHtmlInfoAboutRegisteringManager(String username) {
         return null;
     }
+
+    static String notifyManagerAboutAddedNotice() {
+
+
+        return null;
+    }
 }

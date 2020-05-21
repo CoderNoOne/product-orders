@@ -30,7 +30,11 @@ public class ProductOrder extends BaseEntity {
     private Product product;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id", referencedColumnName = "id")
+    @JoinColumn(name = "shop_id")
+    private Shop shop;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
     private Customer customer;
 
     @Enumerated(EnumType.STRING)
@@ -57,6 +61,8 @@ public class ProductOrder extends BaseEntity {
                 .productDto(Objects.nonNull(product) ? product.toDto() : null)
                 .status(status)
                 .penalty(penalty)
+                .discount(discount)
+                .deliveryAddress(Objects.nonNull(deliveryAddress) ? deliveryAddress.getAddress() : null)
                 .paymentDeadline(paymentDeadline)
                 .build();
     }
@@ -83,5 +89,39 @@ public class ProductOrder extends BaseEntity {
 
     public void setStatus(ProductOrderStatus status) {
         this.status = status;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public ProductOrder customer(Customer customer) {
+        this.customer = customer;
+        return this;
+    }
+
+    public ProductOrder product(Product product) {
+        this.product = product;
+        return this;
+    }
+
+    public ProductOrder orderDate(LocalDate orderDate) {
+        this.orderDate = orderDate;
+        return this;
+    }
+
+    public ProductOrder quantity(Integer quantity) {
+        this.quantity = quantity;
+        return this;
+    }
+
+    public ProductOrder deliveryAddress(Address deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
+        return this;
+    }
+
+    public ProductOrder shop(Shop shop) {
+        this.shop = shop;
+        return this;
     }
 }

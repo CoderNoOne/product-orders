@@ -75,4 +75,5 @@ public class Stock extends BaseEntity {
         return shop;
     }
 
+
 }

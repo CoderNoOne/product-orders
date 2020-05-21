@@ -1,7 +1,7 @@
 package com.app.infrastructure.controller;
 
 import com.app.application.service.ManagerProductOrderProposalService;
-import com.app.infrastructure.dto.CreateProductOrderProposalByManagerDto;
+import com.app.infrastructure.dto.CreateManagerProductOrderProposalDto;
 import com.app.infrastructure.dto.ManagerUpdateProductOrderProposalDto;
 import com.app.infrastructure.dto.ProductOrderProposalDto;
 import com.app.infrastructure.dto.ResponseData;
@@ -16,19 +16,19 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/manager/productOrderProposals")
+@RequestMapping("/managerProductOrderProposals")
 public class ManagerProductOrderProposalController {
 
     private final ManagerProductOrderProposalService managerProductOrderProposalService;
 
     @PostMapping
     public ResponseEntity<ResponseData<Long>> addProductOrderProposal(
-            @RequestBody CreateProductOrderProposalByManagerDto createProductOrderProposalByManagerDto) {
+            @RequestBody CreateManagerProductOrderProposalDto createManagerProductOrderProposalDto) {
 
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         var body = ResponseData.<Long>builder()
-                .data(managerProductOrderProposalService.addProductOrderProposal(username, createProductOrderProposalByManagerDto))
+                .data(managerProductOrderProposalService.addManagerProductOrderProposal(username, createManagerProductOrderProposalDto))
                 .build();
 
         return new ResponseEntity<>(body, HttpStatus.CREATED);

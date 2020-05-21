@@ -4,6 +4,7 @@ import com.app.domain.entity.Role;
 import com.app.domain.entity.User;
 import com.app.domain.repository.RoleRepository;
 import com.app.domain.repository.UserRepository;
+import com.app.infrastructure.repository.jpa.JpaShopRepository;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +12,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 import javax.crypto.SecretKey;
 import java.util.List;
@@ -20,13 +22,15 @@ public class ProductOrdersApplication {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(ProductOrdersApplication.class, args);
+
+//        var jpaShopRepository = ctx.getBean("jpaShopRepository", JpaShopRepository.class);
+//
+//        System.out.println(jpaShopRepository.findProductQuantityGroupByName(1L));
 //
 //        RoleRepository roleRepository = ctx.getBean("roleRepositoryImpl", RoleRepository.class);
 //
 //        UserRepository userRepository = ctx.getBean("userRepositoryImpl", UserRepository.class);
 //
-//
-//        System.out.println(userRepository.findByUsername("Michael").get().getRole().getName());
 //
 //        roleRepository.save(Role.builder()
 //                .name("ROLE_ADMIN_PRODUCT")
@@ -39,7 +43,17 @@ public class ProductOrdersApplication {
 //        roleRepository.save(Role.builder()
 //                .name("ROLE_USER_CUSTOMER")
 //                .build());
+//
+//        roleRepository.save(Role.builder()
+//                .name("ROLE_ADMIN_SHOP")
+//                .build());
+//
+//        roleRepository.save(Role.builder()
+//                .name("ROLE_ADMIN_ACTUATOR")
+//                .build());
+
     }
+
 
     @Bean
     public SecretKey secretKey() {

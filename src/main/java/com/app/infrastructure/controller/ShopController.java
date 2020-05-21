@@ -8,6 +8,7 @@ import com.app.infrastructure.dto.ResponseData;
 import com.app.infrastructure.dto.createShop.CreateStockDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,7 +46,7 @@ public class ShopController {
     }
 
     @PostMapping(
-            consumes = {"application/xml", "application/json"})
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<ResponseData<Long>> add(RequestEntity<CreateShopDto> requestEntity) {
 
         var body = ResponseData.<Long>builder()
@@ -111,12 +112,6 @@ public class ShopController {
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
-//    @GetMapping
-//    public ResponseEntity<List<ResponseData<List<ShopDto>>>> getAllShopWithProductInStore(@RequestParam(name = "productInStore") Long productId){
-//
-//        return null;
-//    }
 
 }
 

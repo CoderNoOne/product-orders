@@ -72,17 +72,13 @@ public class MeetingController {
 
     }
 
-    /*-------------------------------------------------------------------------------*/
-//    tu czy w kontrolerze noticeController?
-    // TODO: 18.05.2020
-
     @PostMapping("{id}/notices")
-    public ResponseEntity<ResponseData<Long>> saveNotice(@PathVariable Long id, @RequestBody CreateNoticeDto createNoticeDto) {
+    public ResponseEntity<ResponseData<Long>> saveNotice(@PathVariable Long id, @RequestBody CreateNoticeForMeetingDto createNoticeForMeetingDto) {
 
         var managerUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 
         var body = ResponseData.<Long>builder()
-                .data(meetingService.addNotice(id, createNoticeDto, managerUsername))
+                .data(meetingService.addNotice(id, createNoticeForMeetingDto, managerUsername))
                 .build();
 
         return new ResponseEntity<>(body, HttpStatus.CREATED);

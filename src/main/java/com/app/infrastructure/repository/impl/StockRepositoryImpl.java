@@ -1,12 +1,12 @@
 package com.app.infrastructure.repository.impl;
 
-import com.app.domain.entity.Product;
 import com.app.domain.entity.Stock;
 import com.app.domain.repository.StockRepository;
 import com.app.infrastructure.repository.jpa.JpaStockRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -65,5 +65,15 @@ public class StockRepositoryImpl implements StockRepository {
     @Override
     public boolean doProductExistsInAnyStock(Long productId) {
         return jpaStockRepository.doProductExistsInAnyStock(productId);
+    }
+
+    @Override
+    public Set<Stock> findAllByIdIn(Collection<Long> ids) {
+        return jpaStockRepository.findAllByIdIn(ids);
+    }
+
+    @Override
+    public Boolean doAllStocksBelongToTheSameShop(Set<Long> stockIds, Long shopId, Integer stockSize) {
+        return jpaStockRepository.doAllStocksBelongToTheSameShop(stockIds, shopId, stockSize);
     }
 }

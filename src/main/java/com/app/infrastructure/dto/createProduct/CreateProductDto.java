@@ -2,6 +2,7 @@ package com.app.infrastructure.dto.createProduct;
 
 import com.app.domain.entity.Category;
 import com.app.domain.entity.Product;
+import com.app.infrastructure.dto.CreateProducerDto;
 import com.app.infrastructure.dto.GuaranteeDto;
 import com.app.infrastructure.dto.ProducerDto;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,7 @@ public class CreateProductDto {
     private String name;
     private BigDecimal price;
     private String categoryName;
-    private ProducerDto producer;
+    private CreateProducerDto producer;
     private GuaranteeDto guarantee;
 
     public Product toEntity() {
@@ -31,7 +32,7 @@ public class CreateProductDto {
                         .name(categoryName)
                         .build() : null)
                 .producer(producer != null ? producer.toEntity() : null)
-                .guarantee(guarantee.toEntity())
+                .guarantee(guarantee != null ?  guarantee.toEntity() : null)
                 .build();
     }
 }

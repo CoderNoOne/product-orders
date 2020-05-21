@@ -1,6 +1,5 @@
 package com.app.infrastructure.dto;
 
-import com.app.domain.entity.Meeting;
 import com.app.domain.entity.Notice;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,9 +10,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateNoticeDto {
+public class CreateNoticeForMeetingDto {
 
-    private Long meetingId;
     private String tittle;
     private String content;
 
@@ -21,9 +19,6 @@ public class CreateNoticeDto {
         return Notice.builder()
                 .tittle(tittle)
                 .content(content)
-                .meeting(Meeting.builder()
-                        .id(meetingId)
-                        .build())
                 .build();
     }
 }

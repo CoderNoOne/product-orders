@@ -9,6 +9,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Set;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @SuperBuilder
 @Table(name = "shops")
+@XmlRootElement
 public class Shop extends BaseEntity {
 
     @Column(unique = true)

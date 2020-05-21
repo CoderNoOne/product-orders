@@ -1,11 +1,13 @@
 package com.app.domain.entity;
 
 import com.app.domain.enums.Gender;
+import com.app.infrastructure.dto.CustomerDto;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 
 @Entity
@@ -36,4 +38,14 @@ public class Customer extends User {
         return age;
     }
 
+    public CustomerDto toDto() {
+
+        return CustomerDto.builder()
+                .id(getId())
+                .username(getUsername())
+                .email(getEmail())
+                .age(age)
+                .gender(Objects.nonNull(gender) ? gender.name() : null)
+                .build();
+    }
 }

@@ -23,5 +23,6 @@ public class ProductOrderDto {
     private ProductOrderStatus status;
     private LocalDate paymentDeadline;
     private LocalDate orderDate;
+    private String deliveryAddress;
 
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 
@@ -98,6 +99,18 @@ public class ProductController { /*ADMIN_PRODUCT*/
                 .build();
 
         return new ResponseEntity<>(body, HttpStatus.OK);
+    }
+
+
+    @GetMapping("/{id}/productQuantityGroupByShop")
+    public ResponseEntity<ResponseData<Map<String, Integer>>> getProductQuantityGroupByShop(@PathVariable Long id){
+
+        var body = ResponseData.<Map<String, Integer>>builder()
+                .data(shopService.findProductQuantityGroupByShop(id))
+                .build();
+
+        return new ResponseEntity<>(body, HttpStatus.OK);
+
     }
 
 }

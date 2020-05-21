@@ -3,6 +3,8 @@ package com.app.application.validators.impl;
 import com.app.application.validators.generic.AbstractValidator;
 import com.app.domain.entity.Producer;
 import com.app.domain.repository.ProducerRepository;
+import com.app.domain.repository.ProductRepository;
+import com.app.infrastructure.dto.CreateProducerDto;
 import com.app.infrastructure.dto.createProduct.CreateProductDto;
 import com.app.infrastructure.dto.GuaranteeDto;
 import com.app.infrastructure.dto.ProducerDto;
@@ -22,6 +24,7 @@ import java.util.Objects;
 public class CreateProductDtoValidator extends AbstractValidator<CreateProductDto> {
 
     private final ProducerRepository producerRepository;
+    private final ProductRepository productRepository;
 
     @Override
     public Map<String, String> validate(CreateProductDto createProductDto) {
@@ -45,15 +48,6 @@ public class CreateProductDtoValidator extends AbstractValidator<CreateProductDt
             errors.put("Price", "Price is not correct");
         }
 
-//        if (negate(isProductGuaranteePresent(createProductDto.getGuarantee()))) {
-//            errors.put("Guarantee object", "Product guarantee is not specified");
-//        } else {
-//
-//            if (negate(isProductGuaranteeGuaranteeTimeValid(createProductDto.getGuarantee()))) {
-//                errors.put("Guarantee guarantee time", "Product guarantee time is not valid");
-//            }
-//        }
-
         validateProducerInfo(createProductDto);
 
         return errors;
@@ -70,38 +64,47 @@ public class CreateProductDtoValidator extends AbstractValidator<CreateProductDt
                         Objects.isNull(guarantee.getGuaranteeTime().getDays()));
     }
 
-    private boolean isProductGuaranteePresent(GuaranteeDto guarantee) {
-        return Objects.nonNull(guarantee);
-    }
 
     private void validateProducerInfo(CreateProductDto createProductDto) {
 
         var producerDto = createProductDto.getProducer();
 
-        if (negate(isProducerNonNull(producerDto))) {
+        System.out.println(createProductDto.getProducer());
+
+        if (!isProducerNonNull(producerDto)) {
             errors.put("Producer object", "Producer object is null");
-        } else if (negate(isProducerNameValid(producerDto.getName()))) {
+        } else if (!isProducerNameValid(producerDto.getName())) {
             errors.put("Producer name", "Producer name cannot be unspecified");
         } else {
 
             producerRepository.findByNameWithFetchedGuarantees(producerDto.getName()).ifPresentOrElse(
-                    producerFromDb -> validateProductGuaranteesForExistingProducer(createProductDto, producerFromDb),
+                    producerFromDb -> {
+                        validateProductGuaranteesForExistingProducer(createProductDto, producerFromDb);
+                        validateUniqueName(createProductDto.getName(), producerFromDb.getName());
+                    },
 
                     () -> {
                         validateNewProducer(producerDto);
                         validateNewProductAndNewProducerIntegrity(producerDto, createProductDto);
+                        validateUniqueName(createProductDto.getName(), producerDto.getName());
                     });
         }
     }
 
-    private void validateNewProducer(ProducerDto producerDto) {
+    private void validateUniqueName(String productName, String producerName) {
+        if (Objects.nonNull(productName) && productRepository.findByNameAndProducerName(productName, producerName).isPresent()) {
+            errors.put("Product name", "There is already a product with name: " + productName + " and producer name: " + producerName);
+        }
+    }
+
+    private void validateNewProducer(CreateProducerDto producerDto) {
 
         if (Objects.isNull(producerDto.getTradeName()) || Strings.isBlank(producerDto.getTradeName())) {
             errors.put("Producer trade", "Trade name cannot be null");
         }
     }
 
-    private void validateNewProductAndNewProducerIntegrity(ProducerDto producerDto, CreateProductDto createProductDto) {
+    private void validateNewProductAndNewProducerIntegrity(CreateProducerDto producerDto, CreateProductDto createProductDto) {
 
         boolean yetValidProducerGuarantees = true;
 
@@ -202,10 +205,6 @@ public class CreateProductDtoValidator extends AbstractValidator<CreateProductDt
 
     private void validateProductGuaranteesForExistingProducer(CreateProductDto createProductDto, Producer producer) {
 
-        System.out.println(producer.getGuarantees());
-
-        System.out.println(createProductDto.getGuarantee());
-
         if (
                 Objects.isNull(createProductDto.getGuarantee()) ||
                         producer.getGuarantees().stream()
@@ -218,6 +217,7 @@ public class CreateProductDtoValidator extends AbstractValidator<CreateProductDt
                                             Objects.equals(productGuarantee.getPercent(), guarantee.getPercent());
 
                                 })) {
+
             errors.put("Guarantee", "Guarantee should be specified and offered by producer");
         }
     }
@@ -229,7 +229,7 @@ public class CreateProductDtoValidator extends AbstractValidator<CreateProductDt
                         Strings.isNotBlank(name);
     }
 
-    private boolean isProducerNonNull(ProducerDto producerDto) {
+    private boolean isProducerNonNull(CreateProducerDto producerDto) {
         return Objects.nonNull(producerDto);
     }
 

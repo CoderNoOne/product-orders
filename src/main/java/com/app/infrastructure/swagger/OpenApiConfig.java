@@ -36,27 +36,24 @@ import java.util.Map;
 @Configuration
 public class OpenApiConfig {
 
-    // porob grupy dzieki ktorym w osobnej zakladce masz np zadania z meeting w osobnej grupie masz zadania z
-    // producer, ...
-
-
     @Bean
     public OpenAPI openAPI() {
-        return new OpenAPI().components(
-                new Components()
-                        .securitySchemes(Map.of(
-                                "JwtAuthToken",
-                                new SecurityScheme()
-                                        .bearerFormat("jwt")
-                                        .type(SecurityScheme.Type.HTTP)
-                                        .scheme("bearer"),
-                                "CookieAuth",
-                                new SecurityScheme()
-                                        .name("remember-me")
-                                        .type(SecurityScheme.Type.APIKEY)
-                                        .in(SecurityScheme.In.COOKIE)
-                        ))
-        ).security(List.of(new SecurityRequirement().addList("JwtAuthToken").addList("CookieAuth")))
+        return new OpenAPI()
+                .components(
+                        new Components()
+                                .securitySchemes(Map.of(
+                                        "JwtAuthToken",
+                                        new SecurityScheme()
+                                                .bearerFormat("jwt")
+                                                .type(SecurityScheme.Type.HTTP)
+                                                .scheme("bearer"),
+                                        "CookieAuth",
+                                        new SecurityScheme()
+                                                .name("remember-me")
+                                                .type(SecurityScheme.Type.APIKEY)
+                                                .in(SecurityScheme.In.COOKIE)
+                                ))
+                ).security(List.of(new SecurityRequirement().addList("JwtAuthToken").addList("CookieAuth")))
                 .info(new Info()
                         .title("Product-order rest API")
                         .version("1.0")
@@ -200,6 +197,35 @@ public class OpenApiConfig {
         return GroupedOpenApi.builder()
                 .setGroup("producer")
                 .pathsToMatch("/producers/**")
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi shopApi() {
+
+        return GroupedOpenApi.builder()
+                .setGroup("shop")
+                .pathsToMatch("/shops/**")
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi actuatorApi() {
+        return GroupedOpenApi.builder()
+                .setGroup("actuator")
+                .pathsToMatch("/actuator/**")
+                .addOpenApiCustomiser(openApi -> openApi
+                        .path("/actuator/shutdown", new PathItem()
+                                .post(new Operation().tags(List.of("actuator"))
+                                        .responses(new ApiResponses()
+                                                ._default(new ApiResponse()
+                                                        .content(new Content()
+                                                                .addMediaType("application/json",
+                                                                        new MediaType().schema(new Schema<String>()
+                                                                                .type("object")
+                                                                                .addProperties(
+                                                                                        "message", new Schema<String>()
+                                                                                                .type("string"))))))))))
                 .build();
     }
 }

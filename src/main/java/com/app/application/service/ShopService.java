@@ -297,4 +297,21 @@ public class ShopService {
             throw new ValidationException(Validations.createErrorMessage(errors));
         }
     }
+
+    public Map<String, Integer> findProductQuantityGroupByShop(Long id) {
+
+        return shopRepository.findAllShopsWithProductInStore(id)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        Shop::getName,
+                        Collectors.flatMapping(
+                                shop -> shop.getStocks()
+                                        .stream()
+                                        .flatMap(stock -> stock.getProductsQuantity().entrySet().stream())
+                                        .filter(e -> e.getKey().getId().equals(id)),
+                                Collectors.summingInt(Map.Entry::getValue)
+                        )
+                ));
+
+    }
 }

@@ -23,7 +23,7 @@ public class SecurityController {
     private final SecurityService securityService;
     private final TokenManager tokenManager;
 
-    @PostMapping("/sign-up-customer")
+        @PostMapping("/sign-up-customer")
     public ResponseEntity<ResponseData<Long>> signUpCustomer(@RequestBody RegisterCustomerDto registerCustomerDto) {
 
         var body = ResponseData

@@ -33,4 +33,8 @@ public class Notice extends BaseEntity {
                 .tittle(tittle)
                 .build();
     }
+
+    public void setMeeting(Meeting meeting) {
+        this.meeting = meeting;
+    }
 }

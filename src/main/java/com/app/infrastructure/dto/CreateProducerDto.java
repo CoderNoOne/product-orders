@@ -12,13 +12,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Data
-public class ProducerDto {
+public class CreateProducerDto {
 
-    private Long id;
     private String name;
     private String tradeName;
     private List<GuaranteeDto> guarantees;
@@ -26,7 +25,6 @@ public class ProducerDto {
 
     public Producer toEntity() {
         return Producer.builder()
-                .id(id)
                 .name(name)
                 .trade(Objects.nonNull(tradeName) ? Trade.builder().name(tradeName).build() : null)
                 .products(new HashSet<>())

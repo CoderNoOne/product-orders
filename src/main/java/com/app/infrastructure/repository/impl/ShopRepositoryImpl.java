@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -44,5 +45,15 @@ public class ShopRepositoryImpl implements ShopRepository {
     @Override
     public Set<Shop> findAllShopsWithProductInStore(Long id) {
         return jpaShopRepository.findAllWhereProductExists(id);
+    }
+
+    @Override
+    public Integer findProductCountInAllStocks(Long shopId, Long productId) {
+        return jpaShopRepository.findProductCountInAllStocks(shopId, productId);
+    }
+
+    @Override
+    public Map<Shop, Integer> findProductQuantityGroupByShop(Long productId) {
+        return null;
     }
 }

@@ -1,7 +1,7 @@
 package com.app.application.service;
 
 import com.app.application.validators.impl.CreateMeetingDtoValidator;
-import com.app.application.validators.impl.CreateNoticeDtoValidator;
+import com.app.application.validators.impl.CreateNoticeForMeetingDtoValidator;
 import com.app.domain.entity.Meeting;
 import com.app.domain.entity.Notice;
 import com.app.domain.enums.MeetingStatus;
@@ -9,7 +9,7 @@ import com.app.domain.repository.MeetingRepository;
 import com.app.domain.repository.NoticeRepository;
 import com.app.domain.repository.ProductOrderProposalRepository;
 import com.app.infrastructure.dto.CreateMeetingDto;
-import com.app.infrastructure.dto.CreateNoticeDto;
+import com.app.infrastructure.dto.CreateNoticeForMeetingDto;
 import com.app.infrastructure.dto.MeetingDto;
 import com.app.infrastructure.dto.NoticeDto;
 import com.app.infrastructure.exception.NotFoundException;
@@ -33,15 +33,15 @@ public class MeetingService {
     private final ProductOrderProposalRepository productOrderProposalRepository;
     private final NoticeRepository noticeRepository;
     private final CreateMeetingDtoValidator createMeetingDtoValidator;
-    private final CreateNoticeDtoValidator createNoticeDtoValidator;
+    private final CreateNoticeForMeetingDtoValidator createNoticeForMeetingDtoValidator;
 
     public List<MeetingDto> getMeetings(String status, boolean isManager, String username) {
 
         return meetingRepository.findAll()
                 .stream()
                 .filter(meeting -> Objects.isNull(status) || Objects.equals(meeting.getStatus().name(), status))
-                .filter(meeting -> isManager ? Objects.equals(meeting.getProposalProductOrder().getCustomer().getManager().getUsername(), username) :
-                        Objects.equals(meeting.getProposalProductOrder().getCustomer().getUsername(), username))
+//                .filter(meeting -> isManager ? Objects.equals(meeting.getProposalProductOrder().getCustomer().getManager().getUsername(), username) :
+//                        Objects.equals(meeting.getProposalProductOrder().getCustomer().getUsername(), username))
                 .map(Meeting::toDto)
                 .collect(Collectors.toList());
     }
@@ -58,9 +58,9 @@ public class MeetingService {
                 .orElseThrow(() ->
                         new NotFoundException("No productOrderProposal with id: " + createMeetingDto.getProductOrderProposalId()));
 
-        if (!Objects.equals(productOrderProposal.getCustomer().getManager().getUsername(), managerUsername)) {
-            throw new ValidationException("Proposal is associated with customer who is not your client!");
-        }
+//        if (!Objects.equals(productOrderProposal.getCustomer().getManager().getUsername(), managerUsername)) {
+//            throw new ValidationException("Proposal is associated with customer who is not your client!");
+//        }
 
         var meeting = createMeetingDto.toEntity();
 
@@ -76,10 +76,10 @@ public class MeetingService {
         }
 
         var meeting = meetingRepository.findOne(id).orElseThrow(() -> new NotFoundException("No meeting with id: " + id));
-
-        if (!Objects.equals(meeting.getProposalProductOrder().getCustomer().getManager().getUsername(), managerUsername)) {
-            throw new ValidationException("Proposal do not belong to your client");
-        }
+//
+//        if (!Objects.equals(meeting.getProposalProductOrder().getCustomer().getManager().getUsername(), managerUsername)) {
+//            throw new ValidationException("Proposal do not belong to your client");
+//        }
 
         if (meeting.getStatus().equals(MeetingStatus.FINISHED)) {
             throw new ValidationException("Meeting has been finished. Cannot be canceled");
@@ -92,12 +92,12 @@ public class MeetingService {
 
         var meeting = meetingRepository.findOne(id).orElseThrow(() -> new NotFoundException("No meeting with id: " + id));
 
-        var doBelongToUser = isManager ? Objects.equals(meeting.getProposalProductOrder().getCustomer().getManager().getUsername(), username) :
-                Objects.equals(meeting.getProposalProductOrder().getCustomer().getUsername(), username);
+//        var doBelongToUser = isManager ? Objects.equals(meeting.getProposalProductOrder().getCustomer().getManager().getUsername(), username) :
+//                Objects.equals(meeting.getProposalProductOrder().getCustomer().getUsername(), username);
 
-        if (!doBelongToUser) {
-            throw new ValidationException("You have no access to that notices");
-        }
+//        if (!doBelongToUser) {
+//            throw new ValidationException("You have no access to that notices");
+//        }
 
         return meeting.getNotices()
                 .stream()
@@ -105,26 +105,26 @@ public class MeetingService {
                 .collect(Collectors.toList());
     }
 
-    public Long addNotice(Long id, CreateNoticeDto createNoticeDto, String managerUsername) {
+    public Long addNotice(Long id, CreateNoticeForMeetingDto createNoticeForMeetingDto, String managerUsername) {
 
         if (Objects.isNull(id)) {
             throw new NullIdValueException("Meeting id is null");
         }
 
-        var errors = createNoticeDtoValidator.validate(createNoticeDto);
+        var errors = createNoticeForMeetingDtoValidator.validate(createNoticeForMeetingDto);
 
         Optional<Meeting> meeting;
         if ((meeting = meetingRepository.findOne(id)).isEmpty()) {
             errors.put("Meeting id", "No meeting with id " + id);
-        } else if (!Objects.equals(meeting.get().getProposalProductOrder().getCustomer().getManager().getUsername(), managerUsername)) {
+        }/* else if (!Objects.equals(meeting.get().getProposalProductOrder().getCustomer().getManager().getUsername(), managerUsername)) {
             errors.put("Manager username", "That meeting is not managed by you");
-        }
+        }*/
 
-        if (createNoticeDtoValidator.hasErrors()) {
+        if (createNoticeForMeetingDtoValidator.hasErrors()) {
             throw new ValidationException(Validations.createErrorMessage(errors));
         }
 
-        var notice = createNoticeDto.toEntity();
+        var notice = createNoticeForMeetingDto.toEntity();
         var savedNotice = noticeRepository.save(notice);
         meeting.ifPresent(value -> value.getNotices().add(savedNotice));
 

@@ -5,7 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface JpaStockRepository extends JpaRepository<Stock, Long> {
 
@@ -23,4 +26,10 @@ public interface JpaStockRepository extends JpaRepository<Stock, Long> {
 
     @Query("select case when (count (s.productsQuantity.size) > 0) then true else false end from Stock s join s.productsQuantity pr where exists (select pr from s.productsQuantity pr where key(pr).id = :productId)")
     boolean doProductExistsInAnyStock(Long productId);
+
+    @Query(value = "select s from Stock s join fetch s.productsQuantity where s.id in :ids")
+    Set<Stock> findAllByIdIn(Collection<Long> ids);
+
+    @Query("select case when ((count(distinct st)) = :stockSize) then true else false end from Stock st where st.id in :stockIds and st.shop.id = :shopId")
+    Boolean doAllStocksBelongToTheSameShop(Set<Long> stockIds, Long shopId, Integer stockSize);
 }

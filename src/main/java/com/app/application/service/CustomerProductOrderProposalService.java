@@ -38,7 +38,7 @@ public class CustomerProductOrderProposalService {
                 .orElseThrow(() -> new NotFoundException("No  user with username: " + username));
 
         var productOrderProposal = createProductOrderProposalByCustomerDto.toEntity();
-        productOrderProposal.setCustomer(user);
+//        productOrderProposal.setCustomer(user);
 
         var productName = createProductOrderProposalByCustomerDto.getProductInfo().getName();
         var producerName = createProductOrderProposalByCustomerDto.getProductInfo().getProducerName();
