@@ -21,7 +21,7 @@ public class StockController {
     private final StockService stockService;
 
     @PostMapping(value = "/products")
-    public ResponseEntity<ResponseData<Long>> addProductToStock(/*@PathVariable Long id,*/ RequestEntity<AddProductToStockDto> requestEntity) {
+    public ResponseEntity<ResponseData<Long>> addProductToStock(RequestEntity<AddProductToStockDto> requestEntity) {
 
         var body = ResponseData.<Long>builder()
                 .data(stockService.addProductToStock(requestEntity.getBody()))

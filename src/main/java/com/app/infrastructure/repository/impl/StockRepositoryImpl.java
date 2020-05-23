@@ -68,12 +68,13 @@ public class StockRepositoryImpl implements StockRepository {
     }
 
     @Override
-    public Set<Stock> findAllByIdIn(Collection<Long> ids) {
+    public List<Stock> findAllByIdIn(Collection<Long> ids) {
         return jpaStockRepository.findAllByIdIn(ids);
     }
 
     @Override
-    public Boolean doAllStocksBelongToTheSameShop(Set<Long> stockIds, Long shopId, Integer stockSize) {
-        return jpaStockRepository.doAllStocksBelongToTheSameShop(stockIds, shopId, stockSize);
+    public boolean doAllStocksBelongToTheSameShop(Long shopId, List<Long> stockIds) {
+        return jpaStockRepository.doAllStocksBelongToTheSameShop(shopId , stockIds);
     }
+
 }

@@ -1,10 +1,6 @@
 package com.app;
 
-import com.app.domain.entity.Role;
-import com.app.domain.entity.User;
-import com.app.domain.repository.RoleRepository;
-import com.app.domain.repository.UserRepository;
-import com.app.infrastructure.repository.jpa.JpaShopRepository;
+import com.app.infrastructure.repository.jpa.JpaStockRepository;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,7 +8,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 import javax.crypto.SecretKey;
 import java.util.List;
@@ -22,6 +17,17 @@ public class ProductOrdersApplication {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(ProductOrdersApplication.class, args);
+
+
+        var stockRepository = ctx.getBean("jpaStockRepository", JpaStockRepository.class);
+//
+        System.out.println(stockRepository.doAllStocksBelongToTheSameShop(1L, List.of(1L, 2L)));
+
+//        var allByIdIn = stockRepository.findAllById(List.of(1L, 2L));
+//
+//        allByIdIn.forEach(stock -> System.out.println(stock.getProductsQuantity()));
+
+
 
 //        var jpaShopRepository = ctx.getBean("jpaShopRepository", JpaShopRepository.class);
 //

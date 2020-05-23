@@ -33,6 +33,7 @@ public class Stock extends BaseEntity {
     @Column(name = "quantity")
     private Map<Product, Integer> productsQuantity;
 
+
     public Address getAddress() {
         return address;
     }

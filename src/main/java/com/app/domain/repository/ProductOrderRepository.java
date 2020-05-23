@@ -24,4 +24,6 @@ public interface ProductOrderRepository extends CrudRepository<ProductOrder, Lon
     List<ProductOrder> findAllByIdIn(List<Long> productOrdersIds);
 
     boolean hasProductBeenOrdered(Long id);
+
+    void deleteById(Long id);
 }

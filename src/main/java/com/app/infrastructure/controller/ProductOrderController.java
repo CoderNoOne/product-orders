@@ -31,6 +31,7 @@ public class ProductOrderController { /*USER_CUSTOMER*/
 
         var managerUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 
+
         var body = ResponseData.<Long>builder()
                 .data(productOrderService.addProductOrder(managerUsername, createProductOrderDto))
                 .build();
@@ -149,12 +150,13 @@ public class ProductOrderController { /*USER_CUSTOMER*/
 
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
 
+        var productOrder = productOrderService.getById(id);
         productOrderService.deleteById(id, username);
 
         emailService.sendAsHtml(
                 null,
                 userService.getEmailForUsername(username),
-                MailTemplates.generateHtmlInfoAboutCancelingProductOrder(username, productOrderService.getById(id)),
+                MailTemplates.generateHtmlInfoAboutCancelingProductOrder(username, productOrder),
                 "Product order canceled ");
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

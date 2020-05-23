@@ -1,16 +1,12 @@
 package com.app.application.service;
 
 import com.app.application.mappers.Mappers;
-import com.app.application.validators.impl.CreateComplaintDtoValidator;
-import com.app.application.validators.impl.CreateProductOrderDtoValidator;
-import com.app.application.validators.impl.OrderDateBoundaryDtoValidator;
-import com.app.application.validators.impl.ProductOrderFilteringCriteriaDtoValidator;
+import com.app.application.validators.impl.*;
 import com.app.domain.entity.*;
 import com.app.domain.enums.AdminShopPropertyName;
 import com.app.domain.enums.ComplaintStatus;
 import com.app.domain.enums.DamageType;
 import com.app.domain.enums.ProductOrderStatus;
-import com.app.domain.entity.Product;
 import com.app.domain.repository.ProductRepository;
 import com.app.domain.repository.*;
 import com.app.infrastructure.dto.*;
@@ -24,12 +20,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,6 +44,8 @@ public class ProductOrderService {
     private final CreateComplaintDtoValidator createComplaintDtoValidator;
     private final AdminShopPropertyRepository adminShopPropertyRepository;
     private final ShopRepository shopRepository;
+    private final ReservedProductRepository reservedProductRepository;
+    private final CreateProductOrderDto2Validator createProductOrderDto2Validator;
 
 
 //    public Long addProductOrder(String username, CreateProductOrderDto createProductOrderDto) {
@@ -212,18 +208,22 @@ public class ProductOrderService {
             throw new ValidationException(Validations.createErrorMessage(Map.of("Id", "is null")));
         }
 
-        productOrderRepository.findByIdAndCustomerUsername(id, username)
-                .ifPresentOrElse(
-                        productOrder -> {
-                            if (productOrder.getStatus().equals(ProductOrderStatus.DONE)) {
-                                throw new ValidationException(Validations.createErrorMessage(Map.of("Product order status", "Order is already done. Cannot be canceled")));
-                            }
-                            productOrderRepository.delete(productOrder);
-                        },
-                        () -> {
-                            throw new NotFoundException("No productOrder with id: " + id);
-                        }
-                );
+        var productOrder = productOrderRepository.findByIdAndCustomerUsername(id, username)
+                .orElseThrow(() -> new NotFoundException("No productOrder with id: " + id));
+
+
+        if (productOrder.getStatus().equals(ProductOrderStatus.DONE)) {
+            throw new ValidationException(Validations.createErrorMessage(Map.of("Product order status", "Order is already done. Cannot be canceled")));
+        }
+
+        var reservedProducts = reservedProductRepository.findAllByProductOrderId(productOrder.getId());
+        reservedProducts.forEach(reservedProduct -> {
+            stockRepository.findOne(reservedProduct.getStock().getId())
+                    .ifPresent(stock -> stock.getProductsQuantity().merge(productOrder.getProduct(), reservedProduct.getQuantity(), Integer::sum));
+        });
+
+        reservedProductRepository.deleteByProductOrderId(productOrder.getId());
+        productOrderRepository.deleteById(productOrder.getId());
 
     }
 
@@ -406,6 +406,12 @@ public class ProductOrderService {
 
     public Long addProductOrder(String managerUsername, CreateProductOrderDto2 createProductOrderDto) {
 
+        var errors = createProductOrderDto2Validator.validate(createProductOrderDto);
+
+        if (createProductOrderDto2Validator.hasErrors()) {
+            throw new ValidationException(Validations.createErrorMessage(errors));
+        }
+
         var productStockQuantity = createProductOrderDto.getProductStockQuantity().entrySet()
                 .stream()
                 .collect(Collectors.toMap(e -> Long.valueOf(e.getKey()), Map.Entry::getValue));
@@ -424,16 +430,25 @@ public class ProductOrderService {
             throw new ValidationException("You are not the manager of customer with username: " + createProductOrderDto.getCustomerUsername());
         }
 
+
         var stocks = stockRepository.findAllByIdIn(productStockQuantity.keySet());
 
         var totalQuantity = new AtomicInteger(0);
 
+        List<ReservedProduct> reservedProductsToSave = new ArrayList<>();
         stocks.forEach(stock -> {
-            if (stock.getProductsQuantity().get(product) < productStockQuantity.get(stock.getId())) {
+
+            if (!stock.getProductsQuantity().containsKey(product) || stock.getProductsQuantity().get(product) < productStockQuantity.get(stock.getId())) {
                 throw new ValidationException("No enough product in stock: " + stock.getId());
             }
+
             totalQuantity.addAndGet(productStockQuantity.get(stock.getId()));
             stock.getProductsQuantity().merge(product, -productStockQuantity.get(stock.getId()), Integer::sum);
+
+            reservedProductsToSave.add(ReservedProduct.builder()
+                    .stock(stock)
+                    .quantity(productStockQuantity.get(stock.getId()))
+                    .build());
 
             if (stock.getProductsQuantity().get(product).equals(0)) {
                 stock.getProductsQuantity().remove(product);
@@ -454,6 +469,12 @@ public class ProductOrderService {
                                         .build())))
                 .shop(shop);
 
-        return productOrderRepository.save(productOrderToSave).getId();
+        var savedProductOrder = productOrderRepository.save(productOrderToSave);
+
+        reservedProductsToSave.forEach(reservedProduct -> reservedProduct.setProductOrder(savedProductOrder));
+
+        reservedProductRepository.saveAll(reservedProductsToSave);
+
+        return savedProductOrder.getId();
     }
 }

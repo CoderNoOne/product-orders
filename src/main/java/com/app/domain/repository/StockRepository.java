@@ -4,6 +4,7 @@ import com.app.domain.entity.Stock;
 import com.app.domain.generic.CrudRepository;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -22,7 +23,8 @@ public interface StockRepository extends CrudRepository<Stock, Long> {
 
     boolean doProductExistsInAnyStock(Long productId);
 
-    Set<Stock> findAllByIdIn(Collection<Long> ids);
+    List<Stock> findAllByIdIn(Collection<Long> ids);
 
-    Boolean doAllStocksBelongToTheSameShop(Set<Long> stockIds, Long shopId, Integer stockSize);
+    boolean doAllStocksBelongToTheSameShop(Long shopId, List<Long> stockIds);
+
 }

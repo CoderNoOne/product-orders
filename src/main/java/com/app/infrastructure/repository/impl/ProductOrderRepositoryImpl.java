@@ -70,4 +70,9 @@ public class ProductOrderRepositoryImpl implements ProductOrderRepository {
     public boolean hasProductBeenOrdered(Long id) {
         return jpaProductOrderRepository.hasProductBeenOrdered(id);
     }
+
+    @Override
+    public void deleteById(Long id) {
+        jpaProductOrderRepository.deleteById(id);
+    }
 }

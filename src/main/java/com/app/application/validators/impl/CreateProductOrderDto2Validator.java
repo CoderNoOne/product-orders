@@ -71,13 +71,12 @@ public class CreateProductOrderDto2Validator extends AbstractValidator<CreatePro
             if (!areProductStockQuantityKeysValid(createProductOrderDto2.getProductStockQuantity().keySet())) {
                 errors.put("Stock ids", "Stock ids have to be numbers only");
             } else if (!doAllStockBelongToTheSameShop(createProductOrderDto2.getProductStockQuantity().keySet(), createProductOrderDto2.getShopId())) {
-                errors.put("Stock objects", "Stock must belong to the same shop");
+                errors.put("Stock objects", "All stocks must belong to the same shop with id: " + createProductOrderDto2.getShopId());
             }
 
             if (!areProductStockQuantityValuesValid(createProductOrderDto2.getProductStockQuantity().values())) {
                 errors.put("Product quantity", "has to be positive numbers");
             }
-
 
         }
 
@@ -95,8 +94,8 @@ public class CreateProductOrderDto2Validator extends AbstractValidator<CreatePro
     }
 
     private boolean doAllStockBelongToTheSameShop(Set<String> stockIds, Long shopId) {
-        var stockIdsSet = stockIds.stream().map(Long::valueOf).collect(Collectors.toSet());
-        return stockRepository.doAllStocksBelongToTheSameShop(stockIdsSet, shopId, stockIdsSet.size());
+        List<Long> stockIdsList = stockIds.stream().map(Long::valueOf).distinct().collect(Collectors.toList());
+        return stockRepository.doAllStocksBelongToTheSameShop(shopId, stockIdsList);
     }
 
     private boolean areProductStockQuantityValuesValid(Collection<Integer> values) {
