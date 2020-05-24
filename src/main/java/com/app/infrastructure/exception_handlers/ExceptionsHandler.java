@@ -6,150 +6,123 @@ import com.app.infrastructure.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.StaleObjectStateException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestControllerAdvice
 @Slf4j
-public class ExceptionsHandler  {
+public class ExceptionsHandler {
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public ResponseEntity<ResponseData<String>> handleNotFoundException(NotFoundException exception) {
+    public ResponseData<String> handleNotFoundException(NotFoundException exception) {
 
         log.error(exception.getMessage());
 
-        return new ResponseEntity<>(
-                ResponseData.<String>builder()
-                        .error(exception.getMessage())
-                        .build(),
-                HttpStatus.NOT_FOUND);
+        return ResponseData.<String>builder()
+                .error(exception.getMessage())
+                .build();
     }
 
     @ExceptionHandler(RegisterUserException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ResponseData<String>> handleRegisterUserException(RegisterUserException registerUserException) {
+    public ResponseData<String> handleRegisterUserException(RegisterUserException registerUserException) {
 
         log.error(registerUserException.getMessage());
 
-        return new ResponseEntity<>(
-                ResponseData.<String>builder()
-                        .error(registerUserException.getMessage())
-                        .build(),
-                HttpStatus.NOT_FOUND);
+        return ResponseData.<String>builder()
+                .error(registerUserException.getMessage())
+                .build();
     }
 
     @ExceptionHandler(ShopValidationException.class)
-    public ResponseEntity<ResponseData<String>> handleRegisterUserException(ShopValidationException productValidationException) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseData<String> handleRegisterUserException(ShopValidationException productValidationException) {
 
         log.error(productValidationException.getMessage());
 
-        return new ResponseEntity<>(
-                ResponseData.<String>builder()
-                        .error(productValidationException.getMessage())
-                        .build(),
-                HttpStatus.BAD_REQUEST);
+        return ResponseData.<String>builder()
+                .error(productValidationException.getMessage())
+                .build();
     }
 
     @ExceptionHandler(NullReferenceException.class)
-    public ResponseEntity<ResponseData<String>> handleNullReferenceException(NullReferenceException nullReferenceException) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseData<String> handleNullReferenceException(NullReferenceException nullReferenceException) {
 
         log.error(nullReferenceException.getMessage());
 
-        return new ResponseEntity<>(
-                ResponseData.<String>builder()
-                        .error(nullReferenceException.getMessage())
-                        .build(),
-                HttpStatus.BAD_REQUEST);
+        return ResponseData.<String>builder()
+                .error(nullReferenceException.getMessage())
+                .build();
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ResponseData<String>> handleConstraintViolationException(ConstraintViolationException constraintViolationException) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseData<String> handleConstraintViolationException(ConstraintViolationException constraintViolationException) {
 
         log.error(constraintViolationException.getMessage());
 
-        return new ResponseEntity<>(
-                ResponseData.<String>builder()
-                        .error(constraintViolationException.getMessage())
-                        .build(),
-                HttpStatus.BAD_REQUEST);
+        return ResponseData.<String>builder()
+                .error(constraintViolationException.getMessage())
+                .build();
     }
 
 
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<ResponseData<String>> handleConstraintViolationException(ValidationException validationException) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseData<String> handleConstraintViolationException(ValidationException validationException) {
 
         log.error(validationException.getMessage());
 
-        return new ResponseEntity<>(
-                ResponseData.<String>builder()
-                        .error(validationException.getMessage())
-                        .build(),
-                HttpStatus.BAD_REQUEST);
+        return ResponseData.<String>builder()
+                .error(validationException.getMessage())
+                .build();
     }
 
 
     @ExceptionHandler(StaleObjectStateException.class)
-    public ResponseEntity<ResponseData<String>> handleOptimisticLockingException(StaleObjectStateException staleObjectStateException) {
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseData<String> handleOptimisticLockingException(StaleObjectStateException staleObjectStateException) {
 
         log.error(staleObjectStateException.getMessage());
 
-        return new ResponseEntity<>(
-                ResponseData.<String>builder()
-                        .error(staleObjectStateException.getMessage())
-                        .build(),
-                HttpStatus.CONFLICT);
+        return ResponseData.<String>builder()
+                .error(staleObjectStateException.getMessage())
+                .build();
     }
 
     @ExceptionHandler(AdminPropertyNotFoundException.class)
-    public ResponseEntity<ResponseData<String>> handleAdminPropertyNotFoundException(AdminPropertyNotFoundException exception) {
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseData<String> handleAdminPropertyNotFoundException(AdminPropertyNotFoundException exception) {
 
         log.error(exception.getMessage());
 
-        return new ResponseEntity<>(
-                ResponseData.<String>builder()
-                        .error(exception.getMessage())
-                        .build(),
-                HttpStatus.NOT_FOUND);
+        return ResponseData.<String>builder()
+                .error(exception.getMessage())
+                .build();
     }
 
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<ResponseData<String>> handleIllegalStateException(IllegalStateException exception) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseData<String> handleIllegalStateException(IllegalStateException exception) {
 
         log.error(exception.getMessage());
 
-        return new ResponseEntity<>(
-                ResponseData.<String>builder()
-                        .error(exception.getMessage())
-                        .build(),
-                HttpStatus.BAD_REQUEST);
+        return ResponseData.<String>builder()
+                .error(exception.getMessage())
+                .build();
     }
 
     @ExceptionHandler(AppAuthenticationFilterException.class)
-    public ResponseEntity<ResponseData<String>> handleAppAuthenticationFilterException(AppAuthenticationFilterException exception) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseData<String> handleAppAuthenticationFilterException(AppAuthenticationFilterException exception) {
 
         log.error(exception.getMessage());
 
-        return new ResponseEntity<>(
-                ResponseData.<String>builder()
-                        .error(exception.getMessage())
-                        .build(),
-                HttpStatus.BAD_REQUEST);
+        return ResponseData.<String>builder()
+                .error(exception.getMessage())
+                .build();
     }
-
-//    @ExceptionHandler(SecurityException.class)
-//    public ResponseEntity<ResponseData<String>> handleSecurityException(SecurityException exception) {
-//
-//        log.error(exception.getMessage());
-//
-//        return new ResponseEntity<>(
-//                ResponseData.<String>builder()
-//                        .error(exception.getMessage())
-//                        .build(),
-//                HttpStatus.BAD_REQUEST);
-//    }
-
 }
