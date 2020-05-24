@@ -20,7 +20,8 @@ public class MeetingController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<ResponseData<List<MeetingDto>>> getMeetings(
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<List<MeetingDto>> getMeetings(
             @RequestParam(required = false, name = "status") String status
     ) {
 
@@ -28,60 +29,54 @@ public class MeetingController {
 
         var isManager = userService.isManager(username);
 
-        var body = ResponseData.<List<MeetingDto>>builder()
+        return ResponseData.<List<MeetingDto>>builder()
                 .data(meetingService.getMeetings(status, isManager, username))
                 .build();
-
-        return new ResponseEntity<>(body, HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<ResponseData<Long>> save(@RequestBody CreateMeetingDto createMeetingDto) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseData<Long> save(@RequestBody CreateMeetingDto createMeetingDto) {
 
         var managerUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        var body = ResponseData.<Long>builder()
+        return ResponseData.<Long>builder()
                 .data(meetingService.save(managerUsername, createMeetingDto))
                 .build();
-
-        return new ResponseEntity<>(body, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
 
         var managerUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 
         meetingService.delete(id, managerUsername);
 
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/{id}/notices")
-    public ResponseEntity<ResponseData<List<NoticeDto>>> getAllNotices(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<List<NoticeDto>> getAllNotices(@PathVariable Long id) {
 
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
         var isManager = userService.isManager(username);
 
-        var body = ResponseData.<List<NoticeDto>>builder()
+        return ResponseData.<List<NoticeDto>>builder()
                 .data(meetingService.getAllNotices(id, username, isManager))
                 .build();
-
-        return new ResponseEntity<>(body, HttpStatus.OK);
-
 
     }
 
     @PostMapping("{id}/notices")
-    public ResponseEntity<ResponseData<Long>> saveNotice(@PathVariable Long id, @RequestBody CreateNoticeForMeetingDto createNoticeForMeetingDto) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseData<Long> saveNotice(@PathVariable Long id, @RequestBody CreateNoticeForMeetingDto createNoticeForMeetingDto) {
 
         var managerUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        var body = ResponseData.<Long>builder()
+        return ResponseData.<Long>builder()
                 .data(meetingService.addNotice(id, createNoticeForMeetingDto, managerUsername))
                 .build();
-
-        return new ResponseEntity<>(body, HttpStatus.CREATED);
 
     }
 }

@@ -134,6 +134,7 @@ public class AppWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/producers**").hasAnyRole("USER_CUSTOMER", "ADMIN_PRODUCT")
                 .antMatchers(HttpMethod.GET, "/trades**").hasAnyRole("USER_CUSTOMER", "ADMIN_PRODUCT")
                 .antMatchers(HttpMethod.GET, "/meetings**", "/meetings/**").hasAnyRole("USER_MANAGER", "USER_CUSTOMER")
+                .antMatchers(HttpMethod.GET, "/repairOrders**", "/repairOrders/**").hasAnyRole("USER_MANAGER", "USER_CUSTOMER")
 
                 .antMatchers("/customer/productOrderProposals/**").hasRole("USER_CUSTOMER")
                 .antMatchers("/customer/**").hasRole("USER_CUSTOMER")
@@ -144,8 +145,10 @@ public class AppWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/products/**", "/products**").hasRole("ADMIN_PRODUCT")
                 .antMatchers("/actuator/**").hasRole("ADMIN_ACTUATOR")
                 .antMatchers("/managers/**").hasRole("ADMIN_MANAGER")
-                .antMatchers(HttpMethod.POST,"/productOrders/**").hasRole("USER_MANAGER")
-                .antMatchers(HttpMethod.GET,"/productOrders/**").hasRole("USER_CUSTOMER")
+                .antMatchers("/repairOrders/**").hasRole("USER_MANAGER")
+
+                .antMatchers(HttpMethod.POST, "/productOrders/**").hasRole("USER_MANAGER")
+                .antMatchers(HttpMethod.GET, "/productOrders/**").hasRole("USER_CUSTOMER")
                 .antMatchers(HttpMethod.DELETE, "/productOrders/**").hasRole("USER_CUSTOMER")
                 .anyRequest().authenticated()
 

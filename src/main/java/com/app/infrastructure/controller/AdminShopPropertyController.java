@@ -6,6 +6,7 @@ import com.app.infrastructure.dto.CreateAdminShopPropertyDto;
 import com.app.infrastructure.dto.ResponseData;
 import com.app.infrastructure.dto.UpdateAdminShopPropertyDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -22,53 +23,47 @@ public class AdminShopPropertyController {
     private final AdminShopPropertyService adminShopPropertyService;
 
     @PostMapping
-    public ResponseEntity<ResponseData<Long>> addProperty(RequestEntity<CreateAdminShopPropertyDto> requestEntity) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseData<Long> addProperty(RequestEntity<CreateAdminShopPropertyDto> requestEntity) {
 
-        var body = ResponseData.<Long>builder()
+        return ResponseData.<Long>builder()
                 .data(adminShopPropertyService.addProperty(requestEntity.getBody()))
                 .build();
-
-        return new ResponseEntity<>(body, HttpStatus.CREATED);
-
     }
 
     @PatchMapping
-    public ResponseEntity<ResponseData<Long>> updatePropertyValue(RequestEntity<UpdateAdminShopPropertyDto> requestEntity) {
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<Long> updatePropertyValue(RequestEntity<UpdateAdminShopPropertyDto> requestEntity) {
 
-        var body = ResponseData.<Long>builder()
+        return ResponseData.<Long>builder()
                 .data(adminShopPropertyService.updatePropertyValue(requestEntity.getBody()))
                 .build();
-
-        return new ResponseEntity<>(body, HttpStatus.OK);
-
     }
 
     @GetMapping
-    public ResponseEntity<ResponseData<List<AdminShopPropertyDto>>> getAllProperties() {
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<List<AdminShopPropertyDto>> getAllProperties() {
 
-        var body = ResponseData.<List<AdminShopPropertyDto>>builder()
+        return ResponseData.<List<AdminShopPropertyDto>>builder()
                 .data(adminShopPropertyService.getAllProperties())
                 .build();
 
-        return new ResponseEntity<>(body, HttpStatus.OK);
     }
 
     @GetMapping("/{propertyName}")
-    public ResponseEntity<ResponseData<BigDecimal>> getPropertyValueByName(@PathVariable String propertyName) {
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<BigDecimal> getPropertyValueByName(@PathVariable String propertyName) {
 
-        var body = ResponseData.<BigDecimal>builder()
+        return ResponseData.<BigDecimal>builder()
                 .data(adminShopPropertyService.getPropertyValueByName(propertyName))
                 .build();
-
-        return new ResponseEntity<>(body, HttpStatus.OK);
-
     }
 
     @DeleteMapping("/{propertyName}")
-    public ResponseEntity<Void> deletePropertyValue(@PathVariable String propertyName){
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletePropertyValue(@PathVariable String propertyName) {
 
         adminShopPropertyService.deletePropertyValue(propertyName);
 
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -22,40 +22,37 @@ public class ManagerProductOrderProposalController {
     private final ManagerProductOrderProposalService managerProductOrderProposalService;
 
     @PostMapping
-    public ResponseEntity<ResponseData<Long>> addProductOrderProposal(
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseData<Long> addProductOrderProposal(
             @RequestBody CreateManagerProductOrderProposalDto createManagerProductOrderProposalDto) {
 
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        var body = ResponseData.<Long>builder()
+        return ResponseData.<Long>builder()
                 .data(managerProductOrderProposalService.addManagerProductOrderProposal(username, createManagerProductOrderProposalDto))
                 .build();
-
-        return new ResponseEntity<>(body, HttpStatus.CREATED);
 
     }
 
     @GetMapping
-    public ResponseEntity<ResponseData<List<ProductOrderProposalDto>>> getAllProductOrderProposal() {
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<List<ProductOrderProposalDto>> getAllProductOrderProposal() {
 
         var managerUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        var body = ResponseData.<List<ProductOrderProposalDto>>builder()
+        return ResponseData.<List<ProductOrderProposalDto>>builder()
                 .data(managerProductOrderProposalService.getAllProposals(managerUsername))
                 .build();
-
-        return ResponseEntity.ok(body);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseData<Long>> updateProductOrderProposal(
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<Long> updateProductOrderProposal(
             @PathVariable Long id,
             RequestEntity<ManagerUpdateProductOrderProposalDto> requestEntity
     ) {
-        var body = ResponseData.<Long>builder()
+        return ResponseData.<Long>builder()
                 .data(managerProductOrderProposalService.updateProductProposal(id, requestEntity.getBody()))
                 .build();
-
-        return new ResponseEntity<>(body, HttpStatus.OK);
     }
 }

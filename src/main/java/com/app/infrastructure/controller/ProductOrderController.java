@@ -27,23 +27,23 @@ public class ProductOrderController { /*USER_CUSTOMER*/
 
 
     @PostMapping
-    public ResponseEntity<ResponseData<Long>> addProduct(@RequestBody CreateProductOrderDto2 createProductOrderDto) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseData<Long> addProduct(@RequestBody CreateProductOrderDto2 createProductOrderDto) {
 
         var managerUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+//        emailService.sendAsHtml(null, userService.getEmailForUsername(username), MailTemplates.generateHtmlInfoAboutProductOrder(username, productOrderService.getById(body.getData())), "Product order information");
 
-
-        var body = ResponseData.<Long>builder()
+        return ResponseData.<Long>builder()
                 .data(productOrderService.addProductOrder(managerUsername, createProductOrderDto))
                 .build();
 
-//        emailService.sendAsHtml(null, userService.getEmailForUsername(username), MailTemplates.generateHtmlInfoAboutProductOrder(username, productOrderService.getById(body.getData())), "Product order information");
-        return new ResponseEntity<>(body, HttpStatus.CREATED);
 
     }
 
 
     @PatchMapping("/{id}/pay")
-    public ResponseEntity<ResponseData<Long>> makePurchase(
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<Long> makePurchase(
             @PathVariable Long id) {
 
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -55,12 +55,13 @@ public class ProductOrderController { /*USER_CUSTOMER*/
 
         emailService.sendAsHtml(null, userService.getEmailForUsername(username), MailTemplates.generateHtmlInfoAboutSuccessfulPayment(username, productOrderService.getById(id)), "Product payment information");
 
-        return new ResponseEntity<>(body, HttpStatus.OK);
+        return body;
 
     }
 
     @GetMapping("/price/groupBy/{key}")
-    public ResponseEntity<ResponseData<Map<String, BigDecimal>>> getTotalPriceGroupByKey(
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<Map<String, BigDecimal>> getTotalPriceGroupByKey(
             @PathVariable String key) {
 
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -76,11 +77,12 @@ public class ProductOrderController { /*USER_CUSTOMER*/
                 ""
         );
 
-        return new ResponseEntity<>(body, HttpStatus.OK);
+        return body;
     }
 
     @GetMapping("/totalPrice/date")
-    public ResponseEntity<ResponseData<BigDecimal>> getTotalPriceByOrderDate(
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<BigDecimal> getTotalPriceByOrderDate(
             RequestEntity<OrderDateBoundaryDto> requestEntity) {
 
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -90,16 +92,15 @@ public class ProductOrderController { /*USER_CUSTOMER*/
                 .data(productOrderService.getTotalPriceByOrderDateForUsername(requestEntity.getBody(), username))
                 .build();
 
-        return new ResponseEntity<>(body, HttpStatus.OK);
+        return body;
     }
 
     @GetMapping
-    public ResponseEntity<ResponseData<List<ProductOrderDto>>> getFiltered(
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<List<ProductOrderDto>> getFiltered(
             RequestEntity<ProductOrderFilteringCriteriaDto> requestEntity) {
 
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        System.out.println(requestEntity.getBody());
 
         var body = ResponseData.<List<ProductOrderDto>>builder()
                 .data(Objects.nonNull(requestEntity.getBody()) ?
@@ -108,43 +109,41 @@ public class ProductOrderController { /*USER_CUSTOMER*/
                 )
                 .build();
 
-        return new ResponseEntity<>(body, HttpStatus.OK);
+        return body;
 
     }
 
     @GetMapping("/filterByKey")
-    public ResponseEntity<ResponseData<List<ProductOrderDto>>> getFilteredByKeyWord(
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<List<ProductOrderDto>> getFilteredByKeyWord(
             @RequestParam(name = "keyWord") String keyWord) {
 
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
 
 
-        var body = ResponseData.<List<ProductOrderDto>>builder()
+        return ResponseData.<List<ProductOrderDto>>builder()
                 .data(productOrderService.getFilteredProductOrdersByKeyWordForUsername(KeywordDto.builder().word(keyWord).build(), username))
                 .build();
-
-        return new ResponseEntity<>(body, HttpStatus.OK);
 
     }
 
     @PostMapping("/{id}/complaints")
-    public ResponseEntity<ResponseData<Long>> addComplaint(
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseData<Long> addComplaint(
             @PathVariable Long id,
             RequestEntity<CreateComplaintDto> requestEntity) {
 
-
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        var body = ResponseData.<Long>builder()
+        return ResponseData.<Long>builder()
                 .data(productOrderService.addComplaint(id, username, requestEntity.getBody()))
                 .build();
-
-        return new ResponseEntity<>(body, HttpStatus.CREATED);
 
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseData<Void>> cancelProductOrder(
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void cancelProductOrder(
             @PathVariable Long id
     ) {
 
@@ -158,12 +157,11 @@ public class ProductOrderController { /*USER_CUSTOMER*/
                 userService.getEmailForUsername(username),
                 MailTemplates.generateHtmlInfoAboutCancelingProductOrder(username, productOrder),
                 "Product order canceled ");
-
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/{id}/invoice")
-    public ResponseEntity<ResponseData<Long>> issueAnInvoice(
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseData<Long> issueAnInvoice(
             @PathVariable Long id
     ) {
 
@@ -179,21 +177,6 @@ public class ProductOrderController { /*USER_CUSTOMER*/
                 MailTemplates.generateHtmlInfoAboutComplaint(username, complaintService.getComplaintByIdAndManagerUsername(body.getData(), username)),
                 "Invoice done");
 
-        return new ResponseEntity<>(body, HttpStatus.OK);
+        return body;
     }
-
-//    @GetMapping
-//    public ResponseEntity<ResponseData<List<ProductOrderDto>>> getAllProductOrders(
-//    ) {
-//
-//        var username = SecurityContextHolder.getContext().getAuthentication().getName();
-//
-//
-//        var body = ResponseData.<List<ProductOrderDto>>builder()
-//                .data(productOrderService.getAllProductOrdersForUsername(username))
-//                .build();
-//
-//        return new ResponseEntity<>(body, HttpStatus.OK);
-//    }
-
 }

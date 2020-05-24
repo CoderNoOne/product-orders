@@ -18,7 +18,6 @@ public class ProductOrdersApplication {
     public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(ProductOrdersApplication.class, args);
 
-
         var stockRepository = ctx.getBean("jpaStockRepository", JpaStockRepository.class);
 //
         System.out.println(stockRepository.doAllStocksBelongToTheSameShop(1L, List.of(1L, 2L)));

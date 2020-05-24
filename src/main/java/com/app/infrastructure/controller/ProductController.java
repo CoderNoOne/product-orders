@@ -2,22 +2,19 @@ package com.app.infrastructure.controller;
 
 import com.app.application.service.ProductService;
 import com.app.application.service.ShopService;
-import com.app.application.validators.impl.CreateProductDtoValidator;
-import com.app.infrastructure.dto.ShopDto;
-import com.app.infrastructure.dto.createProduct.CreateProductDto;
 import com.app.infrastructure.dto.ProductDto;
 import com.app.infrastructure.dto.ResponseData;
+import com.app.infrastructure.dto.ShopDto;
 import com.app.infrastructure.dto.UpdateProductDto;
+import com.app.infrastructure.dto.createProduct.CreateProductDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 
 @RequestMapping("/products")
@@ -29,7 +26,8 @@ public class ProductController { /*ADMIN_PRODUCT*/
     private final ShopService shopService;
 
     @GetMapping
-    public ResponseEntity<ResponseData<List<ProductDto>>> getProducts(
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<List<ProductDto>> getProducts(
             @RequestParam(name = "category", required = false) String category,
             @RequestParam(name = "producer", required = false) String producer,
             @RequestParam(name = "minPrice", required = false) BigDecimal minPrice,
@@ -37,79 +35,69 @@ public class ProductController { /*ADMIN_PRODUCT*/
 
     ) {
 
-        var body = ResponseData.<List<ProductDto>>builder()
+        return ResponseData.<List<ProductDto>>builder()
                 .data(productService.getFilteredProducts(category, producer, minPrice, maxPrice))
                 .build();
-
-        return ResponseEntity.ok(body);
     }
+
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseData<ProductDto>> getOne(
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<ProductDto> getOne(
             @PathVariable Long id) {
 
-        var body = ResponseData.<ProductDto>builder()
+        return ResponseData.<ProductDto>builder()
                 .data(productService.getById(id))
                 .build();
-
-        return new ResponseEntity<>(body, HttpStatus.OK);
     }
 
-    @PostMapping(
-            consumes = {"application/json", "application/xml"})
-    public ResponseEntity<ResponseData<Long>> add(
+
+    @PostMapping(consumes = {"application/json", "application/xml"})
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseData<Long> add(
             RequestEntity<CreateProductDto> requestEntity) {
 
-        var body = ResponseData.<Long>builder()
+        return ResponseData.<Long>builder()
                 .data(productService.addProduct(requestEntity.getBody()))
                 .build();
-
-        return new ResponseEntity<>(body, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(
-            @PathVariable Long id) {
-
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
         productService.delete(id);
-
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("{/id}")
-    public ResponseEntity<ResponseData<Long>> update(
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<Long> update(
             @PathVariable Long id,
             RequestEntity<UpdateProductDto> requestEntity
     ) {
 
-        var body = ResponseData.<Long>builder()
+        return ResponseData.<Long>builder()
                 .data(productService.updateProduct(id, requestEntity.getBody()))
                 .build();
-
-
-        return new ResponseEntity<>(body, HttpStatus.OK);
     }
 
     @GetMapping("/{id}/shops")
-    public ResponseEntity<ResponseData<List<ShopDto>>> getAllShopsWithProductInStore(
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<List<ShopDto>> getAllShopsWithProductInStore(
             @PathVariable Long id) {
 
-        var body = ResponseData.<List<ShopDto>>builder()
+        return ResponseData.<List<ShopDto>>builder()
                 .data(shopService.getAllShopsWithProductInStore(id))
                 .build();
-
-        return new ResponseEntity<>(body, HttpStatus.OK);
     }
 
 
     @GetMapping("/{id}/productQuantityGroupByShop")
-    public ResponseEntity<ResponseData<Map<String, Integer>>> getProductQuantityGroupByShop(@PathVariable Long id){
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<Map<String, Integer>> getProductQuantityGroupByShop(@PathVariable Long id) {
 
-        var body = ResponseData.<Map<String, Integer>>builder()
+        return ResponseData.<Map<String, Integer>>builder()
                 .data(shopService.findProductQuantityGroupByShop(id))
                 .build();
-
-        return new ResponseEntity<>(body, HttpStatus.OK);
 
     }
 

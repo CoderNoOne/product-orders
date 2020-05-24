@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -20,15 +21,14 @@ public class CustomerProductOrderProposalController {
     private final CustomerProductOrderProposalService customerProductOrderProposalService;
 
     @PostMapping
-    public ResponseEntity<ResponseData<Long>> addProductOrderProposal(
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseData<Long> addProductOrderProposal(
             RequestEntity<CreateProductOrderProposalByCustomerDto> requestEntity) {
 
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        var body = ResponseData.<Long>builder()
+        return ResponseData.<Long>builder()
                 .data(customerProductOrderProposalService.addProductOrderProposal(username, requestEntity.getBody()))
                 .build();
-
-        return new ResponseEntity<>(body, HttpStatus.CREATED);
     }
 }

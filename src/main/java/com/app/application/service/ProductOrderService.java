@@ -47,76 +47,6 @@ public class ProductOrderService {
     private final ReservedProductRepository reservedProductRepository;
     private final CreateProductOrderDto2Validator createProductOrderDto2Validator;
 
-
-//    public Long addProductOrder(String username, CreateProductOrderDto createProductOrderDto) {
-//
-//        var errors = createProductOrderDtoValidator.validate(createProductOrderDto);
-//        if (createProductOrderDtoValidator.hasErrors()) {
-//            throw new ValidationException(Validations.createErrorMessage(errors));
-//        }
-//
-//        Product product = productRepository
-//                .findByNameAndProducerName(createProductOrderDto.getProductInfo().getName(),
-//                        createProductOrderDto.getProductInfo().getProducerName())
-//                .orElseThrow(() -> new NotFoundException(MessageFormat.format("No product with (name : {0}, producerName: {1})",
-//                        createProductOrderDto.getProductInfo().getName(),
-//                        createProductOrderDto.getProductInfo().getProducerName())));
-//
-//        Map<Product, Integer> productsQuantity = stockRepository.findOne(createProductOrderDto.getStockId())
-//                .orElseThrow(() -> new NotFoundException("No stock with id: " + createProductOrderDto.getStockId()))
-//                .getProductsQuantity();
-//
-//        ProductOrder productOrder = createProductOrderDto.toEntity();
-//        productOrder.setProduct(product);
-//        productOrder.setOrderDate(LocalDate.now());
-//        productOrder.setPaymentDeadline(LocalDate.now().plusDays(7));
-//
-//        addressRepository.findByAddress(productOrder.getDeliveryAddress().getAddress())
-//                .ifPresentOrElse(productOrder::setDeliveryAddress,
-//                        () -> {
-//                            Address savedAddress = addressRepository.save(productOrder.getDeliveryAddress());
-//                            productOrder.setDeliveryAddress(savedAddress);
-//                        });
-//
-//        Customer customer = customerRepository.findByUsername(username)
-//                .orElseThrow(() -> new NotFoundException("No customer with username: " + username));
-//
-//        productOrder.setDiscount(calculateDiscount(product, productOrder.getQuantity(), customer));
-//
-//        productOrder.setCustomer(customer);
-//
-//        productsQuantity.merge(
-//                product, createProductOrderDto.getQuantity(), (oldVal, newVal) -> oldVal - newVal);
-//
-//        return productOrderRepository.save(productOrder).
-//                getId();
-//
-//    }
-
-//    private BigDecimal calculateDiscount(Product product, Integer quantity, Customer customer) {
-//
-//        var totalPrice = calculateTotalPrice(quantity, product.getPrice());
-//
-//        BigDecimal discount = new BigDecimal(0);
-//
-//        if (customer.getAge() <= 25) {
-//            discount = discount.add(BigDecimal.valueOf(5));
-//        }
-//        if (totalPrice.compareTo(BigDecimal.valueOf(500)) >= 0) {
-//            discount = discount.add(BigDecimal.TEN);
-//        }
-//
-//        if (productOrderRepository.findByUsernameAndProducerName(customer.getUsername(), product.getProducer().getName()).size() >= 50) {
-//            discount = discount.add(BigDecimal.valueOf(5));
-//        }
-//
-//        return discount;
-//    }
-
-//    private BigDecimal calculateTotalPrice(Integer quantity, BigDecimal price) {
-//        return new BigDecimal(String.valueOf(quantity)).multiply(price);
-//    }
-
     public List<ProductOrderDto> getFilteredProductOrdersForUsername(ProductOrderFilteringCriteriaDto productOrderFilteringCriteriaDto, String username) {
 
         var errors = productOrderFilteringCriteriaDtoValidator.validate(productOrderFilteringCriteriaDto);
@@ -128,6 +58,7 @@ public class ProductOrderService {
 
         return filter(allByUsername, productOrderFilteringCriteriaDto)
                 .stream()
+                .filter(productOrder -> productOrder.getStatus() == ProductOrderStatus.DONE)
                 .map(ProductOrder::toDto)
                 .collect(Collectors.toList());
 
@@ -259,9 +190,13 @@ public class ProductOrderService {
                 .ifPresentOrElse(
                         productOrder -> {
                             if (Objects.equals(productOrder.getStatus(), ProductOrderStatus.DONE)) {
-                                throw new ValidationException(Validations.createErrorMessage(Map.of("Payment done", "You have arleady paid for this order")));
+                                throw new ValidationException(
+                                        Validations.createErrorMessage(
+                                                Map.of("Payment done", "You have already paid for this order")));
                             }
                             productOrder.setStatus(ProductOrderStatus.DONE);
+                            var shop = productOrder.getShop();
+                            shop.setBudget(shop.getBudget().add(calculateTotalPriceToPay(productOrder)));
                         },
                         () -> {
                             throw new NotFoundException("No productOrder with id: " + id);
@@ -270,6 +205,19 @@ public class ProductOrderService {
 
         return id;
     }
+
+    private BigDecimal calculateTotalPriceToPay(ProductOrder productOrder) {
+
+        var quantity = productOrder.getQuantity();
+        var penalty = productOrder.getPenalty();
+        var productBasePrice = productOrder.getProduct().getPrice();
+        var discount = productOrder.getDiscount();
+
+        return Objects.isNull(penalty) ?
+                (BigDecimal.ONE.subtract(discount)).multiply(productBasePrice.multiply(new BigDecimal(quantity))) :
+                (BigDecimal.ONE.add(penalty)).multiply(BigDecimal.ONE.subtract(discount)).multiply(productBasePrice.multiply(new BigDecimal(quantity)));
+    }
+
 
     public Map<String, BigDecimal> groupPriceByKey(String key, String username) {
 

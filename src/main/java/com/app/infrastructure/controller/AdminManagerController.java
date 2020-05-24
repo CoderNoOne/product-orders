@@ -6,7 +6,6 @@ import com.app.infrastructure.dto.ManagerDto;
 import com.app.infrastructure.dto.ResponseData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +19,8 @@ public class AdminManagerController { /*ADMIN_MANAGER*/
     private final EmailService emailService;
 
     @PutMapping("/{id}/activate")
-    public ResponseEntity<ResponseData<Long>> activateManagerAccount(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<Long> activateManagerAccount(@PathVariable Long id) {
 
         var body = ResponseData.<Long>builder()
                 .data(managerService.activate(id))
@@ -28,16 +28,16 @@ public class AdminManagerController { /*ADMIN_MANAGER*/
 
 //        emailService.sendAsHtml();
 
-        return new ResponseEntity<>(body, HttpStatus.OK);
+        return body;
 
     }
 
     @GetMapping
-    public ResponseEntity<ResponseData<List<ManagerDto>>> getAllManagers(@RequestParam(name = "enabled", required = false) Boolean enabled) {
-        var body = ResponseData.<List<ManagerDto>>builder()
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<List<ManagerDto>> getAllManagers(@RequestParam(name = "enabled", required = false) Boolean enabled) {
+
+        return ResponseData.<List<ManagerDto>>builder()
                 .data(managerService.getAll(enabled))
                 .build();
-
-        return new ResponseEntity<>(body, HttpStatus.OK);
     }
 }

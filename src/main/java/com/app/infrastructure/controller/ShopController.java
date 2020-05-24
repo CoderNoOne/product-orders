@@ -25,92 +25,82 @@ public class ShopController {
     private final ShopService shopService;
 
     @GetMapping
-    public ResponseEntity<ResponseData<List<ShopDto>>> getAll(@RequestParam(name = "productInStore", required = false) Long id) {
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<List<ShopDto>> getAll(@RequestParam(name = "productInStore", required = false) Long id) {
 
-        var body = ResponseData.<List<ShopDto>>builder()
+        return ResponseData.<List<ShopDto>>builder()
                 .data(Objects.isNull(id) ? shopService.getAllShops() : shopService.getAllShopsWithProductInStore(id))
                 .build();
-
-        return ResponseEntity.ok(body);
 
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseData<ShopDto>> getOne(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<ShopDto> getOne(@PathVariable Long id) {
 
-        var body = ResponseData.<ShopDto>builder()
+        return ResponseData.<ShopDto>builder()
                 .data(shopService.getShopById(id))
                 .build();
-
-        return ResponseEntity.ok(body);
     }
 
     @PostMapping(
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity<ResponseData<Long>> add(RequestEntity<CreateShopDto> requestEntity) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseData<Long> add(RequestEntity<CreateShopDto> requestEntity) {
 
-        var body = ResponseData.<Long>builder()
+        return ResponseData.<Long>builder()
                 .data(shopService.addShop(requestEntity.getBody()))
                 .build();
-
-        return new ResponseEntity<>(body, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
         shopService.delete(id);
-
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseData<Long>> update(@PathVariable Long id, RequestEntity<UpdateShopDto> requestEntity) {
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<Long> update(@PathVariable Long id, RequestEntity<UpdateShopDto> requestEntity) {
 
-        var body = ResponseData.<Long>builder()
+        return ResponseData.<Long>builder()
                 .data(shopService.updateShop(id, requestEntity.getBody()))
                 .build();
-
-        return new ResponseEntity<>(body, HttpStatus.OK);
 
     }
 
     @PostMapping("{shopId}/stocks")
-    public ResponseEntity<ResponseData<Long>> addStockToExistingShop(
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseData<Long> addStockToExistingShop(
             @PathVariable Long shopId,
             RequestEntity<CreateStockDto> requestEntity
     ) {
 
-        var body = ResponseData.<Long>builder()
+        return ResponseData.<Long>builder()
                 .data(shopService.createStockForShop(shopId, requestEntity.getBody()))
                 .build();
-
-        return new ResponseEntity<>(body, HttpStatus.CREATED);
     }
 
     @PatchMapping("/{shopId}/stocks/{stockId}")
-    public ResponseEntity<ResponseData<Long>> updateStock(
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<Long> updateStock(
             @PathVariable Long shopId,
             @PathVariable Long stockId,
             RequestEntity<Map<String, String>> requestEntity) {
 
-        var body = ResponseData.<Long>builder()
+        return ResponseData.<Long>builder()
                 .data(shopService.updateStock(shopId, stockId, requestEntity.getBody()))
                 .build();
-
-        return new ResponseEntity<>(body, HttpStatus.OK);
 
     }
 
     @DeleteMapping("/{shopId}/stocks/{stockId}")
-    public ResponseEntity<Void> deleteStock(
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteStock(
             @PathVariable Long shopId,
             @PathVariable Long stockId
     ) {
-
         shopService.deleteStock(shopId, stockId);
-
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

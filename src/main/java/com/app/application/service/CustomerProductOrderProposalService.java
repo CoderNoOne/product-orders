@@ -34,8 +34,8 @@ public class CustomerProductOrderProposalService {
             throw new ValidationException(Validations.createErrorMessage(errors));
         }
 
-        var user = customerRepository.findByUsername(username)
-                .orElseThrow(() -> new NotFoundException("No  user with username: " + username));
+//        var user = customerRepository.findByUsername(username)
+//                .orElseThrow(() -> new NotFoundException("No  user with username: " + username));
 
         var productOrderProposal = createProductOrderProposalByCustomerDto.toEntity();
 //        productOrderProposal.setCustomer(user);
