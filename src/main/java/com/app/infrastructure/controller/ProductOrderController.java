@@ -5,7 +5,6 @@ import com.app.infrastructure.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +27,7 @@ public class ProductOrderController { /*USER_CUSTOMER*/
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseData<Long> addProduct(@RequestBody CreateProductOrderDto2 createProductOrderDto) {
+    public ResponseData<Long> addProduct(@RequestBody CreateProductOrderDto createProductOrderDto) {
 
         var managerUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 //        emailService.sendAsHtml(null, userService.getEmailForUsername(username), MailTemplates.generateHtmlInfoAboutProductOrder(username, productOrderService.getById(body.getData())), "Product order information");

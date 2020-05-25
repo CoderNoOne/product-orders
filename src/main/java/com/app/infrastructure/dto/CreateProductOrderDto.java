@@ -1,40 +1,46 @@
 package com.app.infrastructure.dto;
 
-import com.app.domain.entity.Address;
-import com.app.domain.entity.Producer;
-import com.app.domain.entity.ProductOrder;
+import com.app.domain.entity.*;
 import com.app.domain.enums.ProductOrderStatus;
-import com.app.domain.entity.Product;
-import com.app.infrastructure.dto.createShop.ProductInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Map;
 import java.util.Objects;
 
-@Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Builder
 public class CreateProductOrderDto {
 
-    private ProductInfo productInfo;
-    private Integer quantity;
-    private Long stockId;
+    private String customerUsername;
     private String deliveryAddress;
+    private LocalDate paymentDeadline;
+    private Long productId;
+    private Long shopId;
+    private Map<String, Integer> productStockQuantity;
+    private BigDecimal discount;
+    private Long managerProductOrderProposalId;
 
     public ProductOrder toEntity() {
+
         return ProductOrder.builder()
-                .product(Product.builder()
-                        .producer(Producer.builder()
-                                .name(Objects.isNull(productInfo) ? null : productInfo.getProducerName())
-                                .build())
-                        .name(Objects.isNull(productInfo) ? null : productInfo.getName())
-                        .build())
+                .deliveryAddress(Objects.nonNull(deliveryAddress) ? Address.builder().address(deliveryAddress).build() : null)
+                .customer(Objects.nonNull(customerUsername) ? Customer.builder()
+                        .username(customerUsername)
+                        .build() : null)
+                .quantity(Objects.nonNull(productStockQuantity) ? productStockQuantity.values().stream().mapToInt(i -> i).sum() : null)
                 .status(ProductOrderStatus.IN_PROGRESS)
-                .deliveryAddress(Address.builder().address(deliveryAddress).build())
-                .quantity(quantity)
+                .paymentDeadline(paymentDeadline)
+                .discount(discount)
+                .product(Objects.nonNull(productId) ? Product.builder().id(productId).build() : null)
+                .shop(Objects.nonNull(shopId) ? Shop.builder().id(shopId).build() : null)
                 .build();
     }
+
 }

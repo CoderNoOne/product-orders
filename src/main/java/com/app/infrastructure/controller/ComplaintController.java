@@ -2,14 +2,12 @@ package com.app.infrastructure.controller;
 
 import com.app.application.service.ComplaintService;
 import com.app.infrastructure.dto.ComplaintDto;
+import com.app.infrastructure.dto.CreateComplaintDto;
 import com.app.infrastructure.dto.ResponseData;
 import com.app.infrastructure.dto.UpdateComplaintDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,14 +28,13 @@ public class ComplaintController { /*USER_MANGER*/
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         return ResponseData.<List<ComplaintDto>>builder()
-                .data(complaintService.getAllComplaintsByManagerUsername(username))
+                .data(complaintService.getAllAwaitingComplaintsByManagerUsername(username))
                 .build();
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseData<ComplaintDto> getById(
-            @PathVariable Long id) {
+    public ResponseData<ComplaintDto> getById(@PathVariable Long id) {
 
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
 
@@ -57,6 +54,17 @@ public class ComplaintController { /*USER_MANGER*/
 
         return ResponseData.<Long>builder()
                 .data(complaintService.updateComplaintById(id, username, requestEntity.getBody()))
+                .build();
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseData<Long> addComplaint(@RequestBody CreateComplaintDto createComplaintDto) {
+
+        var username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        return ResponseData.<Long>builder()
+                .data(complaintService.addComplaint(username, createComplaintDto))
                 .build();
     }
 }

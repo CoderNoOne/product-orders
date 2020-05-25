@@ -4,10 +4,8 @@ import com.app.domain.repository.UserRepository;
 import com.app.infrastructure.security.dto.AppError;
 import com.app.infrastructure.security.filter.AppAuthenticationFilter;
 import com.app.infrastructure.security.filter.AppAuthorizationFilter;
-import com.app.infrastructure.security.remember_me.RememberMeServiceImpl;
 import com.app.infrastructure.security.tokens.TokenManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
@@ -18,7 +16,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -26,9 +23,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.RememberMeServices;
-import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -135,6 +129,13 @@ public class AppWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/trades**").hasAnyRole("USER_CUSTOMER", "ADMIN_PRODUCT")
                 .antMatchers(HttpMethod.GET, "/meetings**", "/meetings/**").hasAnyRole("USER_MANAGER", "USER_CUSTOMER")
                 .antMatchers(HttpMethod.GET, "/repairOrders**", "/repairOrders/**").hasAnyRole("USER_MANAGER", "USER_CUSTOMER")
+                .antMatchers(HttpMethod.GET, "/complaints**", "/complaints/**").hasRole("USER_MANAGER")
+                .antMatchers(HttpMethod.PATCH, "/complaints**", "/complaints/**").hasRole("USER_MANAGER")
+
+                .antMatchers(HttpMethod.POST, "/productOrders/**").hasRole("USER_MANAGER")
+                .antMatchers(HttpMethod.GET, "/productOrders/**").hasRole("USER_CUSTOMER")
+                .antMatchers(HttpMethod.DELETE, "/productOrders/**").hasRole("USER_CUSTOMER")
+                .antMatchers(HttpMethod.POST, "/complaints").hasRole("USER_CUSTOMER")
 
                 .antMatchers("/customer/productOrderProposals/**").hasRole("USER_CUSTOMER")
                 .antMatchers("/customer/**").hasRole("USER_CUSTOMER")
@@ -147,9 +148,7 @@ public class AppWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/managers/**").hasRole("ADMIN_MANAGER")
                 .antMatchers("/repairOrders/**").hasRole("USER_MANAGER")
 
-                .antMatchers(HttpMethod.POST, "/productOrders/**").hasRole("USER_MANAGER")
-                .antMatchers(HttpMethod.GET, "/productOrders/**").hasRole("USER_CUSTOMER")
-                .antMatchers(HttpMethod.DELETE, "/productOrders/**").hasRole("USER_CUSTOMER")
+
                 .anyRequest().authenticated()
 
 

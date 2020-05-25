@@ -6,6 +6,7 @@ import com.app.domain.generic.BaseEntity;
 import com.app.infrastructure.dto.ProductOrderProposalDto;
 import com.app.infrastructure.dto.createShop.ProductInfo;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -21,6 +22,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
 public class ProductOrderProposal extends BaseEntity {
 
@@ -43,6 +45,9 @@ public class ProductOrderProposal extends BaseEntity {
     @CollectionTable(name = "proposal_remarks")
     private List<ProposalRemark> remarks;
 
+    @ManyToOne
+    @JoinColumn(name = "address_id")
+    private Address address;
 
 //    public void setCustomer(Customer customer) {
 //        this.customer = customer;

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -45,7 +46,7 @@ public class ProductOrderService {
     private final AdminShopPropertyRepository adminShopPropertyRepository;
     private final ShopRepository shopRepository;
     private final ReservedProductRepository reservedProductRepository;
-    private final CreateProductOrderDto2Validator createProductOrderDto2Validator;
+    private final CreateProductOrderDtoValidator createProductOrderDtoValidator;
 
     public List<ProductOrderDto> getFilteredProductOrdersForUsername(ProductOrderFilteringCriteriaDto productOrderFilteringCriteriaDto, String username) {
 
@@ -143,8 +144,8 @@ public class ProductOrderService {
                 .orElseThrow(() -> new NotFoundException("No productOrder with id: " + id));
 
 
-        if (productOrder.getStatus().equals(ProductOrderStatus.DONE)) {
-            throw new ValidationException(Validations.createErrorMessage(Map.of("Product order status", "Order is already done. Cannot be canceled")));
+        if (!productOrder.getStatus().equals(ProductOrderStatus.IN_PROGRESS)) {
+            throw new ValidationException(Validations.createErrorMessage(Map.of("Product order status", "Order need to have status in_progress to be cancelled")));
         }
 
         var reservedProducts = reservedProductRepository.findAllByProductOrderId(productOrder.getId());
@@ -196,7 +197,10 @@ public class ProductOrderService {
                             }
                             productOrder.setStatus(ProductOrderStatus.DONE);
                             var shop = productOrder.getShop();
-                            shop.setBudget(shop.getBudget().add(calculateTotalPriceToPay(productOrder)));
+                            var augend = calculateTotalPriceToPay(productOrder);
+                            System.out.println(augend);
+                            shop.setBudget(shop.getBudget().add(augend));
+                            reservedProductRepository.deleteByProductOrderId(productOrder.getId());
                         },
                         () -> {
                             throw new NotFoundException("No productOrder with id: " + id);
@@ -213,9 +217,10 @@ public class ProductOrderService {
         var productBasePrice = productOrder.getProduct().getPrice();
         var discount = productOrder.getDiscount();
 
+        var pricePercentageAfterDiscount = BigDecimal.ONE.subtract(discount.divide(new BigDecimal("100"), RoundingMode.HALF_UP));
         return Objects.isNull(penalty) ?
-                (BigDecimal.ONE.subtract(discount)).multiply(productBasePrice.multiply(new BigDecimal(quantity))) :
-                (BigDecimal.ONE.add(penalty)).multiply(BigDecimal.ONE.subtract(discount)).multiply(productBasePrice.multiply(new BigDecimal(quantity)));
+                pricePercentageAfterDiscount.multiply(productBasePrice.multiply(new BigDecimal(quantity))) :
+                (BigDecimal.ONE.add(penalty.divide(new BigDecimal("100"), RoundingMode.HALF_UP))).multiply(pricePercentageAfterDiscount).multiply(productBasePrice.multiply(new BigDecimal(quantity)));
     }
 
 
@@ -262,6 +267,7 @@ public class ProductOrderService {
 
         return productOrderRepository.findAllByUsernameAndStatus(username, ProductOrderStatus.DONE)
                 .stream()
+                .filter(productOrder -> productOrder.getStatus() == ProductOrderStatus.DONE)
                 .filter(productOrder -> Objects.isNull(orderDateBoundary.getFrom()) || orderDateBoundary.getFrom().compareTo(productOrder.getOrderDate()) <= 0)
                 .filter(productOrder -> Objects.isNull(orderDateBoundary.getTo()) || orderDateBoundary.getTo().compareTo(productOrder.getOrderDate()) >= 0)
                 .map(productOrder -> productOrder.getProduct().getPrice().multiply(BigDecimal.valueOf(productOrder.getQuantity()).multiply(BigDecimal.valueOf(100).subtract(productOrder.getDiscount()))))
@@ -352,11 +358,11 @@ public class ProductOrderService {
                 .collect(Collectors.toList());
     }
 
-    public Long addProductOrder(String managerUsername, CreateProductOrderDto2 createProductOrderDto) {
+    public Long addProductOrder(String managerUsername, CreateProductOrderDto createProductOrderDto) {
 
-        var errors = createProductOrderDto2Validator.validate(createProductOrderDto);
+        var errors = createProductOrderDtoValidator.validate(createProductOrderDto);
 
-        if (createProductOrderDto2Validator.hasErrors()) {
+        if (createProductOrderDtoValidator.hasErrors()) {
             throw new ValidationException(Validations.createErrorMessage(errors));
         }
 
