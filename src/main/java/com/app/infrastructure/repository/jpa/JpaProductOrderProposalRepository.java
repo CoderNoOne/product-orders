@@ -23,5 +23,4 @@ public interface JpaProductOrderProposalRepository extends JpaRepository <Produc
 
     Optional<ProductOrderProposal> findByIdAndCustomerUsernameAndSide(Long id, String username, ProposalSide side);
 
-
 }

@@ -61,13 +61,24 @@ public class CustomerProductOrderProposalController {
     public ResponseData<Long> replyToProductOrderProposal(
             @PathVariable Long id,
             @RequestBody UpdateProductOrderProposalByCustomerDto updateProductOrderProposalByCustomerDto
-            ) {
+    ) {
 
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         return ResponseData.<Long>builder()
                 .data(customerProductOrderProposalService.replyToProductOrderProposal(id, username, updateProductOrderProposalByCustomerDto))
                 .build();
+    }
+
+    @GetMapping("/{id}/allRevisions")
+    public ResponseData<List<ProductOrderProposalDto>> getById(@PathVariable Long id) {
+
+        var username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        return ResponseData.<List<ProductOrderProposalDto>>builder()
+                .data(customerProductOrderProposalService.getById(id, username))
+                .build();
+
     }
 
 

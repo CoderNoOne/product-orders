@@ -136,4 +136,18 @@ public class CustomerProductOrderProposalService {
 
         return id;
     }
+
+    public List<ProductOrderProposalDto> getById(Long id, String username) {
+
+        return productOrderProposalRepository.findAllRevisionsById(id)
+                .stream()
+                .filter(productOrderProposal -> {
+                    if(!Objects.equals(productOrderProposal.getCustomer().getUsername(), username)){
+                        throw new ValidationException("You are not part of this conversation");
+                    }
+                    return true;
+                })
+                .map(ProductOrderProposal::toDto)
+                .collect(Collectors.toList());
+    }
 }
