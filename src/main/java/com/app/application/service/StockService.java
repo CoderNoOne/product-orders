@@ -3,6 +3,7 @@ package com.app.application.service;
 import com.app.application.validators.impl.AddProductToStockDtoValidator;
 import com.app.application.validators.impl.ProductQuantityDtoValidator;
 import com.app.application.validators.impl.TransferProductDtoValidator;
+import com.app.domain.entity.Shop;
 import com.app.domain.repository.AdminShopPropertyRepository;
 import com.app.domain.entity.Stock;
 import com.app.domain.repository.StockRepository;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -66,10 +68,16 @@ public class StockService {
 
         BigDecimal totalPrice = product.getPrice().multiply(BigDecimal.valueOf(addProductToStockDto.getQuantity()));
 
-        if (stock.getShop().getBudget().multiply(xValue).compareTo(totalPrice) < 0) {
+        var shop = stock.getShop();
+        var budget = shop.getBudget();
+
+        if (totalPrice.compareTo(budget.multiply(xValue)) > 0) {
             throw new ValidationException("Cannot add products to stock - budget limit");
         }
 
+        shop.setBudget(budget.subtract(totalPrice));
+
+        shop.setBudget(budget.subtract(totalPrice));
         stock.getProductsQuantity().merge(product, addProductToStockDto.getQuantity(), Integer::sum);
 
         return product.getId();
@@ -133,4 +141,5 @@ public class StockService {
 
         return productIdWrapper.get();
     }
+
 }

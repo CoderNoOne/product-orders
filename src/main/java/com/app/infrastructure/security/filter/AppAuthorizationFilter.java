@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -44,7 +45,7 @@ public class AppAuthorizationFilter extends BasicAuthenticationFilter {
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
-            FilterChain chain) throws IOException {
+            FilterChain chain) throws IOException, ServletException {
 
         String accessToken = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (Objects.nonNull(accessToken)) {
@@ -72,7 +73,6 @@ public class AppAuthorizationFilter extends BasicAuthenticationFilter {
             }
         }
 
-
         try {
             chain.doFilter(request, response);
         } catch (Exception e) {
@@ -83,5 +83,8 @@ public class AppAuthorizationFilter extends BasicAuthenticationFilter {
             writer.close();
             writer.flush();
         }
+
     }
 }
+
+

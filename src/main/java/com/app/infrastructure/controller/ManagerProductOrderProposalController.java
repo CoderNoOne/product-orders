@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/managerProductOrderProposals")
+@RequestMapping("/manager/productOrderProposals")
 public class ManagerProductOrderProposalController {
 
     private final ManagerProductOrderProposalService managerProductOrderProposalService;

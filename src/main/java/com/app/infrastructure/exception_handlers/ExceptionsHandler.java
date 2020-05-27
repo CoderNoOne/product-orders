@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 @Slf4j
-public class ExceptionsHandler {
+public class ExceptionsHandler  {
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public ResponseData<String> handleNotFoundException(NotFoundException exception) {
+    public ResponseData<String> handleNotFoundException(/*NotFoundException*/ Exception exception) {
 
         log.error(exception.getMessage());
 
@@ -125,4 +125,5 @@ public class ExceptionsHandler {
                 .error(exception.getMessage())
                 .build();
     }
+
 }

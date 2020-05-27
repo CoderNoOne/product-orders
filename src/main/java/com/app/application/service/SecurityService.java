@@ -14,6 +14,7 @@ import com.app.domain.repository.ManagerRepository;
 import com.app.domain.repository.RoleRepository;
 import com.app.domain.entity.User;
 import com.app.domain.repository.UserRepository;
+import com.app.infrastructure.exception.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -45,10 +46,13 @@ public class SecurityService {
         var customer = registerCustomerDto.toEntity();
 
         managerRepository.findOneWithLeastCustomers()
-                .ifPresent(
+                .ifPresentOrElse(
                         manager -> {
                             Objects.requireNonNull(customer).setManager(manager);
                             manager.getCustomers().add(customer);
+                        }
+                        , () -> {
+                            throw new ValidationException("Registration is not available now. Waiting for more managers");
                         }
                 );
 

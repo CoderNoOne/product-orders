@@ -69,8 +69,6 @@ public class CreateProductDtoValidator extends AbstractValidator<CreateProductDt
 
         var producerDto = createProductDto.getProducer();
 
-        System.out.println(createProductDto.getProducer());
-
         if (!isProducerNonNull(producerDto)) {
             errors.put("Producer object", "Producer object is null");
         } else if (!isProducerNameValid(producerDto.getName())) {

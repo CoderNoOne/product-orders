@@ -3,6 +3,7 @@ package com.app.domain.entity;
 import com.app.domain.enums.Gender;
 import com.app.infrastructure.dto.CustomerDto;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -14,6 +15,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "customers")
 public class Customer extends User {
 

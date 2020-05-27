@@ -46,7 +46,6 @@ public class ProductOrderService {
     private final AdminShopPropertyRepository adminShopPropertyRepository;
     private final ShopRepository shopRepository;
     private final ReservedProductRepository reservedProductRepository;
-    private final CreateProductOrderDtoValidator createProductOrderDtoValidator;
 
     public List<ProductOrderDto> getFilteredProductOrdersForUsername(ProductOrderFilteringCriteriaDto productOrderFilteringCriteriaDto, String username) {
 

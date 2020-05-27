@@ -98,6 +98,22 @@ public class OpenApiConfig {
     }
 
     @Bean
+    public GroupedOpenApi managerProductOrderProposalApi() {
+        return GroupedOpenApi.builder()
+                .setGroup("managerProductOrderProposals")
+                .pathsToMatch("/manager/productOrderProposals/**")
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi customerProductOrderProposalApi() {
+        return GroupedOpenApi.builder()
+                .setGroup("customerProductOrderProposals")
+                .pathsToMatch("/customer/productOrderProposals/**")
+                .build();
+    }
+
+    @Bean
     public GroupedOpenApi securityApi() {
         return GroupedOpenApi.builder()
                 .setGroup("security")

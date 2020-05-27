@@ -1,11 +1,13 @@
 package com.app.infrastructure.security.config;
 
 import com.app.domain.repository.UserRepository;
+import com.app.infrastructure.exception_handlers.ExceptionsHandler;
 import com.app.infrastructure.security.dto.AppError;
 import com.app.infrastructure.security.filter.AppAuthenticationFilter;
 import com.app.infrastructure.security.filter.AppAuthorizationFilter;
 import com.app.infrastructure.security.tokens.TokenManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
@@ -22,7 +24,6 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.authentication.RememberMeServices;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -35,16 +36,16 @@ public class AppWebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsService userDetailsService;
     private final TokenManager tokenManager;
     private final UserRepository userRepository;
-    private final RememberMeServices rememberMeServiceImpl;
+    private final ExceptionsHandler exceptionHandler;
 
 
     public AppWebSecurityConfig(
             @Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService,
-            TokenManager tokenManager, UserRepository userRepository, RememberMeServices rememberMeServiceImpl) {
+            TokenManager tokenManager, UserRepository userRepository, ExceptionsHandler exceptionHandler) {
         this.userDetailsService = userDetailsService;
         this.tokenManager = tokenManager;
         this.userRepository = userRepository;
-        this.rememberMeServiceImpl = rememberMeServiceImpl;
+        this.exceptionHandler = exceptionHandler;
     }
 
     @Bean
@@ -153,8 +154,9 @@ public class AppWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
                 .and()
-                .addFilter(new AppAuthenticationFilter(authenticationManager(), tokenManager, rememberMeServiceImpl))
+                .addFilter(new AppAuthenticationFilter(authenticationManager(), tokenManager))
                 .addFilter(new AppAuthorizationFilter(authenticationManager(), tokenManager, userRepository));
     }
+
 
 }

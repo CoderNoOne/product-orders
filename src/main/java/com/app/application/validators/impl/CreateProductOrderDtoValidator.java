@@ -1,10 +1,8 @@
 package com.app.application.validators.impl;
 
 import com.app.application.validators.generic.AbstractValidator;
-import com.app.domain.repository.CustomerRepository;
-import com.app.domain.repository.ProductRepository;
-import com.app.domain.repository.ShopRepository;
-import com.app.domain.repository.StockRepository;
+import com.app.domain.enums.ProposalStatus;
+import com.app.domain.repository.*;
 import com.app.infrastructure.dto.CreateProductOrderDto;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
@@ -25,6 +23,7 @@ public class CreateProductOrderDtoValidator extends AbstractValidator<CreateProd
     private final CustomerRepository customerRepository;
     private final StockRepository stockRepository;
     private final ShopRepository shopRepository;
+    private final ProductOrderProposalRepository productOrderProposalRepository;
 
     @Override
     public Map<String, String> validate(CreateProductOrderDto createProductOrderDto) {
@@ -35,6 +34,13 @@ public class CreateProductOrderDtoValidator extends AbstractValidator<CreateProd
             errors.put("CreateProductOrderDto object", "is null");
             return errors;
         }
+
+        if (Objects.isNull(createProductOrderDto.getManagerProductOrderProposalId())) {
+            errors.put("ManagerProductOrderProposal id", "is null");
+        }
+//        } else if (!isManagerProductOrderProposalValid(createProductOrderDto.getManagerProductOrderProposalId())) {
+//            errors.put("ManagerProductOrderProposal object", "must exist and have status ACCEPTED");
+//        }
 
         if (Objects.isNull(createProductOrderDto.getProductId())) {
             errors.put("Product id", "is null");
@@ -88,6 +94,12 @@ public class CreateProductOrderDtoValidator extends AbstractValidator<CreateProd
 
         return errors;
     }
+
+//    private boolean isManagerProductOrderProposalValid(Long managerProductOrderProposalId) {
+//        var managerProposal = managerProductOrderProposalRepository.findOne(managerProductOrderProposalId);
+//        return managerProposal.isPresent()
+//                && managerProposal.get().getStatus() == ProposalStatus.ACCEPTED;
+//    }
 
     private boolean doShopExist(Long shopId) {
         return shopRepository.findOne(shopId).isPresent();

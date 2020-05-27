@@ -1,16 +1,15 @@
 package com.app.infrastructure.controller;
 
 import com.app.application.service.ShopService;
+import com.app.infrastructure.dto.ResponseData;
 import com.app.infrastructure.dto.ShopDto;
 import com.app.infrastructure.dto.UpdateShopDto;
 import com.app.infrastructure.dto.createShop.CreateShopDto;
-import com.app.infrastructure.dto.ResponseData;
 import com.app.infrastructure.dto.createShop.CreateStockDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

@@ -1,9 +1,7 @@
 package com.app.infrastructure.dto;
 
-import com.app.domain.entity.Producer;
-import com.app.domain.entity.Product;
-import com.app.domain.entity.ProductOrderProposal;
-import com.app.domain.entity.Shop;
+import com.app.domain.entity.*;
+import com.app.domain.enums.ProposalSide;
 import com.app.domain.enums.ProposalStatus;
 import com.app.infrastructure.dto.createShop.ProductInfo;
 import lombok.AllArgsConstructor;
@@ -23,8 +21,9 @@ public class CreateProductOrderProposalByCustomerDto {
 
     private ProductInfo productInfo;
     private Integer quantity;
-    private CustomerProposalRemarkDto remark;
+    private CreateProposalRemarkDto remark;
     private String shopName;
+    private String address;
 
     public ProductOrderProposal toEntity() {
         return
@@ -36,11 +35,13 @@ public class CreateProductOrderProposalByCustomerDto {
                                         .build() : null)
                                 .build() : null)
                         .quantity(quantity)
-                        .remarks(Objects.nonNull(remark) ? List.of(remark.toProposalRemark()) : new ArrayList<>())
+                        .remarks(Objects.nonNull(remark) ? new ArrayList<>(List.of(remark.toEntity())) : new ArrayList<>())
                         .shop(Objects.nonNull(shopName) ? Shop.builder()
                                 .name(shopName)
                                 .build() : null)
                         .status(ProposalStatus.PROPOSED)
+                        .address(Objects.nonNull(address) ? Address.builder().build() : null)
+                        .side(ProposalSide.CUSTOMER)
                         .build();
     }
 }

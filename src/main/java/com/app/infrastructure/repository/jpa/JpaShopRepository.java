@@ -20,7 +20,7 @@ public interface JpaShopRepository extends JpaRepository<Shop, Long> {
     @Query(value = "select s from Shop s JOIN FETCH s.stocks st where exists (select pr from st.productsQuantity pr where key(pr).id = :productId and value(pr) > 0) order by value(st.productsQuantity) DESC")
     Set<Shop> findAllWhereProductExists(@Param("productId") Long productId);
 
-    @Query(value = "select sum(value(pr)) from Shop s  JOIN  s.stocks st join st.productsQuantity pr where s.id = :shopId and exists (select pr from st.productsQuantity pr where key(pr).id = :productId)")
+    @Query(value = "select case when sum(value(pr)) is not null then sum(value(pr)) else 0 end from Shop s  JOIN  s.stocks st join st.productsQuantity pr where s.id = :shopId and exists (select pr from st.productsQuantity pr where key(pr).id = :productId)")
     Integer findProductCountInAllStocks(Long shopId, Long productId);
 
 

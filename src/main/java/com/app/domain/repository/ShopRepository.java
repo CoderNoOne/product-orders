@@ -2,7 +2,6 @@ package com.app.domain.repository;
 
 import com.app.domain.entity.Shop;
 import com.app.domain.generic.CrudRepository;
-import com.app.infrastructure.dto.projection.ShopProductQuantity;
 
 import java.util.Map;
 import java.util.Optional;

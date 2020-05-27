@@ -44,7 +44,6 @@ public class ManagerProductOrderProposalService {
                 .collect(Collectors.toList());
     }
 
-    // TODO: 19.05.2020 change
     public Long updateProductProposal(Long id, ManagerUpdateProductOrderProposalDto managerUpdateProductOrderProposalDto) {
 
         if (Objects.isNull(id)) {
@@ -124,10 +123,10 @@ public class ManagerProductOrderProposalService {
             throw new ValidationException("Not enough product quantity in shop stores");
         }
 
-        managerProductOrderProposal.setShop(shop);
-        managerProductOrderProposal.setManager(manager);
-        managerProductOrderProposal.setCustomer(customer);
-        managerProductOrderProposal.setProduct(product);
+        managerProductOrderProposal
+                .shop(shop)
+                .customer(customer)
+                .product(product);
 
         return productOrderProposalRepository
                 .save(managerProductOrderProposal)

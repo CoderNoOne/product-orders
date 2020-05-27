@@ -5,7 +5,8 @@ import com.app.domain.repository.CustomerRepository;
 import com.app.domain.repository.ProductRepository;
 import com.app.domain.repository.ShopRepository;
 import com.app.infrastructure.dto.CreateManagerProductOrderProposalDto;
-import com.app.infrastructure.dto.ManagerProposalRemarkDto;
+import com.app.infrastructure.dto.CreateProposalRemarkDto;
+import com.app.infrastructure.dto.ProposalRemarkDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
@@ -94,7 +95,7 @@ public class CreateManagerProductOrderProposalDtoValidator extends AbstractValid
     }
 
 
-    private boolean isRemarkValid(ManagerProposalRemarkDto remark) {
+    private boolean isRemarkValid(CreateProposalRemarkDto remark) {
         return Objects.nonNull(remark.getTittle())
                 && remark.getTittle().length() <= 255
                 && Objects.nonNull(remark.getContent())

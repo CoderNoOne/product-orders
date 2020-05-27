@@ -5,7 +5,7 @@ import com.app.domain.repository.ProductRepository;
 import com.app.domain.repository.ShopRepository;
 import com.app.domain.repository.StockRepository;
 import com.app.infrastructure.dto.CreateProductOrderProposalByCustomerDto;
-import com.app.infrastructure.dto.CustomerProposalRemarkDto;
+import com.app.infrastructure.dto.CreateProposalRemarkDto;
 import com.app.infrastructure.dto.createShop.ProductInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -73,9 +73,9 @@ public class CreateProductOrderProposalByCustomerDtoValidator extends AbstractVa
         return errors;
     }
 
-    private boolean isRemarkValid(CustomerProposalRemarkDto remark) {
-        return Objects.nonNull(remark.getTitle())
-                && remark.getTitle().length() <= 255
+    private boolean isRemarkValid(CreateProposalRemarkDto remark) {
+        return Objects.nonNull(remark.getTittle())
+                && remark.getTittle().length() <= 255
                 && Objects.nonNull(remark.getContent())
                 && remark.getContent().length() <= 2000;
     }

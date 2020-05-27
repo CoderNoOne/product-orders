@@ -1,6 +1,8 @@
 package com.app.infrastructure.repository.impl;
 
 import com.app.domain.entity.ProductOrderProposal;
+import com.app.domain.enums.ProposalSide;
+import com.app.domain.enums.ProposalStatus;
 import com.app.domain.repository.ProductOrderProposalRepository;
 import com.app.infrastructure.repository.jpa.JpaProductOrderProposalRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,5 +35,25 @@ public class ProductOrderProposalRepositoryImpl implements ProductOrderProposalR
     @Override
     public List<ProductOrderProposal> getAllByManagerUsername(String username) {
         return jpaProductOrderProposalRepository.findAllByManagerUsername(username);
+    }
+
+    @Override
+    public List<ProductOrderProposal> findAllByCustomerUsernameAndStatus(String username, ProposalStatus status) {
+        return jpaProductOrderProposalRepository.findAllByCustomerUsernameAndStatus(username, status);
+    }
+
+    @Override
+    public List<ProductOrderProposal> findAllByCustomerUsername(String username) {
+        return jpaProductOrderProposalRepository.findAllByCustomerUsername(username);
+    }
+
+    @Override
+    public Optional<ProductOrderProposal> findByIdAndCustomerUsername(Long id, String username) {
+        return jpaProductOrderProposalRepository.findByIdAndCustomerUsername(id, username);
+    }
+
+    @Override
+    public Optional<ProductOrderProposal> findByIdAndCustomerUsernameAndSide(Long id, String username, ProposalSide side) {
+        return jpaProductOrderProposalRepository.findByIdAndCustomerUsernameAndSide(id, username, side);
     }
 }
