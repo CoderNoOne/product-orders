@@ -9,22 +9,28 @@ import com.app.infrastructure.dto.createShop.ProductInfo;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
-import java.net.Proxy;
 import java.util.List;
 import java.util.Objects;
 
+import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
+
 @Entity
 @Table(name = "product_orders_proposal")
+@Audited(targetAuditMode = NOT_AUDITED)
 
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-public class ProductOrderProposal extends BaseEntity {
+public class ProductOrderProposal extends BaseEntity implements Serializable {
 
     private BigDecimal discount;
     private Integer daysFromOrderToPaymentDeadline;

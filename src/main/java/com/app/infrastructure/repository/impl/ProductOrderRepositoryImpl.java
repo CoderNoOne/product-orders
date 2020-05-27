@@ -5,6 +5,7 @@ import com.app.domain.repository.ProductOrderRepository;
 import com.app.domain.enums.ProductOrderStatus;
 import com.app.infrastructure.repository.jpa.JpaProductOrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.history.Revision;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -75,4 +76,5 @@ public class ProductOrderRepositoryImpl implements ProductOrderRepository {
     public void deleteById(Long id) {
         jpaProductOrderRepository.deleteById(id);
     }
+
 }

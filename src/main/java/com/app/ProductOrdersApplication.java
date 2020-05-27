@@ -1,12 +1,7 @@
 package com.app;
 
-import com.app.application.service.StockService;
-import com.app.domain.entity.Role;
-import com.app.domain.entity.User;
-import com.app.domain.repository.RoleRepository;
-import com.app.domain.repository.StockRepository;
-import com.app.domain.repository.UserRepository;
-import com.app.infrastructure.repository.jpa.JpaStockRepository;
+import com.app.domain.entity.ProductOrderProposal;
+import com.app.domain.repository.ProductOrderProposalRepository;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,17 +9,23 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import javax.crypto.SecretKey;
 import java.util.List;
 
 @SpringBootApplication
+@EnableJpaRepositories(repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class)
 public class ProductOrdersApplication {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(ProductOrdersApplication.class, args);
 
+        ProductOrderProposalRepository productOrderProposalRepository = ctx.getBean("productOrderProposalRepositoryImpl", ProductOrderProposalRepository.class);
+
+        productOrderProposalRepository.findAllRevisionsById(2L)
+                .forEach(System.out::println);
 
 //        var allByIdIn = stockRepository.findAllById(List.of(1L, 2L));
 //
@@ -33,9 +34,9 @@ public class ProductOrdersApplication {
 //
 //        System.out.println(jpaShopRepository.findProductQuantityGroupByName(1L));
 //
-        RoleRepository roleRepository = ctx.getBean("roleRepositoryImpl", RoleRepository.class);
-
-        UserRepository userRepository = ctx.getBean("userRepositoryImpl", UserRepository.class);
+//        RoleRepository roleRepository = ctx.getBean("roleRepositoryImpl", RoleRepository.class);
+//
+//        UserRepository userRepository = ctx.getBean("userRepositoryImpl", UserRepository.class);
 ////
 ////
 //        var roleAdminProduct = roleRepository.save(Role.builder()
@@ -63,12 +64,12 @@ public class ProductOrdersApplication {
 //                .build());
 
 
-        userRepository.save(User.builder()
-                .role(roleRepository.findByName("ROLE_USER_MANAGER").get())
-                .email("asd")
-                .password("{noop}manager")
-                .username("manager")
-                .build());
+//        userRepository.save(User.builder()
+//                .role(roleRepository.findByName("ROLE_USER_MANAGER").get())
+//                .email("asd")
+//                .password("{noop}manager")
+//                .username("manager")
+//                .build());
 
 //        userRepository.save(User.builder()
 //                .role(roleAdminActuator)

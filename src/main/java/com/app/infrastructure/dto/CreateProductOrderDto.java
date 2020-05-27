@@ -25,7 +25,7 @@ public class CreateProductOrderDto {
     private Long shopId;
     private Map<String, Integer> productStockQuantity;
     private BigDecimal discount;
-    private Long managerProductOrderProposalId;
+    private Long acceptedProductOrderProposalId;
 
     public ProductOrder toEntity() {
 

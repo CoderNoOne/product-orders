@@ -6,10 +6,16 @@ import com.app.domain.enums.ProposalStatus;
 import com.app.domain.repository.ProductOrderProposalRepository;
 import com.app.infrastructure.repository.jpa.JpaProductOrderProposalRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.history.Revision;
+import org.springframework.data.history.Revisions;
 import org.springframework.stereotype.Repository;
 
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -55,5 +61,15 @@ public class ProductOrderProposalRepositoryImpl implements ProductOrderProposalR
     @Override
     public Optional<ProductOrderProposal> findByIdAndCustomerUsernameAndSide(Long id, String username, ProposalSide side) {
         return jpaProductOrderProposalRepository.findByIdAndCustomerUsernameAndSide(id, username, side);
+    }
+
+    @Override
+    public List<ProductOrderProposal> findAllRevisionsById(Long id) {
+
+        return jpaProductOrderProposalRepository.findRevisions(id).getContent()
+                .stream()
+                .sorted(Comparator.comparing(Revision::getRequiredRevisionNumber))
+                .map(Revision::getEntity)
+                .collect(Collectors.toCollection(LinkedList::new));
     }
 }
