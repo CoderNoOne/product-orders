@@ -72,4 +72,9 @@ public class ProductOrderProposalRepositoryImpl implements ProductOrderProposalR
                 .map(Revision::getEntity)
                 .collect(Collectors.toCollection(LinkedList::new));
     }
+
+    @Override
+    public Optional<ProductOrderProposal> findByIdAndManagerUsername(Long id, String username) {
+        return jpaProductOrderProposalRepository.findByIdAndCustomerManagerUsername(id, username);
+    }
 }

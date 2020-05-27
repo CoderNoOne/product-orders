@@ -56,7 +56,7 @@ public class ProductOrderProposal extends BaseEntity implements Serializable {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "proposal_remarks")
     private List<ProposalRemark> remarks;
 
@@ -76,19 +76,6 @@ public class ProductOrderProposal extends BaseEntity implements Serializable {
         this.shop = shop;
     }
 
-    public ProductOrderProposalDto toDto() {
-        return ProductOrderProposalDto.builder()
-                .customerUsername(Objects.nonNull(customer) ? customer.getUsername() : null)
-                .productInfo(Objects.nonNull(product) ? ProductInfo.builder()
-                        .name(product.getName())
-                        .producerName(Objects.nonNull(product.getProducer()) ? product.getProducer().getName() : null)
-                        .build() : null)
-                .quantity(quantity)
-                .shopName(Objects.nonNull(shop) ? shop.getName() : null)
-                .proposalStatus(status.toString())
-                .remarks(remarks)
-                .build();
-    }
 
     public Customer getCustomer() {
         return customer;
@@ -157,5 +144,39 @@ public class ProductOrderProposal extends BaseEntity implements Serializable {
     public ProductOrderProposal side(ProposalSide side) {
         this.side = side;
         return this;
+    }
+
+    public ProductOrderProposal daysFromOrderToPaymentDeadline(Integer daysFromOrderToPaymentDeadline){
+        this.daysFromOrderToPaymentDeadline = daysFromOrderToPaymentDeadline;
+        return this;
+    }
+
+    public ProductOrderProposalDto toDto() {
+        return ProductOrderProposalDto.builder()
+                .customerUsername(Objects.nonNull(customer) ? customer.getUsername() : null)
+                .productInfo(Objects.nonNull(product) ? ProductInfo.builder()
+                        .name(product.getName())
+                        .producerName(Objects.nonNull(product.getProducer()) ? product.getProducer().getName() : null)
+                        .build() : null)
+                .quantity(quantity)
+                .shopName(Objects.nonNull(shop) ? shop.getName() : null)
+                .proposalStatus(status.toString())
+                .remarks(remarks)
+                .side(Objects.nonNull(side) ? side.name() : null)
+                .address(Objects.nonNull(address) ? address.getAddress() : null)
+                .discount(discount)
+                .build();
+    }
+
+    public ProposalSide getSide() {
+        return side;
+    }
+
+    public Shop getShop() {
+        return shop;
+    }
+
+    public Integer getDaysFromOrderToPaymentDeadline() {
+        return daysFromOrderToPaymentDeadline;
     }
 }

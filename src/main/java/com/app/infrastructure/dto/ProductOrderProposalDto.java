@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Builder
@@ -21,4 +22,7 @@ public class ProductOrderProposalDto {
     private String customerUsername;
     private List<ProposalRemark> remarks;
     private String proposalStatus;
+    private String side;
+    private String address;
+    private BigDecimal discount;
 }

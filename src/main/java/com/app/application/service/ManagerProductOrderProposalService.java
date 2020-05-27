@@ -3,15 +3,16 @@ package com.app.application.service;
 import com.app.application.validators.impl.CreateManagerProductOrderProposalDtoValidator;
 import com.app.application.validators.impl.ManagerUpdateProductProposalDtoValidator;
 import com.app.domain.entity.ProductOrderProposal;
+import com.app.domain.enums.ProposalSide;
+import com.app.domain.enums.ProposalStatus;
 import com.app.domain.repository.*;
-import com.app.infrastructure.dto.CreateManagerProductOrderProposalDto;
-import com.app.infrastructure.dto.ManagerUpdateProductOrderProposalDto;
-import com.app.infrastructure.dto.ProductOrderProposalDto;
+import com.app.infrastructure.dto.*;
 import com.app.infrastructure.exception.NotFoundException;
 import com.app.infrastructure.exception.NullIdValueException;
 import com.app.infrastructure.exception.NullReferenceException;
 import com.app.infrastructure.exception.ValidationException;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.webresources.ClasspathURLStreamHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -132,5 +133,105 @@ public class ManagerProductOrderProposalService {
                 .save(managerProductOrderProposal)
                 .getId();
 
+    }
+
+    public List<ProductOrderProposalDto> getRevisionsById(Long id, String username) {
+
+        return productOrderProposalRepository
+                .findAllRevisionsById(id)
+                .stream()
+                .filter(productOrderProposal -> {
+                    if (!Objects.equals(productOrderProposal.getManager().getUsername(), username)) {
+                        throw new ValidationException("You are not part of this conversation");
+                    }
+                    return true;
+                })
+                .map(ProductOrderProposal::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public Long denyProductOrderProposal(Long id, String username) {
+
+        productOrderProposalRepository.findByIdAndManagerUsername(id, username)
+                .ifPresentOrElse(
+                        productOrderProposal -> {
+                            if (!Objects.equals(productOrderProposal.getSide(), ProposalSide.CUSTOMER)) {
+                                throw new ValidationException("You cannot respond to your own proposal");
+                            }
+                            if (!Objects.equals(productOrderProposal.getStatus(), ProposalStatus.PROPOSED)) {
+                                throw new ValidationException("This proposal is not actual");
+                            }
+                            productOrderProposal
+                                    .status(ProposalStatus.DENIED)
+                                    .side(ProposalSide.MANAGER);
+                        }
+                        ,
+                        () -> {
+                            throw new NotFoundException("");
+                        }
+                );
+        return id;
+    }
+
+    public Long replyToProductOrderProposal(Long id, String username, UpdateProductOrderProposalByManagerDto updateProductOrderProposalByManagerDto) {
+
+        //walidacja
+
+        productOrderProposalRepository.findByIdAndManagerUsername(id, username)
+                .ifPresentOrElse(
+                        productOrderProposal -> {
+                            if (!Objects.equals(productOrderProposal.getSide(), ProposalSide.CUSTOMER)) {
+                                throw new ValidationException("You cannot reply to your own proposal");
+                            }
+
+                            if (!Objects.equals(productOrderProposal.getStatus(), ProposalStatus.PROPOSED)) {
+                                throw new ValidationException("Proposal should have status: PROPOSED");
+                            }
+
+
+                            productOrderProposal
+                                    .side(ProposalSide.MANAGER)
+                                    .discount(Objects.nonNull(updateProductOrderProposalByManagerDto.getDiscount()) ?
+                                            updateProductOrderProposalByManagerDto.getDiscount() : productOrderProposal.getDiscount())
+                                    .shop(Objects.nonNull(updateProductOrderProposalByManagerDto.getShopName()) ?
+                                            shopRepository.findByName(updateProductOrderProposalByManagerDto.getShopName())
+                                                    .orElseThrow(() -> new NotFoundException("No shop with name: " + updateProductOrderProposalByManagerDto.getShopName())) :
+                                                    productOrderProposal.getShop())
+                                    .daysFromOrderToPaymentDeadline(Objects.nonNull(updateProductOrderProposalByManagerDto.getDaysFromOrderToPaymentDeadline()) ?
+                                            updateProductOrderProposalByManagerDto.getDaysFromOrderToPaymentDeadline() :
+                                            productOrderProposal.getDaysFromOrderToPaymentDeadline());
+
+                        },
+                        () -> {
+                            throw new NotFoundException("No productOrderProposal with id: " + id + " and for manager username: " + username);
+                        }
+                );
+
+        return id;
+
+    }
+
+    public Long acceptProductOrderProposal(Long id, String username) {
+
+        productOrderProposalRepository.findByIdAndManagerUsername(id, username)
+                .ifPresentOrElse(
+                        productOrderProposal -> {
+                            if (!Objects.equals(productOrderProposal.getSide(), ProposalSide.CUSTOMER)) {
+                                throw new ValidationException("You cannot accept your own proposal");
+                            }
+                            if (!Objects.equals(productOrderProposal.getStatus(), ProposalStatus.PROPOSED)) {
+                                throw new ValidationException("Product proposal should have status of: PROPOSED");
+                            }
+
+                            productOrderProposal
+                                    .side(ProposalSide.MANAGER)
+                                    .status(ProposalStatus.ACCEPTED);
+                        },
+                        () -> {
+                            throw new NotFoundException("No productOrderProposal with id: " + id + " and for manager username: " + username);
+                        }
+                );
+
+        return id;
     }
 }

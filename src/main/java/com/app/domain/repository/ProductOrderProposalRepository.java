@@ -21,4 +21,6 @@ public interface ProductOrderProposalRepository extends CrudRepository<ProductOr
     Optional<ProductOrderProposal> findByIdAndCustomerUsernameAndSide(Long id, String username, ProposalSide side);
 
     List<ProductOrderProposal> findAllRevisionsById(Long id);
+
+    Optional<ProductOrderProposal> findByIdAndManagerUsername(Long id, String username);
 }

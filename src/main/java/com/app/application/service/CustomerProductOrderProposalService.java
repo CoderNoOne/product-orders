@@ -120,7 +120,7 @@ public class CustomerProductOrderProposalService {
                                 throw new ValidationException("Product proposal should have status: proposed");
                             }
                             productOrderProposal
-                                    .discount(Objects.nonNull(updateProductOrderProposalByCustomerDto) ?
+                                    .discount(Objects.nonNull(updateProductOrderProposalByCustomerDto.getDiscount()) ?
                                             updateProductOrderProposalByCustomerDto.getDiscount() :
                                             productOrderProposal.getDiscount())
                                     .address(addressRepository.findByAddress(updateProductOrderProposalByCustomerDto.getAddress())
