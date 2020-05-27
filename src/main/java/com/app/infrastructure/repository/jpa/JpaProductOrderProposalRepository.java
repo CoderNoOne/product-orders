@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface JpaProductOrderProposalRepository extends JpaRepository <ProductOrderProposal, Long> {
 
-    @Query("select p from ProductOrderProposal p where p.customer.manager.username = :username")
+    @Query("select p from ProductOrderProposal p where p..manager.username = :username")
     List<ProductOrderProposal> findAllByManagerUsername(String username);
 }
