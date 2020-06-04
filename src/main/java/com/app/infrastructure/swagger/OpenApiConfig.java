@@ -1,5 +1,6 @@
 package com.app.infrastructure.swagger;
 
+import com.app.infrastructure.dto.ResponseData;
 import com.app.infrastructure.security.dto.AuthenticationDto;
 import com.app.infrastructure.security.dto.TokensDto;
 import io.swagger.v3.oas.models.*;
@@ -48,7 +49,7 @@ public class OpenApiConfig {
                                         new SecurityScheme()
                                                 .name("remember-me")
                                                 .type(SecurityScheme.Type.APIKEY)
-                                                .in(SecurityScheme.In.COOKIE)
+                                                .in(SecurityScheme.In.HEADER)
                                 ))
                 ).security(List.of(new SecurityRequirement().addList("JwtAuthToken").addList("CookieAuth")))
                 .info(new Info()
@@ -90,6 +91,13 @@ public class OpenApiConfig {
                                                                         .addProperties("refreshToken", new Schema<String>().type("string"))
                                                                 )
                                                         )).addHeaderObject("Set-Cookie", new Header().schema(new Schema<String>().type("string"))))
+                                                .addApiResponse("404", new ApiResponse().content(new Content().addMediaType("application/json", new MediaType()
+                                                        .schema(new Schema<ResponseData<String>>().type("object")
+                                                                .addProperties(
+                                                                        "data", new Schema<String>().type("string"))
+                                                                .addProperties("error", new Schema<String>().type("string"))
+                                                        ))
+                                                ))
 
                                         )
                                         .tags(List.of("login"))
@@ -106,6 +114,14 @@ public class OpenApiConfig {
     }
 
     @Bean
+    public GroupedOpenApi registerVerificationTokenApi() {
+        return GroupedOpenApi.builder()
+                .setGroup("registerVerificationToken")
+                .pathsToMatch("/registerVerificationTokens/**")
+                .build();
+    }
+
+    @Bean
     public GroupedOpenApi customerProductOrderProposalApi() {
         return GroupedOpenApi.builder()
                 .setGroup("customerProductOrderProposals")
@@ -118,8 +134,11 @@ public class OpenApiConfig {
         return GroupedOpenApi.builder()
                 .setGroup("security")
                 .pathsToMatch("/security/**")
-                .addOpenApiCustomiser(openApi -> openApi
-                        .security(Collections.emptyList()))
+                .addOpenApiCustomiser(openApi -> openApi.security(Collections.emptyList()))
+//                .pathsToExclude("/security/activate")
+//                .addOpenApiCustomiser(openApi -> openApi.paths(new Paths().addPathItem("/security/sign-up-customer", new PathItem().post(new Operation().security(Collections.emptyList())))))
+//                .addOpenApiCustomiser(openApi -> openApi.path("/security/activate", new PathItem().put(new Operation()))
+//                        .security(List.of(new SecurityRequirement().addList("JwtAuthToken").addList("CookieAuth"))))
                 .build();
     }
 

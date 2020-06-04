@@ -11,12 +11,15 @@ import com.app.infrastructure.exception.NotFoundException;
 import com.app.infrastructure.exception.NullIdValueException;
 import com.app.infrastructure.exception.NullReferenceException;
 import com.app.infrastructure.exception.ValidationException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.webresources.ClasspathURLStreamHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -32,6 +35,7 @@ public class ManagerProductOrderProposalService {
     private final ShopRepository shopRepository;
     private final ManagerRepository managerRepository;
     private final CustomerRepository customerRepository;
+    private final ObjectMapper objectMapper;
 
     public List<ProductOrderProposalDto> getAllProposals(String managerUsername) {
 
@@ -216,6 +220,9 @@ public class ManagerProductOrderProposalService {
         productOrderProposalRepository.findByIdAndManagerUsername(id, username)
                 .ifPresentOrElse(
                         productOrderProposal -> {
+                            if(!isReadyToAccept(productOrderProposal)){
+                                throw new ValidationException("");
+                            }
                             if (!Objects.equals(productOrderProposal.getSide(), ProposalSide.CUSTOMER)) {
                                 throw new ValidationException("You cannot accept your own proposal");
                             }
@@ -233,5 +240,18 @@ public class ManagerProductOrderProposalService {
                 );
 
         return id;
+    }
+
+    private boolean isReadyToAccept(ProductOrderProposal productOrderProposal) {
+
+        Map<String, Object> objectFieldsValues = objectMapper.convertValue(productOrderProposal, new TypeReference<Map<String, Object>>() {
+        });
+
+        System.out.println(objectFieldsValues);
+
+        return objectFieldsValues.entrySet()
+                .stream()
+                .allMatch(e -> Objects.nonNull(e.getValue()));
+
     }
 }

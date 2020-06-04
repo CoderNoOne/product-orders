@@ -4,6 +4,7 @@ import com.app.domain.enums.RepairOrderStatus;
 import com.app.domain.generic.BaseEntity;
 import com.app.infrastructure.dto.RepairOrderDto;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -16,11 +17,13 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "repair_orders")
 public class RepairOrder extends BaseEntity {
 
     private LocalDate completionDate;
     private BigDecimal repairCosts;
+
 
     @Enumerated(EnumType.STRING)
     private RepairOrderStatus status;

@@ -28,6 +28,8 @@ public class Customer extends User {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    private boolean enabled;
+
     public Manager getManager() {
         return manager;
     }
@@ -49,5 +51,13 @@ public class Customer extends User {
                 .age(age)
                 .gender(Objects.nonNull(gender) ? gender.name() : null)
                 .build();
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 }

@@ -170,6 +170,8 @@ public class ProductOrderService {
                             if (!Objects.equals(productOrder.getStatus(), ProductOrderStatus.DONE)) {
                                 throw new ValidationException(Validations.createErrorMessage(Map.of("Product order status", "must be DONE")));
                             }
+
+
                         },
                         () -> {
                             throw new NotFoundException("No product order with id: " + id);

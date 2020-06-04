@@ -148,6 +148,7 @@ public class AppWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/actuator/**").hasRole("ADMIN_ACTUATOR")
                 .antMatchers("/managers/**").hasRole("ADMIN_MANAGER")
                 .antMatchers("/repairOrders/**").hasRole("USER_MANAGER")
+                .antMatchers("/registerVerificationTokens").hasRole("USER_CUSTOMER")
 
 
                 .anyRequest().authenticated()

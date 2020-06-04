@@ -7,8 +7,13 @@ import com.app.infrastructure.dto.RefreshTokenDto;
 import com.app.infrastructure.dto.ResponseData;
 import com.app.infrastructure.security.dto.TokensDto;
 import com.app.infrastructure.security.tokens.TokenManager;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.security.SecuritySchemes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -47,6 +52,16 @@ public class SecurityController {
                 .<TokensDto>builder()
                 .data(tokenManager.generateTokens(refreshTokenDto))
                 .build();
+    }
+
+    @PutMapping("/activate")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<Long> activateCustomerUser(@RequestParam(name = "token") String token) {
+
+        return ResponseData.<Long>builder()
+                .data(securityService.activateCustomer(token))
+                .build();
+
     }
 
 }

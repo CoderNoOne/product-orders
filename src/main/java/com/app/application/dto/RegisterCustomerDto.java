@@ -27,6 +27,7 @@ public class RegisterCustomerDto {
                 .email(email)
                 .password(password)
                 .role(Role.builder().name("ROLE_USER_CUSTOMER").build())
+                .enabled(false)
                 .age(age)
                 .build();
     }

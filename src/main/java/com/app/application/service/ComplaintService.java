@@ -66,6 +66,7 @@ public class ComplaintService {
                 .ifPresentOrElse(
                         complaint -> {
                             complaint.setStatus(ComplaintStatus.valueOf(updateComplaintDto.getStatus().toUpperCase()));
+
                             complaintId.set(complaint.getId());
                         }
                         , () -> {
@@ -85,24 +86,20 @@ public class ComplaintService {
 
         var idWrapper = new AtomicLong();
 
-        productOrderRepository.findOne(createComplaintDto.getProductOrderId())
+        productOrderRepository.findByIdAndCustomerUsername(createComplaintDto.getProductOrderId(), username)
                 .ifPresentOrElse(
-                        productOrder -> {
-                            if (!Objects.equals(productOrder.getCustomer().getUsername(), username)) {
-                                throw new ValidationException("Product order with id " + createComplaintDto.getProductOrderId() +
-                                        "does not belong to you");
-                            }
-                            idWrapper
-                                    .set(complaintRepository.save(Complaint.builder()
-                                            .damageType(DamageType.valueOf(createComplaintDto.getDamageType()))
-                                            .issueDate(LocalDate.now())
-                                            .productOrder(productOrder)
-                                            .status(ComplaintStatus.AWAITING)
-                                            .build())
-                                            .getId());
-                        }
+                        productOrder ->
+                                idWrapper
+                                        .set(complaintRepository.save(Complaint.builder()
+                                                .damageType(DamageType.valueOf(createComplaintDto.getDamageType()))
+                                                .issueDate(LocalDate.now())
+                                                .productOrder(productOrder)
+                                                .status(ComplaintStatus.AWAITING)
+                                                .build())
+                                                .getId())
+
                         , () -> {
-                            throw new NotFoundException("No product order with id: " + createComplaintDto.getProductOrderId());
+                            throw new NotFoundException("No product order with specified details");
                         }
                 );
 

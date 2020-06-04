@@ -1,7 +1,11 @@
 package com.app;
 
 import com.app.domain.entity.ProductOrderProposal;
+import com.app.domain.entity.Role;
+import com.app.domain.entity.User;
 import com.app.domain.repository.ProductOrderProposalRepository;
+import com.app.domain.repository.RoleRepository;
+import com.app.domain.repository.UserRepository;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,8 +16,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.TimeZone;
 
 @SpringBootApplication
 @EnableJpaRepositories(repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class)
@@ -22,23 +29,11 @@ public class ProductOrdersApplication {
     public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(ProductOrdersApplication.class, args);
 
-        ProductOrderProposalRepository productOrderProposalRepository = ctx.getBean("productOrderProposalRepositoryImpl", ProductOrderProposalRepository.class);
-
-        productOrderProposalRepository.findAllRevisionsById(2L)
-                .forEach(System.out::println);
-
-//        var allByIdIn = stockRepository.findAllById(List.of(1L, 2L));
-//
-//        allByIdIn.forEach(stock -> System.out.println(stock.getProductsQuantity()));
-
-//
-//        System.out.println(jpaShopRepository.findProductQuantityGroupByName(1L));
-//
 //        RoleRepository roleRepository = ctx.getBean("roleRepositoryImpl", RoleRepository.class);
 //
 //        UserRepository userRepository = ctx.getBean("userRepositoryImpl", UserRepository.class);
-////
-////
+//////
+//////
 //        var roleAdminProduct = roleRepository.save(Role.builder()
 //                .name("ROLE_ADMIN_PRODUCT")
 //                .build());
@@ -62,15 +57,15 @@ public class ProductOrdersApplication {
 //        var roleAdminActuator = roleRepository.save(Role.builder()
 //                .name("ROLE_ADMIN_ACTUATOR")
 //                .build());
-
-
-//        userRepository.save(User.builder()
-//                .role(roleRepository.findByName("ROLE_USER_MANAGER").get())
-//                .email("asd")
-//                .password("{noop}manager")
-//                .username("manager")
-//                .build());
-
+//
+//
+////        userRepository.save(User.builder()
+////                .role(roleRepository.findByName("ROLE_USER_MANAGER").get())
+////                .email("asd")
+////                .password("{noop}manager")
+////                .username("manager")
+////                .build());
+//
 //        userRepository.save(User.builder()
 //                .role(roleAdminActuator)
 //                .email("asd")
@@ -101,6 +96,10 @@ public class ProductOrdersApplication {
 
     }
 
+    @PostConstruct
+    public void init() {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    }
 
     @Bean
     public SecretKey secretKey() {

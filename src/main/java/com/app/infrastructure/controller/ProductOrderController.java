@@ -157,24 +157,24 @@ public class ProductOrderController { /*USER_CUSTOMER*/
                 "Product order canceled ");
     }
 
-    @PostMapping("/{id}/invoice")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseData<Long> issueAnInvoice(
-            @PathVariable Long id
-    ) {
-
-        var username = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        var body = ResponseData.<Long>builder()
-                .data(productOrderService.issueAnInvoice(id, username))
-                .build();
-
-        emailService.sendAsHtml(
-                null,
-                userService.getEmailForUsername(username),
-                MailTemplates.generateHtmlInfoAboutComplaint(username, complaintService.getComplaintByIdAndManagerUsername(body.getData(), username)),
-                "Invoice done");
-
-        return body;
-    }
+//    @PostMapping("/{id}/invoice")
+//    @ResponseStatus(HttpStatus.CREATED)
+//    public ResponseData<Long> issueAnInvoice(
+//            @PathVariable Long id
+//    ) {
+//
+//        var username = SecurityContextHolder.getContext().getAuthentication().getName();
+//
+//        var body = ResponseData.<Long>builder()
+//                .data(productOrderService.issueAnInvoice(id, username))
+//                .build();
+//
+//        emailService.sendAsHtml(
+//                null,
+//                userService.getEmailForUsername(username),
+//                MailTemplates.generateHtmlInfoAboutComplaint(username, complaintService.getComplaintByIdAndManagerUsername(body.getData(), username)),
+//                "Invoice has been sent");
+//
+//        return body;
+//    }
 }

@@ -4,18 +4,18 @@ import com.app.domain.enums.ComplaintStatus;
 import com.app.domain.enums.DamageType;
 import com.app.domain.generic.BaseEntity;
 import com.app.infrastructure.dto.ComplaintDto;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@SuperBuilder
+@RequiredArgsConstructor
+@SuperBuilder()
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "complaints")
 public class Complaint extends BaseEntity {
 
@@ -23,7 +23,7 @@ public class Complaint extends BaseEntity {
     @JoinColumn(name = "order_id", referencedColumnName = "id")
     private ProductOrder productOrder;
 
-    private LocalDate issueDate;
+    private final LocalDate issueDate;
 
     @Enumerated(EnumType.STRING)
     private DamageType damageType;
@@ -50,4 +50,19 @@ public class Complaint extends BaseEntity {
     public ComplaintStatus getStatus() {
         return status;
     }
+
+    public Complaint(ProductOrder productOrder, DamageType damageType, ComplaintStatus status) {
+        super();
+        this.productOrder = productOrder;
+        this.damageType = damageType;
+        this.status = status;
+        this.issueDate = LocalDate.now();
+    }
+
+    public Complaint() {
+        super();
+        this.issueDate = LocalDate.now();
+    }
+
+
 }

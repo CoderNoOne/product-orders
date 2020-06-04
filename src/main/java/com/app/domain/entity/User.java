@@ -2,6 +2,7 @@ package com.app.domain.entity;
 
 import com.app.domain.generic.BaseEntity;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -11,6 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "users")
 public class User extends BaseEntity {
@@ -22,6 +24,9 @@ public class User extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
+
+    @Column(columnDefinition = "tinyint(1)")
+    private boolean enabled;
 
     public void setRole(Role role) {
         this.role = role;
@@ -45,5 +50,13 @@ public class User extends BaseEntity {
 
     public String getEmail() {
         return email;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean getEnabled() {
+        return enabled;
     }
 }

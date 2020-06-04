@@ -2,7 +2,9 @@ package com.app.domain.entity;
 
 import com.app.infrastructure.dto.ManagerDto;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
@@ -12,10 +14,13 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Entity
+@Table(name = "managers")
+
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@Table(name = "managers")
+@EqualsAndHashCode(callSuper = true)
+@ToString
 public class Manager extends User {
 
     @OneToMany
@@ -24,18 +29,8 @@ public class Manager extends User {
             inverseJoinColumns = @JoinColumn(name = "customer_id", referencedColumnName = "id"))
     private List<Customer> customers;
 
-    private Boolean enabled;
-
     public List<Customer> getCustomers() {
         return customers;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public boolean getEnabled() {
-        return enabled;
     }
 
     public ManagerDto toDto() {
@@ -45,7 +40,9 @@ public class Manager extends User {
                 .email(getEmail())
                 .username(getUsername())
                 .customers(Objects.nonNull(customers) ? customers.stream().map(Customer::toDto).collect(Collectors.toList()) : new ArrayList<>())
-                .enabled(enabled)
+                .enabled(super.getEnabled())
                 .build();
     }
 }
+
+
