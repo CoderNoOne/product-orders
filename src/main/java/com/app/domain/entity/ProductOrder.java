@@ -124,4 +124,9 @@ public class ProductOrder extends BaseEntity {
         this.shop = shop;
         return this;
     }
+
+    public ProductOrder paymentDeadline(LocalDate paymentDeadline){
+        this.paymentDeadline = paymentDeadline;
+        return this;
+    }
 }

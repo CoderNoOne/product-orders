@@ -7,14 +7,12 @@ import com.app.domain.repository.ProductOrderProposalRepository;
 import com.app.infrastructure.repository.jpa.JpaProductOrderProposalRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.history.Revision;
-import org.springframework.data.history.Revisions;
 import org.springframework.stereotype.Repository;
 
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Repository
@@ -76,5 +74,10 @@ public class ProductOrderProposalRepositoryImpl implements ProductOrderProposalR
     @Override
     public Optional<ProductOrderProposal> findByIdAndManagerUsername(Long id, String username) {
         return jpaProductOrderProposalRepository.findByIdAndCustomerManagerUsername(id, username);
+    }
+
+    @Override
+    public Optional<ProductOrderProposal> findByIdAndManagerUsernameAndStatus(Long acceptedProductOrderProposalId, String managerUsername, ProposalStatus status) {
+        return jpaProductOrderProposalRepository.findByIdAndCustomerManagerUsernameAndStatus(acceptedProductOrderProposalId, managerUsername, status);
     }
 }

@@ -40,7 +40,7 @@ public class CreateProductOrderProposalByCustomerDto {
                                 .name(shopName)
                                 .build() : null)
                         .status(ProposalStatus.PROPOSED)
-                        .address(Objects.nonNull(address) ? Address.builder().build() : null)
+                        .deliveryAddress(Objects.nonNull(address) ? Address.builder().build() : null)
                         .side(ProposalSide.CUSTOMER)
                         .build();
     }

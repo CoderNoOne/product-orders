@@ -1,5 +1,5 @@
 package com.app.domain.enums;
 
 public enum ProposalStatus {
-    PROPOSED, ACCEPTED, DENIED
+    PROPOSED, ACCEPTED, DENIED, DONE;
 }

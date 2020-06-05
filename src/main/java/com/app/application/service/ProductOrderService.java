@@ -3,10 +3,7 @@ package com.app.application.service;
 import com.app.application.mappers.Mappers;
 import com.app.application.validators.impl.*;
 import com.app.domain.entity.*;
-import com.app.domain.enums.AdminShopPropertyName;
-import com.app.domain.enums.ComplaintStatus;
-import com.app.domain.enums.DamageType;
-import com.app.domain.enums.ProductOrderStatus;
+import com.app.domain.enums.*;
 import com.app.domain.repository.ProductRepository;
 import com.app.domain.repository.*;
 import com.app.infrastructure.dto.*;
@@ -46,6 +43,7 @@ public class ProductOrderService {
     private final AdminShopPropertyRepository adminShopPropertyRepository;
     private final ShopRepository shopRepository;
     private final ReservedProductRepository reservedProductRepository;
+    private final ProductOrderProposalRepository productOrderProposalRepository;
 
     public List<ProductOrderDto> getFilteredProductOrdersForUsername(ProductOrderFilteringCriteriaDto productOrderFilteringCriteriaDto, String username) {
 
@@ -361,6 +359,10 @@ public class ProductOrderService {
 
     public Long addProductOrder(String managerUsername, CreateProductOrderDto createProductOrderDto) {
 
+        if (Objects.nonNull(createProductOrderDto)) {
+            createProductOrderDto.setManagerUsername(managerUsername);
+        }
+
         var errors = createProductOrderDtoValidator.validate(createProductOrderDto);
 
         if (createProductOrderDtoValidator.hasErrors()) {
@@ -371,19 +373,10 @@ public class ProductOrderService {
                 .stream()
                 .collect(Collectors.toMap(e -> Long.valueOf(e.getKey()), Map.Entry::getValue));
 
-        var product = productRepository.findOne(createProductOrderDto.getProductId())
-                .orElseThrow(() -> new NotFoundException("No product with id: " + createProductOrderDto.getProductId()));
+        ProductOrderProposal productOrderProposal = productOrderProposalRepository.findByIdAndManagerUsernameAndStatus(createProductOrderDto.getAcceptedProductOrderProposalId(), managerUsername, ProposalStatus.ACCEPTED)
+                .orElseThrow(() -> new NotFoundException("No productOrder proposal with specified details found"));
 
-        var customer = customerRepository
-                .findByUsername(createProductOrderDto.getCustomerUsername())
-                .orElseThrow(() -> new NotFoundException("No customer with username: " + createProductOrderDto.getCustomerUsername()));
-
-        var shop = shopRepository.findOne(createProductOrderDto.getShopId())
-                .orElseThrow(() -> new NotFoundException("No shop with id: " + createProductOrderDto.getShopId()));
-
-        if (!Objects.equals(customer.getManager().getUsername(), managerUsername)) {
-            throw new ValidationException("You are not the manager of customer with username: " + createProductOrderDto.getCustomerUsername());
-        }
+        Product product = productOrderProposal.getProduct();
 
 
         var stocks = stockRepository.findAllByIdIn(productStockQuantity.keySet());
@@ -400,6 +393,10 @@ public class ProductOrderService {
             totalQuantity.addAndGet(productStockQuantity.get(stock.getId()));
             stock.getProductsQuantity().merge(product, -productStockQuantity.get(stock.getId()), Integer::sum);
 
+            if(totalQuantity.get() != productOrderProposal.getQuantity()){
+                throw new ValidationException("You ordered: " + totalQuantity.get() + " but your client wanted: " + productOrderProposal.getQuantity());
+            }
+
             reservedProductsToSave.add(ReservedProduct.builder()
                     .stock(stock)
                     .quantity(productStockQuantity.get(stock.getId()))
@@ -410,19 +407,19 @@ public class ProductOrderService {
             }
         });
 
-        var productOrderToSave = createProductOrderDto
-                .toEntity()
-                .customer(customer)
+        ProductOrder productOrderToSave = ProductOrder.builder()
+                .customer(productOrderProposal.getCustomer())
                 .product(product)
+                .shop(productOrderProposal.getShop())
+                .deliveryAddress(productOrderProposal.getDeliveryAddress())
                 .orderDate(LocalDate.now())
+                .paymentDeadline(LocalDate.now().plusDays(productOrderProposal.getDaysFromOrderToPaymentDeadline()))
                 .quantity(totalQuantity.get())
-                .deliveryAddress(addressRepository.findByAddress(createProductOrderDto.getDeliveryAddress())
-                        .orElseGet(() -> addressRepository.save(
-                                Address.builder()
-                                        .address(createProductOrderDto
-                                                .getDeliveryAddress())
-                                        .build())))
-                .shop(shop);
+                .status(ProductOrderStatus.DONE)
+                .build();
+
+
+        productOrderProposal.setStatus(ProposalStatus.DONE);
 
         var savedProductOrder = productOrderRepository.save(productOrderToSave);
 
@@ -432,4 +429,79 @@ public class ProductOrderService {
 
         return savedProductOrder.getId();
     }
+
+
+//    public Long addProductOrder(String managerUsername, CreateProductOrderDto createProductOrderDto) {
+//
+//        var errors = createProductOrderDtoValidator.validate(createProductOrderDto);
+//
+//        if (createProductOrderDtoValidator.hasErrors()) {
+//            throw new ValidationException(Validations.createErrorMessage(errors));
+//        }
+//
+//        var productStockQuantity = createProductOrderDto.getProductStockQuantity().entrySet()
+//                .stream()
+//                .collect(Collectors.toMap(e -> Long.valueOf(e.getKey()), Map.Entry::getValue));
+//
+//        var product = productRepository.findOne(createProductOrderDto.getProductId())
+//                .orElseThrow(() -> new NotFoundException("No product with id: " + createProductOrderDto.getProductId()));
+//
+//        var customer = customerRepository
+//                .findByUsername(createProductOrderDto.getCustomerUsername())
+//                .orElseThrow(() -> new NotFoundException("No customer with username: " + createProductOrderDto.getCustomerUsername()));
+//
+//        var shop = shopRepository.findOne(createProductOrderDto.getShopId())
+//                .orElseThrow(() -> new NotFoundException("No shop with id: " + createProductOrderDto.getShopId()));
+//
+//        if (!Objects.equals(customer.getManager().getUsername(), managerUsername)) {
+//            throw new ValidationException("You are not the manager of customer with username: " + createProductOrderDto.getCustomerUsername());
+//        }
+//
+//
+//        var stocks = stockRepository.findAllByIdIn(productStockQuantity.keySet());
+//
+//        var totalQuantity = new AtomicInteger(0);
+//
+//        List<ReservedProduct> reservedProductsToSave = new ArrayList<>();
+//        stocks.forEach(stock -> {
+//
+//            if (!stock.getProductsQuantity().containsKey(product) || stock.getProductsQuantity().get(product) < productStockQuantity.get(stock.getId())) {
+//                throw new ValidationException("No enough product in stock: " + stock.getId());
+//            }
+//
+//            totalQuantity.addAndGet(productStockQuantity.get(stock.getId()));
+//            stock.getProductsQuantity().merge(product, -productStockQuantity.get(stock.getId()), Integer::sum);
+//
+//            reservedProductsToSave.add(ReservedProduct.builder()
+//                    .stock(stock)
+//                    .quantity(productStockQuantity.get(stock.getId()))
+//                    .build());
+//
+//            if (stock.getProductsQuantity().get(product).equals(0)) {
+//                stock.getProductsQuantity().remove(product);
+//            }
+//        });
+//
+//        var productOrderToSave = createProductOrderDto
+//                .toEntity()
+//                .customer(customer)
+//                .product(product)
+//                .orderDate(LocalDate.now())
+//                .quantity(totalQuantity.get())
+//                .deliveryAddress(addressRepository.findByAddress(createProductOrderDto.getDeliveryAddress())
+//                        .orElseGet(() -> addressRepository.save(
+//                                Address.builder()
+//                                        .address(createProductOrderDto
+//                                                .getDeliveryAddress())
+//                                        .build())))
+//                .shop(shop);
+//
+//        var savedProductOrder = productOrderRepository.save(productOrderToSave);
+//
+//        reservedProductsToSave.forEach(reservedProduct -> reservedProduct.setProductOrder(savedProductOrder));
+//
+//        reservedProductRepository.saveAll(reservedProductsToSave);
+//
+//        return savedProductOrder.getId();
+//    }
 }

@@ -11,7 +11,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.envers.AuditTable;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -63,7 +62,7 @@ public class ProductOrderProposal extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "address_id")
-    private Address address;
+    private Address deliveryAddress;
 
     public void setCustomer(Customer customer) {
         this.customer = customer;
@@ -128,7 +127,7 @@ public class ProductOrderProposal extends BaseEntity {
     }
 
     public ProductOrderProposal address(Address address) {
-        this.address = address;
+        this.deliveryAddress = address;
         return this;
     }
 
@@ -144,6 +143,10 @@ public class ProductOrderProposal extends BaseEntity {
 
     public ProductOrderProposal side(ProposalSide side) {
         this.side = side;
+        return this;
+    }
+    public ProductOrderProposal deliveryAddress(Address deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
         return this;
     }
 
@@ -164,7 +167,7 @@ public class ProductOrderProposal extends BaseEntity {
                 .proposalStatus(status.toString())
                 .remarks(remarks)
                 .side(Objects.nonNull(side) ? side.name() : null)
-                .address(Objects.nonNull(address) ? address.getAddress() : null)
+                .address(Objects.nonNull(deliveryAddress) ? deliveryAddress.getAddress() : null)
                 .discount(discount)
                 .build();
     }
@@ -179,5 +182,13 @@ public class ProductOrderProposal extends BaseEntity {
 
     public Integer getDaysFromOrderToPaymentDeadline() {
         return daysFromOrderToPaymentDeadline;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public Address getDeliveryAddress() {
+        return deliveryAddress;
     }
 }
