@@ -1,6 +1,7 @@
 package com.app.infrastructure.repository.impl;
 
 import com.app.domain.entity.Complaint;
+import com.app.domain.enums.ComplaintStatus;
 import com.app.domain.repository.ComplaintRepository;
 import com.app.infrastructure.repository.jpa.JpaComplaintRepository;
 import lombok.RequiredArgsConstructor;
@@ -38,5 +39,10 @@ public class ComplaintRepositoryImpl implements ComplaintRepository {
     @Override
     public List<Complaint> findAllByManagerUsername(String username) {
         return jpaComplaintRepository.findAllByManagerUsername(username);
+    }
+
+    @Override
+        public Optional<Complaint> findByIdAndManagerUsernameAndStatus(Long complaintId, String managerUsername, ComplaintStatus status) {
+        return jpaComplaintRepository.findByIdAndMangerUsernameAndStatus(complaintId,  managerUsername, status);
     }
 }

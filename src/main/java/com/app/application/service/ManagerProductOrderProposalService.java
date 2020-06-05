@@ -221,7 +221,7 @@ public class ManagerProductOrderProposalService {
                 .ifPresentOrElse(
                         productOrderProposal -> {
                             if(!isReadyToAccept(productOrderProposal)){
-                                throw new ValidationException("");
+                                throw new ValidationException("Cannot accept. Some product order details were not negotiated with the customer");
                             }
                             if (!Objects.equals(productOrderProposal.getSide(), ProposalSide.CUSTOMER)) {
                                 throw new ValidationException("You cannot accept your own proposal");
@@ -244,13 +244,13 @@ public class ManagerProductOrderProposalService {
 
     private boolean isReadyToAccept(ProductOrderProposal productOrderProposal) {
 
-        Map<String, Object> objectFieldsValues = objectMapper.convertValue(productOrderProposal, new TypeReference<Map<String, Object>>() {
+        ProductOrderProposalDto productOrderProposalDto = productOrderProposal.toDto();
+        Map<String, Object> objectFieldsValues = objectMapper.convertValue(productOrderProposalDto, new TypeReference<>() {
         });
-
-        System.out.println(objectFieldsValues);
 
         return objectFieldsValues.entrySet()
                 .stream()
+                .filter(e -> !e.getKey().equals("remarks"))
                 .allMatch(e -> Objects.nonNull(e.getValue()));
 
     }

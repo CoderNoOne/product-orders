@@ -108,8 +108,8 @@ public class OpenApiConfig {
     @Bean
     public GroupedOpenApi managerProductOrderProposalApi() {
         return GroupedOpenApi.builder()
-                .setGroup("managerProductOrderProposals")
-                .pathsToMatch("/manager/productOrderProposals/**")
+                .setGroup("manager-product-order-proposals")
+                .pathsToMatch("/manager/product-order-proposals/**")
                 .build();
     }
 
@@ -124,10 +124,28 @@ public class OpenApiConfig {
     @Bean
     public GroupedOpenApi customerProductOrderProposalApi() {
         return GroupedOpenApi.builder()
-                .setGroup("customerProductOrderProposals")
-                .pathsToMatch("/customer/productOrderProposals/**")
+                .setGroup("customer-product-order-proposals")
+                .pathsToMatch("/customer/product-order-proposals/**")
                 .build();
     }
+
+
+    @Bean
+    public GroupedOpenApi productFailuresOnGuaranteeApi() {
+        return GroupedOpenApi.builder()
+                .setGroup("productFailuresOnGuarantee")
+                .pathsToMatch("/product-failures-on-guarantee/**")
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi productFailuresWithGuaranteeExpiredApi() {
+        return GroupedOpenApi.builder()
+                .setGroup("productFailuresWithGuaranteeExpired")
+                .pathsToMatch("/product-failures-with-guarantee-expired/**")
+                .build();
+    }
+
 
     @Bean
     public GroupedOpenApi securityApi() {

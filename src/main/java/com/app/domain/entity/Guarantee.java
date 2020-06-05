@@ -48,10 +48,6 @@ public class Guarantee extends BaseEntity {
     @EqualsAndHashCode.Exclude
     private Set<Product> product;
 
-//    public String getName() {
-//        return name;
-//    }
-
     public GuaranteeDto toDto() {
         return GuaranteeDto.builder()
                 .guaranteeProcessingTime(guaranteeProcessingTime)

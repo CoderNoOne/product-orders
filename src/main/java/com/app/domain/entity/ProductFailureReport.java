@@ -1,32 +1,41 @@
 package com.app.domain.entity;
 
-import com.app.domain.enums.RepairOrderStatus;
+import com.app.domain.enums.DamageType;
+import com.app.domain.enums.ProductFailureReportStatus;
 import com.app.domain.generic.BaseEntity;
 import com.app.infrastructure.dto.RepairOrderDto;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.envers.AuditOverride;
+import org.hibernate.envers.AuditOverrides;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
+
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Audited(targetAuditMode = NOT_AUDITED)
+@AuditOverride(forClass = ProductFailureReport.class, isAudited = true)
+
+
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-@Table(name = "repair_orders")
-public class RepairOrder extends BaseEntity {
+@Table(name = "product_failure_reports")
+@DiscriminatorColumn(name = "guarantee_expired", columnDefinition = "tinyint(1)")
+public abstract class ProductFailureReport extends BaseEntity {
+
 
     private LocalDate completionDate;
-    private BigDecimal repairCosts;
 
-
-    @Enumerated(EnumType.STRING)
-    private RepairOrderStatus status;
+    private DamageType damageType;
 
     @OneToOne
     @JoinColumn(name = "product_order_id", referencedColumnName = "id")
@@ -37,8 +46,8 @@ public class RepairOrder extends BaseEntity {
         return RepairOrderDto.builder()
                 .id(getId())
                 .completionDate(completionDate)
-                .repairCosts(repairCosts)
                 .productOrder(Objects.nonNull(productOrder) ? productOrder.toDto() : null)
                 .build();
     }
+
 }

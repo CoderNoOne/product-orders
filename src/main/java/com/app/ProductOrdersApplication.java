@@ -1,11 +1,5 @@
 package com.app;
 
-import com.app.domain.entity.ProductOrderProposal;
-import com.app.domain.entity.Role;
-import com.app.domain.entity.User;
-import com.app.domain.repository.ProductOrderProposalRepository;
-import com.app.domain.repository.RoleRepository;
-import com.app.domain.repository.UserRepository;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +12,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -28,6 +21,18 @@ public class ProductOrdersApplication {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(ProductOrdersApplication.class, args);
+
+//        JpaProductFailureOnGuaranteeRepository jpaProductFailureOnGuaranteeRepository = ctx.getBean("jpaProductFailureOnGuaranteeRepository", JpaProductFailureOnGuaranteeRepository.class);
+//
+//        jpaProductFailureOnGuaranteeRepository.save(
+//                ProductFailureOnGuaranteeReport.builder()
+//                        .completionDate(LocalDate.now().plusDays(10))
+//                        .status(RepairOrderStatus.PROPOSED)
+//                        .damageType(DamageType.PHYSICAL)
+//                        .selectedServiceType(GuaranteeComponent.EXCHANGE)
+//                        .productOrder()
+//                        .build()
+//        );
 
 //        RoleRepository roleRepository = ctx.getBean("roleRepositoryImpl", RoleRepository.class);
 //

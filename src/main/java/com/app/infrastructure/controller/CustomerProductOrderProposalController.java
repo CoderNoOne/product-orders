@@ -16,7 +16,7 @@ import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/customer/productOrderProposals")
+@RequestMapping("/customer/product-order-proposals")
 public class CustomerProductOrderProposalController {
 
     private final CustomerProductOrderProposalService customerProductOrderProposalService;
@@ -48,6 +48,7 @@ public class CustomerProductOrderProposalController {
     }
 
     @PutMapping("/{id}/deny")
+    @ResponseStatus(HttpStatus.OK)
     public ResponseData<Long> denyProductOrderProposal(@PathVariable Long id) {
 
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -58,6 +59,7 @@ public class CustomerProductOrderProposalController {
     }
 
     @PutMapping("/{id}/reply")
+    @ResponseStatus(HttpStatus.OK)
     public ResponseData<Long> replyToProductOrderProposal(
             @PathVariable Long id,
             @RequestBody UpdateProductOrderProposalByCustomerDto updateProductOrderProposalByCustomerDto
@@ -68,6 +70,19 @@ public class CustomerProductOrderProposalController {
         return ResponseData.<Long>builder()
                 .data(customerProductOrderProposalService.replyToProductOrderProposal(id, username, updateProductOrderProposalByCustomerDto))
                 .build();
+    }
+
+    @PutMapping("/{id}/accept")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<Long> acceptProductOrderProposal(
+            @PathVariable Long id){
+
+        var username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        return ResponseData.<Long>builder()
+                .data(customerProductOrderProposalService.acceptProductOrderProposal(id, username))
+                .build();
+
     }
 
     @GetMapping("/{id}/allRevisions")

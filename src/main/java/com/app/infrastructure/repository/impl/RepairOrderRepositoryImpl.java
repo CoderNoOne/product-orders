@@ -1,6 +1,6 @@
 package com.app.infrastructure.repository.impl;
 
-import com.app.domain.entity.RepairOrder;
+import com.app.domain.entity.ProductFailureReport;
 import com.app.domain.repository.RepairOrderRepository;
 import com.app.infrastructure.repository.jpa.JpaRepairOrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,37 +16,37 @@ public class RepairOrderRepositoryImpl implements RepairOrderRepository {
     private final JpaRepairOrderRepository jpaRepairOrderRepository;
 
     @Override
-    public List<RepairOrder> findAll() {
+    public List<ProductFailureReport> findAll() {
         return jpaRepairOrderRepository.findAll();
     }
 
     @Override
-    public Optional<RepairOrder> findOne(Long id) {
+    public Optional<ProductFailureReport> findOne(Long id) {
         return jpaRepairOrderRepository.findById(id);
     }
 
     @Override
-    public RepairOrder save(RepairOrder repairOrder) {
+    public ProductFailureReport save(ProductFailureReport repairOrder) {
         return jpaRepairOrderRepository.save(repairOrder);
     }
 
     @Override
-    public List<RepairOrder> findAllByCustomerUsername(String username) {
+    public List<ProductFailureReport> findAllByCustomerUsername(String username) {
         return jpaRepairOrderRepository.findAllByProductOrderCustomerUsername(username);
     }
 
     @Override
-    public List<RepairOrder> findAllByManagerUsername(String username) {
+    public List<ProductFailureReport> findAllByManagerUsername(String username) {
         return jpaRepairOrderRepository.findAllByProductOrderCustomerManagerUsername(username);
     }
 
     @Override
-    public Optional<RepairOrder> findByIdAndCustomerUsername(Long id, String username) {
+    public Optional<ProductFailureReport> findByIdAndCustomerUsername(Long id, String username) {
         return jpaRepairOrderRepository.findByIdAndProductOrderCustomerUsername(id, username);
     }
 
     @Override
-    public Optional<RepairOrder> findByIdAndManagerUsername(Long id, String username) {
+    public Optional<ProductFailureReport> findByIdAndManagerUsername(Long id, String username) {
         return jpaRepairOrderRepository.findByIdAndProductOrderCustomerManagerUsername(id, username);
     }
 }

@@ -13,8 +13,8 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
-@RequiredArgsConstructor
-@SuperBuilder()
+@SuperBuilder
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Table(name = "complaints")
 public class Complaint extends BaseEntity {
@@ -65,4 +65,7 @@ public class Complaint extends BaseEntity {
     }
 
 
+    public DamageType getDamageType() {
+        return damageType;
+    }
 }

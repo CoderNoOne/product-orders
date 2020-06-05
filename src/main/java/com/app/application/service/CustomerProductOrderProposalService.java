@@ -11,12 +11,15 @@ import com.app.infrastructure.dto.ProductOrderProposalDto;
 import com.app.infrastructure.dto.UpdateProductOrderProposalByCustomerDto;
 import com.app.infrastructure.exception.NotFoundException;
 import com.app.infrastructure.exception.ValidationException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -31,6 +34,7 @@ public class CustomerProductOrderProposalService {
     private final ShopRepository shopRepository;
     private final ProductRepository productRepository;
     private final CreateProductOrderProposalByCustomerDtoValidator createProductOrderProposalByCustomerDtoValidator;
+    private final ObjectMapper objectMapper;
 
     public Long addProductOrderProposal(String username, CreateProductOrderProposalByCustomerDto createProductOrderProposalByCustomerDto) {
 
@@ -59,6 +63,8 @@ public class CustomerProductOrderProposalService {
         var productOrderProposal = createProductOrderProposalByCustomerDto
                 .toEntity()
                 .customer(user)
+                .address(addressRepository.findByAddress(createProductOrderProposalByCustomerDto.getAddress())
+                        .orElseGet(() -> addressRepository.save(Address.builder().address(createProductOrderProposalByCustomerDto.getAddress()).build())))
                 .shop(shop)
                 .product(product);
 
@@ -111,7 +117,7 @@ public class CustomerProductOrderProposalService {
 
     public Long replyToProductOrderProposal(Long id, String username, UpdateProductOrderProposalByCustomerDto updateProductOrderProposalByCustomerDto) {
 
-        //walidacja
+        //validation
 
         productOrderProposalRepository.findByIdAndCustomerUsernameAndSide(id, username, ProposalSide.MANAGER)
                 .ifPresentOrElse(
@@ -142,12 +148,51 @@ public class CustomerProductOrderProposalService {
         return productOrderProposalRepository.findAllRevisionsById(id)
                 .stream()
                 .filter(productOrderProposal -> {
-                    if(!Objects.equals(productOrderProposal.getCustomer().getUsername(), username)){
+                    if (!Objects.equals(productOrderProposal.getCustomer().getUsername(), username)) {
                         throw new ValidationException("You are not part of this conversation");
                     }
                     return true;
                 })
                 .map(ProductOrderProposal::toDto)
                 .collect(Collectors.toList());
+    }
+
+    public Long acceptProductOrderProposal(Long id, String username) {
+
+        productOrderProposalRepository.findByIdAndCustomerUsername(id, username)
+                .ifPresentOrElse(
+                        productOrderProposal -> {
+                            if (!isReadyToAccept(productOrderProposal)) {
+                                throw new ValidationException("Cannot accept. Some product order details were not negotiated with the customer");
+                            }
+                            if (!Objects.equals(productOrderProposal.getSide(), ProposalSide.MANAGER)) {
+                                throw new ValidationException("You cannot accept your own proposal");
+                            }
+                            if (!Objects.equals(productOrderProposal.getStatus(), ProposalStatus.PROPOSED)) {
+                                throw new ValidationException("Product proposal should have status of: PROPOSED");
+                            }
+
+                            productOrderProposal
+                                    .side(ProposalSide.CUSTOMER)
+                                    .status(ProposalStatus.ACCEPTED);
+                        },
+                        () -> {
+                            throw new NotFoundException("No productOrderProposal with id: " + id + " and for customer username: " + username);
+                        }
+                );
+
+        return id;
+    }
+
+    private boolean isReadyToAccept(ProductOrderProposal productOrderProposal) {
+        ProductOrderProposalDto productOrderProposalDto = productOrderProposal.toDto();
+        Map<String, Object> objectFieldsValues = objectMapper.convertValue(productOrderProposalDto, new TypeReference<>() {
+        });
+
+        return objectFieldsValues.entrySet()
+                .stream()
+                .filter(e -> !e.getKey().equals("remarks"))
+                .allMatch(e -> Objects.nonNull(e.getValue()));
+
     }
 }

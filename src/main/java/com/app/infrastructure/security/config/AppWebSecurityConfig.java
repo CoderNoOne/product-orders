@@ -1,13 +1,11 @@
 package com.app.infrastructure.security.config;
 
 import com.app.domain.repository.UserRepository;
-import com.app.infrastructure.exception_handlers.ExceptionsHandler;
 import com.app.infrastructure.security.dto.AppError;
 import com.app.infrastructure.security.filter.AppAuthenticationFilter;
 import com.app.infrastructure.security.filter.AppAuthorizationFilter;
 import com.app.infrastructure.security.tokens.TokenManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
@@ -36,16 +34,14 @@ public class AppWebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsService userDetailsService;
     private final TokenManager tokenManager;
     private final UserRepository userRepository;
-    private final ExceptionsHandler exceptionHandler;
 
 
     public AppWebSecurityConfig(
             @Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService,
-            TokenManager tokenManager, UserRepository userRepository, ExceptionsHandler exceptionHandler) {
+            TokenManager tokenManager, UserRepository userRepository) {
         this.userDetailsService = userDetailsService;
         this.tokenManager = tokenManager;
         this.userRepository = userRepository;
-        this.exceptionHandler = exceptionHandler;
     }
 
     @Bean
@@ -133,23 +129,23 @@ public class AppWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/complaints**", "/complaints/**").hasRole("USER_MANAGER")
                 .antMatchers(HttpMethod.PATCH, "/complaints**", "/complaints/**").hasRole("USER_MANAGER")
 
-                .antMatchers(HttpMethod.POST, "/productOrders/**").hasRole("USER_MANAGER")
-                .antMatchers(HttpMethod.GET, "/productOrders/**").hasRole("USER_CUSTOMER")
-                .antMatchers(HttpMethod.DELETE, "/productOrders/**").hasRole("USER_CUSTOMER")
+//                .antMatchers(HttpMethod.POST, "/productOrders/**").hasRole("USER_MANAGER")
+//                .antMatchers(HttpMethod.GET, "/productOrders/**").hasRole("USER_CUSTOMER")
+//                .antMatchers(HttpMethod.DELETE, "/productOrders/**").hasRole("USER_CUSTOMER")
                 .antMatchers(HttpMethod.POST, "/complaints").hasRole("USER_CUSTOMER")
 
-                .antMatchers("/customer/productOrderProposals/**").hasRole("USER_CUSTOMER")
-                .antMatchers("/customer/**").hasRole("USER_CUSTOMER")
+                .antMatchers("/customer/product-order-proposals/**").hasRole("USER_CUSTOMER")
+//                .antMatchers("/customer/**").hasRole("USER_CUSTOMER")
+                .antMatchers("/manager/product-order-proposals/**").hasRole("USER_MANAGER")
 
                 .antMatchers("/stocks/**", "/meetings/**").hasRole("USER_MANAGER")
-                .antMatchers("/manager/productOrderProposals/**").hasRole("USER_MANAGER")
                 .antMatchers("/shops/**", "/shops**").hasRole("ADMIN_SHOP")
                 .antMatchers("/products/**", "/products**").hasRole("ADMIN_PRODUCT")
                 .antMatchers("/actuator/**").hasRole("ADMIN_ACTUATOR")
                 .antMatchers("/managers/**").hasRole("ADMIN_MANAGER")
                 .antMatchers("/repairOrders/**").hasRole("USER_MANAGER")
                 .antMatchers("/registerVerificationTokens").hasRole("USER_CUSTOMER")
-
+                .antMatchers("/product-failures-on-guarantee/**").hasRole("USER_MANAGER")
 
                 .anyRequest().authenticated()
 

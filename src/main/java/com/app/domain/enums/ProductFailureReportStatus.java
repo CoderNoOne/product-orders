@@ -1,5 +1,5 @@
 package com.app.domain.enums;
 
-public enum RepairOrderStatus {
+public enum ProductFailureReportStatus {
     PROPOSED, ACCEPTED, DENIED;
 }

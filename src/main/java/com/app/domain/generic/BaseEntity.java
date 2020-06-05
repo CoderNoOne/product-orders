@@ -25,4 +25,8 @@ public class BaseEntity {
 
     @Version
     private LocalDateTime lastUpdatedTime;
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

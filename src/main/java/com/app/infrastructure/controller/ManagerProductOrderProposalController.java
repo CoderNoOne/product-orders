@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/manager/productOrderProposals")
+@RequestMapping("/manager/product-order-proposals")
 public class ManagerProductOrderProposalController {
 
     private final ManagerProductOrderProposalService managerProductOrderProposalService;
@@ -91,7 +91,7 @@ public class ManagerProductOrderProposalController {
 
     @PutMapping("/{id}/accept")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseData<Long> acceptProductOrderProposal(@PathVariable Long id){
+    public ResponseData<Long> acceptProductOrderProposal(@PathVariable Long id) {
 
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
 
