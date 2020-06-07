@@ -1,6 +1,7 @@
 package com.app.domain.entity;
 
 import com.app.domain.enums.ProductFailureReportStatus;
+import com.app.domain.enums.ProposalSide;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -27,4 +28,7 @@ public class ProductFailureWithGuaranteeExpiredReport extends ProductFailureRepo
     private ProductFailureReportStatus status;
 
     private BigDecimal repairCosts;
+
+    @Enumerated(EnumType.STRING)
+    private ProposalSide side;
 }

@@ -120,7 +120,7 @@ public class ProductOrderService {
                                 .damageType(DamageType.valueOf(createComplaintDto.getDamageType()))
                                 .issueDate(LocalDate.now())
                                 .productOrder(productOrder)
-                                .status(ComplaintStatus.AWAITING)
+                                .status(ComplaintStatus.REQUESTED)
                                 .build()).getId())
                 ,
                 () -> {

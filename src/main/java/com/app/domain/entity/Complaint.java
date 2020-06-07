@@ -36,6 +36,7 @@ public class Complaint extends BaseEntity {
                 .damageType(damageType)
                 .issueDate(issueDate)
                 .productOrderDto(Objects.nonNull(productOrder) ? productOrder.toDto() : null)
+                .complaintStatus(status.name())
                 .build();
     }
 

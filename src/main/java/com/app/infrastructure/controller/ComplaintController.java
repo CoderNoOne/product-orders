@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/complaints")
-public class ComplaintController { /*USER_MANGER*/
+public class ComplaintController {
 
     private final ComplaintService complaintService;
 
@@ -44,16 +44,27 @@ public class ComplaintController { /*USER_MANGER*/
 
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/accept")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseData<Long> updateById(
-            @PathVariable Long id,
-            RequestEntity<UpdateComplaintDto> requestEntity) {
+    public ResponseData<Long> accept(
+            @PathVariable Long id) {
 
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         return ResponseData.<Long>builder()
-                .data(complaintService.updateComplaintById(id, username, requestEntity.getBody()))
+                .data(complaintService.accept(id, username))
+                .build();
+    }
+
+    @PatchMapping("/{id}/deny")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<Long> deny(
+            @PathVariable Long id) {
+
+        var username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        return ResponseData.<Long>builder()
+                .data(complaintService.deny(id, username))
                 .build();
     }
 

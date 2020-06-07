@@ -29,12 +29,13 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @Table(name = "product_failure_reports")
-@DiscriminatorColumn(name = "guarantee_expired", columnDefinition = "tinyint(1)")
+@DiscriminatorColumn(name = "guarantee_expired", discriminatorType = DiscriminatorType.STRING)
 public abstract class ProductFailureReport extends BaseEntity {
 
 
     private LocalDate completionDate;
 
+    @Enumerated(EnumType.STRING)
     private DamageType damageType;
 
     @OneToOne

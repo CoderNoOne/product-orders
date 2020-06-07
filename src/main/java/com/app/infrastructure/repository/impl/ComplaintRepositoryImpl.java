@@ -45,4 +45,14 @@ public class ComplaintRepositoryImpl implements ComplaintRepository {
         public Optional<Complaint> findByIdAndManagerUsernameAndStatus(Long complaintId, String managerUsername, ComplaintStatus status) {
         return jpaComplaintRepository.findByIdAndMangerUsernameAndStatus(complaintId,  managerUsername, status);
     }
+
+    @Override
+    public Optional<Complaint> findById(Long complaintId) {
+        return jpaComplaintRepository.findById(complaintId);
+    }
+
+    @Override
+    public Optional<Complaint> findByProductOrderId(Long productOrderId) {
+        return jpaComplaintRepository.findByProductOrderId(productOrderId);
+    }
 }

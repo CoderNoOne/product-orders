@@ -18,5 +18,6 @@ public class ComplaintDto {
     private ProductOrderDto productOrderDto;
     private LocalDate issueDate;
     private DamageType damageType;
+    private String complaintStatus;
 }
 

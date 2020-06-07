@@ -1,7 +1,6 @@
 package com.app.application.service;
 
 import com.app.application.validators.impl.CreateComplaintDtoValidator;
-import com.app.application.validators.impl.UpdateComplaintDtoValidator;
 import com.app.domain.entity.Complaint;
 import com.app.domain.enums.ComplaintStatus;
 import com.app.domain.enums.DamageType;
@@ -9,7 +8,6 @@ import com.app.domain.repository.ComplaintRepository;
 import com.app.domain.repository.ProductOrderRepository;
 import com.app.infrastructure.dto.ComplaintDto;
 import com.app.infrastructure.dto.CreateComplaintDto;
-import com.app.infrastructure.dto.UpdateComplaintDto;
 import com.app.infrastructure.exception.NotFoundException;
 import com.app.infrastructure.exception.NullIdValueException;
 import com.app.infrastructure.exception.ValidationException;
@@ -29,7 +27,6 @@ import java.util.stream.Collectors;
 public class ComplaintService {
 
     private final ComplaintRepository complaintRepository;
-    private final UpdateComplaintDtoValidator updateComplaintDtoValidator;
     private final CreateComplaintDtoValidator createComplaintDtoValidator;
     private final ProductOrderRepository productOrderRepository;
 
@@ -44,29 +41,22 @@ public class ComplaintService {
 
         return complaintRepository.findAllByManagerUsername(username)
                 .stream()
-                .filter(complaint -> complaint.getStatus() == ComplaintStatus.AWAITING)
+                .filter(complaint -> complaint.getStatus() == ComplaintStatus.REQUESTED)
                 .map(Complaint::toDto)
                 .collect(Collectors.toList());
     }
 
-    public Long updateComplaintById(Long id, String username, UpdateComplaintDto updateComplaintDto) {
+    private Long updateComplaintById(Long id, String username, ComplaintStatus status) {
 
         if (Objects.isNull(id)) {
             throw new NullIdValueException("Complaint id is null");
-        }
-
-        var errors = updateComplaintDtoValidator.validate(updateComplaintDto);
-
-        if (updateComplaintDtoValidator.hasErrors()) {
-            throw new ValidationException(Validations.createErrorMessage(errors));
         }
 
         var complaintId = new AtomicLong();
         complaintRepository.findByIdAndManagerUsername(id, username)
                 .ifPresentOrElse(
                         complaint -> {
-                            complaint.setStatus(ComplaintStatus.valueOf(updateComplaintDto.getStatus().toUpperCase()));
-
+                            complaint.setStatus(status);
                             complaintId.set(complaint.getId());
                         }
                         , () -> {
@@ -77,6 +67,10 @@ public class ComplaintService {
     }
 
     public Long addComplaint(String username, CreateComplaintDto createComplaintDto) {
+
+        if (Objects.nonNull(createComplaintDto)) {
+            createComplaintDto.setCustomerUsername(username);
+        }
 
         var errors = createComplaintDtoValidator.validate(createComplaintDto);
 
@@ -94,7 +88,7 @@ public class ComplaintService {
                                                 .damageType(DamageType.valueOf(createComplaintDto.getDamageType()))
                                                 .issueDate(LocalDate.now())
                                                 .productOrder(productOrder)
-                                                .status(ComplaintStatus.AWAITING)
+                                                .status(ComplaintStatus.REQUESTED)
                                                 .build())
                                                 .getId())
 
@@ -104,5 +98,14 @@ public class ComplaintService {
                 );
 
         return idWrapper.get();
+    }
+
+    public Long accept(Long id, String username) {
+
+        return updateComplaintById(id, username, ComplaintStatus.CONFIRMED);
+    }
+
+    public Long deny(Long id, String username) {
+        return updateComplaintById(id, username, ComplaintStatus.DENIED);
     }
 }
