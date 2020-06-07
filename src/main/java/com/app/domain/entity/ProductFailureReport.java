@@ -13,6 +13,7 @@ import org.hibernate.envers.AuditOverrides;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -33,6 +34,7 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 public abstract class ProductFailureReport extends BaseEntity {
 
 
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDate completionDate;
 
     @Enumerated(EnumType.STRING)
@@ -49,6 +51,10 @@ public abstract class ProductFailureReport extends BaseEntity {
                 .completionDate(completionDate)
                 .productOrder(Objects.nonNull(productOrder) ? productOrder.toDto() : null)
                 .build();
+    }
+
+    public LocalDate getCompletionDate() {
+        return completionDate;
     }
 
 }

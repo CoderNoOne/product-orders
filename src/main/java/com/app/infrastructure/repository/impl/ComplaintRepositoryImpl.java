@@ -55,4 +55,9 @@ public class ComplaintRepositoryImpl implements ComplaintRepository {
     public Optional<Complaint> findByProductOrderId(Long productOrderId) {
         return jpaComplaintRepository.findByProductOrderId(productOrderId);
     }
+
+    @Override
+    public boolean isAnyConfirmedComplaintInProgressForProductOrderById(Long productOrderId) {
+        return jpaComplaintRepository.isAnyConfirmedComplaintInProgressForProductOrderById(productOrderId);
+    }
 }

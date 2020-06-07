@@ -23,7 +23,7 @@ public class ProductFailureOnGuaranteeReportController {
 
         return ResponseData.<Long>builder()
                 .data(productFailureOnGuaranteeReportService.save(
-                        requestBody.managerUsername(username)))
+                        requestBody, username))
                 .build();
     }
 }

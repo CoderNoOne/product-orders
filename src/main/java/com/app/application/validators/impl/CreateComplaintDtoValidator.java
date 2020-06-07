@@ -4,10 +4,11 @@ import com.app.application.validators.generic.AbstractValidator;
 import com.app.domain.entity.Complaint;
 import com.app.domain.entity.ProductOrder;
 import com.app.domain.enums.ComplaintStatus;
-import com.app.domain.repository.ComplaintRepository;
-import com.app.domain.repository.ProductOrderRepository;
 import com.app.domain.enums.DamageType;
 import com.app.domain.enums.ProductOrderStatus;
+import com.app.domain.repository.ComplaintRepository;
+import com.app.domain.repository.ProductFailureReportRepository;
+import com.app.domain.repository.ProductOrderRepository;
 import com.app.infrastructure.dto.CreateComplaintDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,7 @@ public class CreateComplaintDtoValidator extends AbstractValidator<CreateComplai
 
     private final ProductOrderRepository productOrderRepository;
     private final ComplaintRepository complaintRepository;
+    private final ProductFailureReportRepository productFailureReportRepository;
 
     @Override
     public Map<String, String> validate(CreateComplaintDto createComplaintDto) {
@@ -44,7 +46,7 @@ public class CreateComplaintDtoValidator extends AbstractValidator<CreateComplai
             errors.put("Product order", "Status should be Done. You cannot make a complaint");
         }
 
-        if(isComplaintInProgress(createComplaintDto.getProductOrderId())){
+        if(isAnyComplaintInProgress(createComplaintDto.getProductOrderId())){
             errors.put("Complaint in progress", "There is already an active complaint associated with productOrder id: " + createComplaintDto.getProductOrderId());
         }
 
@@ -57,9 +59,10 @@ public class CreateComplaintDtoValidator extends AbstractValidator<CreateComplai
         return errors;
     }
 
-    private boolean isComplaintInProgress(Long productOrderId) {
+    private boolean isAnyComplaintInProgress(Long productOrderId) {
         Optional<Complaint> optional = complaintRepository.findByProductOrderId(productOrderId);
-        return optional.isPresent() && Objects.equals(optional.get().getStatus(), ComplaintStatus.REQUESTED);
+        return optional.isPresent() && (Objects.equals(optional.get().getStatus(), ComplaintStatus.REQUESTED))
+                 || productFailureReportRepository.isAnyConfirmedComplaintInProgressForProductOrderById(productOrderId);
     }
 
     private boolean productOrderStatusIsNotDone(Long productOrderId) {

@@ -31,4 +31,8 @@ public class ProductFailureWithGuaranteeExpiredReport extends ProductFailureRepo
 
     @Enumerated(EnumType.STRING)
     private ProposalSide side;
+
+    public ProductFailureReportStatus getStatus() {
+        return status;
+    }
 }

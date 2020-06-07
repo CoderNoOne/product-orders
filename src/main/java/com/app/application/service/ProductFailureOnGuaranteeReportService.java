@@ -27,7 +27,11 @@ public class ProductFailureOnGuaranteeReportService {
     private final ComplaintRepository complaintRepository;
     private final CreateProductFailureOnGuaranteeReportDtoValidator validator;
 
-    public Long save(CreateProductFailureOnGuaranteeReportDto createProductFailureOnGuaranteeReportDto) {
+    public Long save(CreateProductFailureOnGuaranteeReportDto createProductFailureOnGuaranteeReportDto, String managerUsername) {
+
+        if(Objects.nonNull(createProductFailureOnGuaranteeReportDto)){
+            createProductFailureOnGuaranteeReportDto.setManagerUsername(managerUsername);
+        }
 
         var errors = validator.validate(createProductFailureOnGuaranteeReportDto);
 

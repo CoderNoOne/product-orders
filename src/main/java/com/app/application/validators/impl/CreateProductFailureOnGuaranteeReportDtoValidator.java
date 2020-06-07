@@ -37,7 +37,7 @@ public class CreateProductFailureOnGuaranteeReportDtoValidator extends AbstractV
         if (Objects.isNull(createProductFailureOnGuaranteeReportDto.getComplaintId())) {
             errors.put("Complaint id", "is null");
         } else if (Objects.nonNull(createProductFailureOnGuaranteeReportDto.getManagerUsername())
-                && isComplaintIdValid(createProductFailureOnGuaranteeReportDto.getComplaintId(), createProductFailureOnGuaranteeReportDto.getManagerUsername())) {
+                && !isComplaintIdValid(createProductFailureOnGuaranteeReportDto.getComplaintId(), createProductFailureOnGuaranteeReportDto.getManagerUsername())) {
             errors.put("Complaint object", "No confirmed complaint exists");
         }
 

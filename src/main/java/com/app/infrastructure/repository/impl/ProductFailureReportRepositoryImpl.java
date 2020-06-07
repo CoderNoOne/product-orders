@@ -6,6 +6,8 @@ import com.app.infrastructure.repository.jpa.JpaProductFailureReportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,5 +35,10 @@ public class ProductFailureReportRepositoryImpl implements ProductFailureReportR
     @Override
     public ProductFailureReport save(ProductFailureReport productFailureReport) {
         return jpaProductFailureReportRepository.save(productFailureReport);
+    }
+
+    @Override
+    public boolean isAnyConfirmedComplaintInProgressForProductOrderById(Long productOrderId) {
+        return jpaProductFailureReportRepository.isAnyConfirmedComplaintInProgressForProductOrderById(productOrderId,new Date(LocalDate.now().toEpochDay()));
     }
 }

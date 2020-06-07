@@ -4,9 +4,9 @@ import com.app.domain.enums.ComplaintStatus;
 import com.app.domain.enums.DamageType;
 import com.app.domain.generic.BaseEntity;
 import com.app.infrastructure.dto.ComplaintDto;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -27,6 +27,8 @@ public class Complaint extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private DamageType damageType;
+
+    @Enumerated(EnumType.STRING)
     private ComplaintStatus status;
 
     public ComplaintDto toDto() {
