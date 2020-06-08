@@ -37,11 +37,11 @@ public class ComplaintService {
                 .orElseThrow(() -> new NotFoundException("No complaint with id: " + id + " that is managed by manager: " + username));
     }
 
-    public List<ComplaintDto> getAllAwaitingComplaintsByManagerUsername(String username) {
+    public List<ComplaintDto> getComplaintsByManagerUsernameAndStatus(String username, ComplaintStatus status) {
 
         return complaintRepository.findAllByManagerUsername(username)
                 .stream()
-                .filter(complaint -> complaint.getStatus() == ComplaintStatus.REQUESTED)
+                .filter(complaint -> !Objects.nonNull(status) || complaint.getStatus() == status)
                 .map(Complaint::toDto)
                 .collect(Collectors.toList());
     }
@@ -107,5 +107,19 @@ public class ComplaintService {
 
     public Long deny(Long id, String username) {
         return updateComplaintById(id, username, ComplaintStatus.DENIED);
+    }
+
+    public List<ComplaintDto> getComplaintsByCustomerUsernameAndStatus(String username, ComplaintStatus status) {
+        return complaintRepository.findAllByCustomerUsername(username)
+                .stream()
+                .filter(complaint -> !Objects.nonNull(status) || complaint.getStatus() == status)
+                .map(Complaint::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public ComplaintDto getComplaintByIdAndCustomerUsername(Long id, String username) {
+        return complaintRepository.findByIdAndCustomerUsername(id, username)
+                .map(Complaint::toDto)
+                .orElseThrow(() -> new NotFoundException("No complaint with id: " + id + " for customer username: " + username));
     }
 }

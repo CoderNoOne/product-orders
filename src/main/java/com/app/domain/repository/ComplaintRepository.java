@@ -19,4 +19,7 @@ public interface ComplaintRepository extends CrudRepository<Complaint, Long> {
 
     Optional<Complaint> findByProductOrderId(Long productOrderId);
 
+    List<Complaint> findAllByCustomerUsername(String username);
+
+    Optional<Complaint> findByIdAndCustomerUsername(Long id, String username);
 }

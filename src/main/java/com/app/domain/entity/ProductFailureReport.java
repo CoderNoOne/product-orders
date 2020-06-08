@@ -33,8 +33,6 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 @DiscriminatorColumn(name = "guarantee_expired", discriminatorType = DiscriminatorType.STRING)
 public abstract class ProductFailureReport extends BaseEntity {
 
-
-    @Temporal(TemporalType.TIMESTAMP)
     private LocalDate completionDate;
 
     @Enumerated(EnumType.STRING)

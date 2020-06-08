@@ -1,13 +1,13 @@
 package com.app.infrastructure.controller;
 
 import com.app.application.service.ComplaintService;
+import com.app.application.service.UserService;
+import com.app.domain.enums.ComplaintStatus;
 import com.app.infrastructure.dto.ComplaintDto;
 import com.app.infrastructure.dto.CreateComplaintDto;
 import com.app.infrastructure.dto.ResponseData;
-import com.app.infrastructure.dto.UpdateComplaintDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,16 +19,21 @@ import java.util.List;
 public class ComplaintController {
 
     private final ComplaintService complaintService;
+    private final UserService userService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public ResponseData<List<ComplaintDto>> getAll(
+            @RequestParam(name = "status", required = false) ComplaintStatus status
     ) {
 
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         return ResponseData.<List<ComplaintDto>>builder()
-                .data(complaintService.getAllAwaitingComplaintsByManagerUsername(username))
+                .data(userService.isManager(username) ?
+                        complaintService.getComplaintsByManagerUsernameAndStatus(username, status) :
+                        complaintService.getComplaintsByCustomerUsernameAndStatus(username, status)
+                )
                 .build();
     }
 
@@ -39,7 +44,9 @@ public class ComplaintController {
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         return ResponseData.<ComplaintDto>builder()
-                .data(complaintService.getComplaintByIdAndManagerUsername(id, username))
+                .data(userService.isManager(username) ?
+                        complaintService.getComplaintByIdAndManagerUsername(id, username)
+                        : complaintService.getComplaintByIdAndCustomerUsername(id, username))
                 .build();
 
     }

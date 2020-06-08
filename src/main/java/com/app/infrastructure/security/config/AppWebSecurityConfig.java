@@ -115,7 +115,6 @@ public class AppWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
 
                 .authorizeRequests()
-//                .antMatchers("/actuator/**").permitAll()
                 .antMatchers("/security/**").permitAll()
                 .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/swagger-resources/configuration/ui", "/swagger-ui.html").permitAll()
                 .antMatchers("/swagger-ui/**", "/swagger/**", "/v3/**").permitAll()
@@ -126,16 +125,13 @@ public class AppWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/trades**").hasAnyRole("USER_CUSTOMER", "ADMIN_PRODUCT")
                 .antMatchers(HttpMethod.GET, "/meetings**", "/meetings/**").hasAnyRole("USER_MANAGER", "USER_CUSTOMER")
                 .antMatchers(HttpMethod.GET, "/repairOrders**", "/repairOrders/**").hasAnyRole("USER_MANAGER", "USER_CUSTOMER")
-                .antMatchers(HttpMethod.GET, "/complaints**", "/complaints/**").hasRole("USER_MANAGER")
+                .antMatchers(HttpMethod.GET, "/complaints**", "/complaints/**").hasAnyRole("USER_MANAGER", "USER_CUSTOMER")
                 .antMatchers(HttpMethod.PATCH, "/complaints**", "/complaints/**").hasRole("USER_MANAGER")
 
-//                .antMatchers(HttpMethod.POST, "/productOrders/**").hasRole("USER_MANAGER")
-//                .antMatchers(HttpMethod.GET, "/productOrders/**").hasRole("USER_CUSTOMER")
-//                .antMatchers(HttpMethod.DELETE, "/productOrders/**").hasRole("USER_CUSTOMER")
+
                 .antMatchers(HttpMethod.POST, "/complaints").hasRole("USER_CUSTOMER")
 
                 .antMatchers("/customer/product-order-proposals/**").hasRole("USER_CUSTOMER")
-//                .antMatchers("/customer/**").hasRole("USER_CUSTOMER")
                 .antMatchers("/manager/product-order-proposals/**").hasRole("USER_MANAGER")
 
                 .antMatchers("/stocks/**", "/meetings/**").hasRole("USER_MANAGER")

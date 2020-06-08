@@ -22,4 +22,8 @@ public interface JpaComplaintRepository extends JpaRepository<Complaint, Long> {
 
     Optional<Complaint> findByProductOrderId(Long productOrderId);
 
+    @Query(value = "select c from Complaint c where c.productOrder.customer.username = :username")
+    List<Complaint> findAllByCustomerUsername(String username);
+
+    Optional<Complaint> findByIdAndProductOrderCustomerUsername(Long id, String username);
 }
