@@ -146,6 +146,13 @@ public class OpenApiConfig {
                 .build();
     }
 
+    @Bean
+    public GroupedOpenApi productFailuresApi() {
+        return GroupedOpenApi.builder()
+                .setGroup("product-failures-report")
+                .pathsToMatch("/product-failure-reports/**")
+                .build();
+    }
 
     @Bean
     public GroupedOpenApi securityApi() {

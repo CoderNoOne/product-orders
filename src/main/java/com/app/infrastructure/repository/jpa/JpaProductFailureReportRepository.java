@@ -37,4 +37,7 @@ public interface JpaProductFailureReportRepository extends JpaRepository<Product
         return returnValue.get();
     }
 
+    @Query(value = "select p from ProductFailureReport p where p.productOrder.customer.manager.username = :username")
+    List<ProductFailureReport> findAllByManagerUsername(String username);
+
 }

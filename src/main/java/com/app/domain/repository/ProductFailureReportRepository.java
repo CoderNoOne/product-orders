@@ -8,4 +8,6 @@ import java.util.List;
 public interface ProductFailureReportRepository extends CrudRepository<ProductFailureReport, Long> {
     List<ProductFailureReport> findAllByUsername(String username);
     boolean isAnyConfirmedComplaintInProgressForProductOrderById(Long productOrderId);
+
+    List<ProductFailureReport> findAllByManagerUsername(String username);
 }

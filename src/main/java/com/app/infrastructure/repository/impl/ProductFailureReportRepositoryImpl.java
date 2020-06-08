@@ -41,4 +41,9 @@ public class ProductFailureReportRepositoryImpl implements ProductFailureReportR
     public boolean isAnyConfirmedComplaintInProgressForProductOrderById(Long productOrderId) {
         return jpaProductFailureReportRepository.isAnyConfirmedComplaintInProgressForProductOrderById(productOrderId,new Date(LocalDate.now().toEpochDay()));
     }
+
+    @Override
+    public List<ProductFailureReport> findAllByManagerUsername(String username) {
+        return jpaProductFailureReportRepository.findAllByManagerUsername(username);
+    }
 }

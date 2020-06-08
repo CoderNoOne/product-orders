@@ -127,7 +127,7 @@ public class AppWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/repairOrders**", "/repairOrders/**").hasAnyRole("USER_MANAGER", "USER_CUSTOMER")
                 .antMatchers(HttpMethod.GET, "/complaints**", "/complaints/**").hasAnyRole("USER_MANAGER", "USER_CUSTOMER")
                 .antMatchers(HttpMethod.PATCH, "/complaints**", "/complaints/**").hasRole("USER_MANAGER")
-
+                .antMatchers("/product-failure-reports").hasAnyRole("USER_CUSTOMER", "USER_MANAGER")
 
                 .antMatchers(HttpMethod.POST, "/complaints").hasRole("USER_CUSTOMER")
 
