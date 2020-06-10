@@ -18,7 +18,7 @@ import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/shops") /*ADMIN_SHOP*/
+@RequestMapping("/shops")
 public class ShopController {
 
     private final ShopService shopService;

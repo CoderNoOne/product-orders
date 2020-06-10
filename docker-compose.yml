@@ -1,0 +1,40 @@
+version: '3.3'
+services:
+  rest:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    restart: always
+    depends_on:
+      - mysql
+    environment:
+      DB_HOSTNAME: mysql
+      DB_PORT: 3000
+      DB_NAME: db
+      DB_USERNAME: root
+      DB_PASSWORD: root
+    networks:
+      - custom-network
+  mysql:
+    image: mysql:8.0.19
+    ports:
+      - "3000:3306"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+      MYSQL_DATABASE: db
+
+    volumes:
+    - mysql-data-volume:/var/lib/mysql
+    networks:
+    - custom-network
+
+volumes:
+  mysql-data-volume:
+
+networks:
+  custom-network:

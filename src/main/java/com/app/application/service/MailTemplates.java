@@ -1,7 +1,11 @@
 package com.app.application.service;
 
 import com.app.infrastructure.dto.ComplaintDto;
+import com.app.infrastructure.dto.CustomerDto;
+import com.app.infrastructure.dto.ManagerDto;
 import com.app.infrastructure.dto.ProductOrderDto;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -14,8 +18,8 @@ import java.util.stream.Collectors;
 import static j2html.TagCreator.*;
 import static j2html.TagCreator.td;
 
+// TODO: 10.06.2020
 public interface MailTemplates {
-
 
     static String generateHtmlInfoAboutSuccessfulPayment(String username, ProductOrderDto productOrderDto) {
 
@@ -263,6 +267,23 @@ public interface MailTemplates {
     static String notifyManagerAboutAddedNotice() {
 
 
+        return null;
+    }
+
+    static String generateHtmlInfoAboutManagerAccountActivation(ManagerDto activatedManager) {
+
+        return document(html(
+                body(
+                        h1("Hello, " + activatedManager.getUsername()).withStyle("text-align: center; color: black"),
+                        h3("Your account has been activated by admin_manager").withStyle("text-align:center; color: red"),
+
+                        a("You can now log in here").withHref(/*serverProperties.getAddress() +*/ "/login")
+
+                )
+        ));
+    }
+
+    static String generateHtmlInfoAboutCustomerAccountActivation(CustomerDto activatedCustomer) {
         return null;
     }
 }

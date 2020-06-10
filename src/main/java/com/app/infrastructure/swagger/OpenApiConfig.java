@@ -3,11 +3,13 @@ package com.app.infrastructure.swagger;
 import com.app.infrastructure.dto.ResponseData;
 import com.app.infrastructure.security.dto.AuthenticationDto;
 import com.app.infrastructure.security.dto.TokensDto;
-import io.swagger.v3.oas.models.*;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.headers.Header;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
@@ -17,15 +19,10 @@ import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-import io.swagger.v3.oas.models.tags.Tag;
 import org.springdoc.core.GroupedOpenApi;
-import org.springdoc.core.OpenAPIBuilder;
-import org.springdoc.core.customizers.OpenApiCustomiser;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.servlet.http.Cookie;
-import javax.swing.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -160,10 +157,6 @@ public class OpenApiConfig {
                 .setGroup("security")
                 .pathsToMatch("/security/**")
                 .addOpenApiCustomiser(openApi -> openApi.security(Collections.emptyList()))
-//                .pathsToExclude("/security/activate")
-//                .addOpenApiCustomiser(openApi -> openApi.paths(new Paths().addPathItem("/security/sign-up-customer", new PathItem().post(new Operation().security(Collections.emptyList())))))
-//                .addOpenApiCustomiser(openApi -> openApi.path("/security/activate", new PathItem().put(new Operation()))
-//                        .security(List.of(new SecurityRequirement().addList("JwtAuthToken").addList("CookieAuth"))))
                 .build();
     }
 
@@ -204,14 +197,6 @@ public class OpenApiConfig {
         return GroupedOpenApi.builder()
                 .setGroup("meeting")
                 .pathsToMatch("/meetings/**")
-                .build();
-    }
-
-    @Bean
-    public GroupedOpenApi repairOrderApi() {
-        return GroupedOpenApi.builder()
-                .setGroup("repairOrder")
-                .pathsToMatch("/repairOrders/**")
                 .build();
     }
 

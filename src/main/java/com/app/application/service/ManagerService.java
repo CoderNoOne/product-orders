@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,17 +20,22 @@ public class ManagerService {
 
     private final ManagerRepository managerRepository;
 
-    public Long activate(Long id) {
+    public ManagerDto activate(Long id) {
+
+        var managerWrapper = new AtomicReference<ManagerDto>();
 
         managerRepository.findOne(id)
                 .ifPresentOrElse(
-                        manager -> manager.setEnabled(true),
+                        manager -> {
+                            manager.setEnabled(true);
+                            managerWrapper.set(manager.toDto());
+                        },
                         () -> {
                             throw new NotFoundException("No manager with id: " + id);
                         }
                 );
 
-        return id;
+        return managerWrapper.get();
     }
 
     public List<ManagerDto> getAll(Boolean enabled) {

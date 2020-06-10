@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/stocks") /*USER_MANAGER*/
+@RequestMapping("/stocks")
 public class StockController {
 
     private final StockService stockService;

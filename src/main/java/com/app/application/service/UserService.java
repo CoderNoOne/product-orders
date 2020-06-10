@@ -4,6 +4,7 @@ import com.app.domain.entity.Manager;
 import com.app.domain.entity.User;
 import com.app.domain.repository.UserRepository;
 import com.app.infrastructure.exception.NotFoundException;
+import com.app.infrastructure.exception.NullIdValueException;
 import com.app.infrastructure.exception.NullReferenceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,5 +40,16 @@ public class UserService {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new NotFoundException("No user with username: " + username))
                 instanceof Manager;
+    }
+
+    public String getEmailById(Long id) {
+
+        if (Objects.isNull(id)) {
+            throw new NullIdValueException("User id is null");
+        }
+
+        return userRepository.findEmailById(id)
+                .orElseThrow(() -> new NotFoundException("No email found for user with id: " + id))
+                .getEmail();
     }
 }

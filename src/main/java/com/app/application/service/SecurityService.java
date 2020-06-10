@@ -10,6 +10,7 @@ import com.app.domain.entity.RegisterVerificationToken;
 import com.app.domain.entity.User;
 import com.app.domain.enums.Gender;
 import com.app.domain.repository.*;
+import com.app.infrastructure.dto.CustomerDto;
 import com.app.infrastructure.exception.NotFoundException;
 import com.app.infrastructure.exception.ValidationException;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @Transactional
@@ -92,9 +94,9 @@ public class SecurityService {
         return userRepository.save(user);
     }
 
-    public Long activateCustomer(String token) {
+    public CustomerDto activateCustomer(String token) {
 
-        var idWrapper = new AtomicLong();
+        var customerWrapper = new AtomicReference<CustomerDto>();
         registerVerificationTokenRepository.findByToken(token)
                 .ifPresentOrElse(
                         tokenFromDb -> {
@@ -103,7 +105,7 @@ public class SecurityService {
                             }
 
                             Customer customer = tokenFromDb.getCustomer();
-                            idWrapper.set(customer.getId());
+                            customerWrapper.set(customer.toDto());
                             customer.setEnabled(true);
 
                             registerVerificationTokenRepository.delete(tokenFromDb);
@@ -112,6 +114,6 @@ public class SecurityService {
                             throw new NotFoundException("Not valid token");
                         }
                 );
-        return idWrapper.get();
+        return customerWrapper.get();
     }
 }

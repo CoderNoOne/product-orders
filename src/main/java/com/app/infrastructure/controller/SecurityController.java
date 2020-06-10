@@ -2,19 +2,19 @@ package com.app.infrastructure.controller;
 
 import com.app.application.dto.RegisterCustomerDto;
 import com.app.application.dto.RegisterManagerDto;
+import com.app.application.service.EmailService;
+import com.app.application.service.MailTemplates;
 import com.app.application.service.SecurityService;
+import com.app.infrastructure.dto.CustomerDto;
 import com.app.infrastructure.dto.RefreshTokenDto;
 import com.app.infrastructure.dto.ResponseData;
 import com.app.infrastructure.security.dto.TokensDto;
 import com.app.infrastructure.security.tokens.TokenManager;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import io.swagger.v3.oas.annotations.security.SecuritySchemes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RequiredArgsConstructor
 @RestController
@@ -23,6 +23,7 @@ public class SecurityController {
 
     private final SecurityService securityService;
     private final TokenManager tokenManager;
+    private final EmailService emailService;
 
     @PostMapping("/sign-up-customer")
     @ResponseStatus(HttpStatus.CREATED)
@@ -56,10 +57,18 @@ public class SecurityController {
 
     @PutMapping("/activate")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseData<Long> activateCustomerUser(@RequestParam(name = "token") String token) {
+    public ResponseData<Long> activateCustomerUser(HttpServletRequest request, @RequestParam(name = "token") String token) {
+
+        CustomerDto activatedCustomer = securityService.activateCustomer(token);
+
+        emailService.sendAsHtml(null,
+                activatedCustomer.getEmail(),
+                MailTemplates.generateHtmlInfoAboutCustomerAccountActivation(activatedCustomer),
+                "Your account has been activated"
+        );
 
         return ResponseData.<Long>builder()
-                .data(securityService.activateCustomer(token))
+                .data(activatedCustomer.getId())
                 .build();
 
     }
