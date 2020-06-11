@@ -39,4 +39,9 @@ public class ProductFailureWithGuaranteeExpiredReportRepositoryImpl implements P
     public Optional<ProductFailureWithGuaranteeExpiredReport> findByIdAndManagerUsername(Long id, String managerUsername) {
         return jpaProductFailureWithGuaranteeExpiredReportRepository.findByIdAndManagerUsername(id, managerUsername);
     }
+
+    @Override
+    public Optional<ProductFailureWithGuaranteeExpiredReport> findByIdAndCustomerUsername(Long productFailureWithGuaranteeExpiredReportId, String customerUsername) {
+        return jpaProductFailureWithGuaranteeExpiredReportRepository.findByIdAndCustomerUsername(productFailureWithGuaranteeExpiredReportId, customerUsername);
+    }
 }

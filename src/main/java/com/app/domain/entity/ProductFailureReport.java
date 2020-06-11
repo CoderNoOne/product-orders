@@ -60,4 +60,12 @@ public abstract class ProductFailureReport extends BaseEntity {
     public void setCompletionDate(LocalDate completionDate) {
         this.completionDate = completionDate;
     }
+
+    public DamageType getDamageType() {
+        return damageType;
+    }
+
+    public ProductOrder getProductOrder() {
+        return productOrder;
+    }
 }

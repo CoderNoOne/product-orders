@@ -43,12 +43,16 @@ public class ProductFailureWithGuaranteeExpiredReportController {
                 .build();
     }
 
-    @PutMapping("/accept")
+    @PutMapping("{id}/accept")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseData<Long> accept(@RequestBody UpdateProductFailureWithGuaranteeExpiredReportDto updateProductFailureWithGuaranteeExpiredReportDto) {
+    public ResponseData<Long> accept(@PathVariable Long id) {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
+        return ResponseData.<Long>builder()
+                .data(userService.isManager(username) ? productFailureWithGuaranteeExpiredReportService.acceptByManager(id, username) :
+                        productFailureWithGuaranteeExpiredReportService.acceptByCustomer(id, username))
+                .build();
 
     }
 

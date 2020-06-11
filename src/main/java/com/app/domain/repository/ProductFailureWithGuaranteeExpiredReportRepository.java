@@ -9,4 +9,6 @@ public interface ProductFailureWithGuaranteeExpiredReportRepository extends Crud
     Optional<ProductFailureWithGuaranteeExpiredReport> findById(Long id);
 
     Optional<ProductFailureWithGuaranteeExpiredReport> findByIdAndManagerUsername(Long id, String managerUsername);
+
+    Optional<ProductFailureWithGuaranteeExpiredReport> findByIdAndCustomerUsername(Long productFailureWithGuaranteeExpiredReportId, String customerUsername);
 }

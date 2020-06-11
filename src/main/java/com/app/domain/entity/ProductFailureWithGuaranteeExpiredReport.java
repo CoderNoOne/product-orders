@@ -2,6 +2,7 @@ package com.app.domain.entity;
 
 import com.app.domain.enums.ProductFailureReportStatus;
 import com.app.domain.enums.ProposalSide;
+import com.app.infrastructure.dto.ProductFailureWithGuaranteeExpiredReportDto;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
 @Audited
@@ -54,5 +56,27 @@ public class ProductFailureWithGuaranteeExpiredReport extends ProductFailureRepo
 
     public BigDecimal getCosts() {
         return repairCosts;
+    }
+
+    public ProposalSide getSide() {
+        return side;
+    }
+
+    public ProductFailureWithGuaranteeExpiredReport status(ProductFailureReportStatus status) {
+        this.status = status;
+        return this;
+    }
+
+
+    public ProductFailureWithGuaranteeExpiredReportDto toProductFailureWithGuaranteeExpiredReportDto(){
+        return ProductFailureWithGuaranteeExpiredReportDto.builder()
+                .id(getId())
+                .status(status)
+                .side(side)
+                .costs(repairCosts)
+                .completionDate(getCompletionDate())
+                .damageType(getDamageType())
+                .productOrderDto(Objects.nonNull(getProductOrder()) ? getProductOrder().toDto() : null)
+                .build();
     }
 }

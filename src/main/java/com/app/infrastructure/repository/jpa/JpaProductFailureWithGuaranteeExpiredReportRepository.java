@@ -9,4 +9,7 @@ import java.util.Optional;
 public interface JpaProductFailureWithGuaranteeExpiredReportRepository extends JpaRepository <ProductFailureWithGuaranteeExpiredReport, Long> {
     @Query("select p from ProductFailureWithGuaranteeExpiredReport p where p.id = :id and p.productOrder.customer.manager.username = :username")
     Optional<ProductFailureWithGuaranteeExpiredReport> findByIdAndManagerUsername(Long id, String username);
+
+    @Query("select p from ProductFailureWithGuaranteeExpiredReport p where p.id = :id and p.productOrder.customer.username = :customerUsername")
+    Optional<ProductFailureWithGuaranteeExpiredReport> findByIdAndCustomerUsername(Long id, String customerUsername);
 }
