@@ -1,6 +1,7 @@
 package com.app.application.service;
 
 import com.app.application.validators.impl.CreateProductFailureWithGuaranteeExpiredReportByManagerDtoValidator;
+import com.app.application.validators.impl.UpdateProductFailureWithGuaranteeExpiredReportByCustomerDtoValidator;
 import com.app.domain.entity.Complaint;
 import com.app.domain.entity.ProductFailureWithGuaranteeExpiredReport;
 import com.app.domain.enums.ComplaintStatus;
@@ -20,14 +21,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.TypeFactory;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -41,7 +38,7 @@ public class ProductFailureWithGuaranteeExpiredReportService {
     private final CreateProductFailureWithGuaranteeExpiredReportByManagerDtoValidator validator;
     private final ComplaintRepository complaintRepository;
     private final ObjectMapper mapper;
-
+    private final UpdateProductFailureWithGuaranteeExpiredReportByCustomerDtoValidator updateProductFailureWithGuaranteeExpiredReportByCustomerDtoValidator;
 
     public Long save(CreateProductFailureWithGuaranteeExpiredReportByManagerDto createProductFailureWithGuaranteeExpiredReportByManagerDto, String managerUsername) {
 
@@ -75,7 +72,7 @@ public class ProductFailureWithGuaranteeExpiredReportService {
 
     public Long replyToByManager(UpdateProductFailureWithGuaranteeExpiredReportByManagerDto updateProductFailureWithGuaranteeExpiredReportByManagerDto) {
 
-        //walidacja
+        //validation
 
 
         var productFailureReport = productFailureWithGuaranteeExpiredReportRepository.findByIdAndManagerUsername(updateProductFailureWithGuaranteeExpiredReportByManagerDto.getProductFailureWithGuaranteeExpiredReportId(), updateProductFailureWithGuaranteeExpiredReportByManagerDto.getManagerUsername())
@@ -90,7 +87,11 @@ public class ProductFailureWithGuaranteeExpiredReportService {
 
     public Long replyToByCustomer(UpdateProductFailureWithGuaranteeExpiredReportByCustomerDto updateProductFailureWithGuaranteeExpiredReportByCustomerDto) {
 
-        //walidacja
+        var errors = updateProductFailureWithGuaranteeExpiredReportByCustomerDtoValidator.validate(updateProductFailureWithGuaranteeExpiredReportByCustomerDto);
+
+        if (updateProductFailureWithGuaranteeExpiredReportByCustomerDtoValidator.hasErrors()) {
+            throw new ValidationException(Validations.createErrorMessage(errors));
+        }
 
         var productFailureReport = productFailureWithGuaranteeExpiredReportRepository.findByIdAndCustomerUsername(updateProductFailureWithGuaranteeExpiredReportByCustomerDto.getProductFailureWithGuaranteeExpiredReportId(), updateProductFailureWithGuaranteeExpiredReportByCustomerDto.getCustomerUsername())
                 .orElseThrow(() -> new NotFoundException("No productFailureReport found"));
