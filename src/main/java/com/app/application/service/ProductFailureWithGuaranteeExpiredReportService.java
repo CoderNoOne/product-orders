@@ -9,6 +9,9 @@ import com.app.domain.enums.ProposalSide;
 import com.app.domain.repository.ComplaintRepository;
 import com.app.domain.repository.ProductFailureWithGuaranteeExpiredReportRepository;
 import com.app.infrastructure.dto.CreateProductFailureWithGuaranteeExpiredReportByManagerDto;
+import com.app.infrastructure.dto.UpdateProductFailureWithGuaranteeExpiredReportByCustomerDto;
+import com.app.infrastructure.dto.UpdateProductFailureWithGuaranteeExpiredReportByManagerDto;
+import com.app.infrastructure.dto.UpdateProductFailureWithGuaranteeExpiredReportDto;
 import com.app.infrastructure.exception.NotFoundException;
 import com.app.infrastructure.exception.ValidationException;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +32,7 @@ public class ProductFailureWithGuaranteeExpiredReportService {
 
     public Long save(CreateProductFailureWithGuaranteeExpiredReportByManagerDto createProductFailureWithGuaranteeExpiredReportByManagerDto, String managerUsername) {
 
-        if(Objects.nonNull(createProductFailureWithGuaranteeExpiredReportByManagerDto)){
+        if (Objects.nonNull(createProductFailureWithGuaranteeExpiredReportByManagerDto)) {
             createProductFailureWithGuaranteeExpiredReportByManagerDto.setManagerUsername(managerUsername);
         }
 
@@ -55,5 +58,26 @@ public class ProductFailureWithGuaranteeExpiredReportService {
 
         complaint.setStatus(ComplaintStatus.DONE);
         return productFailureWithGuaranteeExpiredReportRepository.save(toSave).getId();
+    }
+
+    public Long replyToByManager(UpdateProductFailureWithGuaranteeExpiredReportByManagerDto updateProductFailureWithGuaranteeExpiredReportByManagerDto) {
+
+        //walidacja
+
+
+        var productFailureReport = productFailureWithGuaranteeExpiredReportRepository.findByIdAndManagerUsername(updateProductFailureWithGuaranteeExpiredReportByManagerDto.getProductFailureWithGuaranteeExpiredReportId(),updateProductFailureWithGuaranteeExpiredReportByManagerDto.getManagerUsername() )
+                .orElseThrow(() -> new NotFoundException("No productFailureReport found"));
+
+        return productFailureReport
+                .side(ProposalSide.MANAGER)
+                .costs(Objects.nonNull(updateProductFailureWithGuaranteeExpiredReportByManagerDto.getCosts()) ? updateProductFailureWithGuaranteeExpiredReportByManagerDto.getCosts() : productFailureReport.getCosts())
+                .completionDate(Objects.nonNull(updateProductFailureWithGuaranteeExpiredReportByManagerDto.getCompletionDate()) ? updateProductFailureWithGuaranteeExpiredReportByManagerDto.getCompletionDate() : productFailureReport.getCompletionDate())
+                .getId();
+    }
+
+    public Long replyToByCustomer(UpdateProductFailureWithGuaranteeExpiredReportByCustomerDto updateProductFailureWithGuaranteeExpiredReportByCustomerDto) {
+
+        //walidacja
+
     }
 }

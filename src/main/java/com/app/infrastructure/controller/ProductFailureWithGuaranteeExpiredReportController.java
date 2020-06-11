@@ -1,11 +1,12 @@
 package com.app.infrastructure.controller;
 
 import com.app.application.service.ProductFailureWithGuaranteeExpiredReportService;
+import com.app.application.service.UserService;
 import com.app.infrastructure.dto.CreateProductFailureWithGuaranteeExpiredReportByManagerDto;
 import com.app.infrastructure.dto.ResponseData;
+import com.app.infrastructure.dto.UpdateProductFailureWithGuaranteeExpiredReportDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,11 +16,12 @@ import org.springframework.web.bind.annotation.*;
 public class ProductFailureWithGuaranteeExpiredReportController {
 
     private final ProductFailureWithGuaranteeExpiredReportService productFailureWithGuaranteeExpiredReportService;
+    private final UserService userService;
 
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseData<Long> save(@RequestBody CreateProductFailureWithGuaranteeExpiredReportByManagerDto createProductFailureWithGuaranteeExpiredReportByManagerDto){
+    public ResponseData<Long> save(@RequestBody CreateProductFailureWithGuaranteeExpiredReportByManagerDto createProductFailureWithGuaranteeExpiredReportByManagerDto) {
 
         String managerUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 
@@ -28,4 +30,27 @@ public class ProductFailureWithGuaranteeExpiredReportController {
                 .build();
 
     }
+
+    @PutMapping("/reply")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<Long> reply( @RequestBody UpdateProductFailureWithGuaranteeExpiredReportDto updateProductFailureWithGuaranteeExpiredReportDto) {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        return ResponseData.<Long>builder()
+                .data(userService.isManager(username) ? productFailureWithGuaranteeExpiredReportService.replyToByManager(updateProductFailureWithGuaranteeExpiredReportDto.byManager(username)) :
+                        productFailureWithGuaranteeExpiredReportService.replyToByCustomer(updateProductFailureWithGuaranteeExpiredReportDto.byCustomer(username)))
+                .build();
+    }
+
+    @PutMapping("/accept")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<Long> accept(@RequestBody UpdateProductFailureWithGuaranteeExpiredReportDto updateProductFailureWithGuaranteeExpiredReportDto) {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+
+    }
+
+
 }

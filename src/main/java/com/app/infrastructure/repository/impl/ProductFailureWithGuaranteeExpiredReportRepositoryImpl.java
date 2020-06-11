@@ -29,4 +29,14 @@ public class ProductFailureWithGuaranteeExpiredReportRepositoryImpl implements P
     public ProductFailureWithGuaranteeExpiredReport save(ProductFailureWithGuaranteeExpiredReport productFailureWithGuaranteeExpiredReport) {
         return jpaProductFailureWithGuaranteeExpiredReportRepository.save(productFailureWithGuaranteeExpiredReport);
     }
+
+    @Override
+    public Optional<ProductFailureWithGuaranteeExpiredReport> findById(Long id) {
+        return jpaProductFailureWithGuaranteeExpiredReportRepository.findById(id);
+    }
+
+    @Override
+    public Optional<ProductFailureWithGuaranteeExpiredReport> findByIdAndManagerUsername(Long id, String managerUsername) {
+        return jpaProductFailureWithGuaranteeExpiredReportRepository.findByIdAndManagerUsername(id, managerUsername);
+    }
 }

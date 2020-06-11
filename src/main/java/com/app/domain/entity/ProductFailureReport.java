@@ -56,4 +56,8 @@ public abstract class ProductFailureReport extends BaseEntity {
                 .productOrderDto(Objects.nonNull(productOrder) ? productOrder.toDto() : null)
                 .build();
     }
+
+    public void setCompletionDate(LocalDate completionDate) {
+        this.completionDate = completionDate;
+    }
 }

@@ -13,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 @Audited
@@ -22,7 +23,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @DiscriminatorValue(value = "true")
-public class ProductFailureWithGuaranteeExpiredReport extends ProductFailureReport{
+public class ProductFailureWithGuaranteeExpiredReport extends ProductFailureReport {
 
     @Enumerated(EnumType.STRING)
     private ProductFailureReportStatus status;
@@ -34,5 +35,24 @@ public class ProductFailureWithGuaranteeExpiredReport extends ProductFailureRepo
 
     public ProductFailureReportStatus getStatus() {
         return status;
+    }
+
+    public ProductFailureWithGuaranteeExpiredReport side(ProposalSide side) {
+        this.side = side;
+        return this;
+    }
+
+    public ProductFailureWithGuaranteeExpiredReport costs(BigDecimal costs) {
+        this.repairCosts = costs;
+        return this;
+    }
+
+    public ProductFailureWithGuaranteeExpiredReport completionDate(LocalDate completionDate) {
+        setCompletionDate(completionDate);
+        return this;
+    }
+
+    public BigDecimal getCosts() {
+        return repairCosts;
     }
 }
