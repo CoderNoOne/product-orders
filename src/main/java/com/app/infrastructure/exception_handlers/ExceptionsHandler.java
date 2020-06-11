@@ -36,6 +36,17 @@ public class ExceptionsHandler  {
                 .build();
     }
 
+    @ExceptionHandler(ObjectMapperException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseData<String> handleObjectMapperException(ObjectMapperException objectMapperException) {
+
+        log.error(objectMapperException.getMessage());
+
+        return ResponseData.<String>builder()
+                .error(objectMapperException.getMessage())
+                .build();
+    }
+
     @ExceptionHandler(ShopValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseData<String> handleRegisterUserException(ShopValidationException productValidationException) {
