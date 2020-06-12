@@ -64,6 +64,7 @@ public class ProductOrder extends BaseEntity {
                 .discount(discount)
                 .deliveryAddress(Objects.nonNull(deliveryAddress) ? deliveryAddress.getAddress() : null)
                 .paymentDeadline(paymentDeadline)
+                .customerDto(Objects.nonNull(customer) ? customer.toDto() : null)
                 .build();
     }
 

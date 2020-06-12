@@ -9,6 +9,7 @@ import com.app.domain.other.Period;
 import com.app.domain.repository.ComplaintRepository;
 import com.app.domain.repository.ProductFailureOnGuaranteeReportRepository;
 import com.app.infrastructure.dto.CreateProductFailureOnGuaranteeReportDto;
+import com.app.infrastructure.dto.ProductFailureOnGuaranteeReportDto;
 import com.app.infrastructure.exception.NotFoundException;
 import com.app.infrastructure.exception.ValidationException;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class ProductFailureOnGuaranteeReportService {
     private final ComplaintRepository complaintRepository;
     private final CreateProductFailureOnGuaranteeReportDtoValidator validator;
 
-    public Long save(CreateProductFailureOnGuaranteeReportDto createProductFailureOnGuaranteeReportDto, String managerUsername) {
+    public ProductFailureOnGuaranteeReportDto save(CreateProductFailureOnGuaranteeReportDto createProductFailureOnGuaranteeReportDto, String managerUsername) {
 
         if(Objects.nonNull(createProductFailureOnGuaranteeReportDto)){
             createProductFailureOnGuaranteeReportDto.setManagerUsername(managerUsername);
@@ -52,7 +53,7 @@ public class ProductFailureOnGuaranteeReportService {
                 .productOrder(complaint.getProductOrder())
                 .build();
 
-        return productFailureOnGuaranteeReportRepository.save(toSave).getId();
+        return productFailureOnGuaranteeReportRepository.save(toSave).toProductFailureOnGuaranteeReportDto();
 
     }
 

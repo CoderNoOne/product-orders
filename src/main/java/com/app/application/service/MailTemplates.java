@@ -1,9 +1,6 @@
 package com.app.application.service;
 
-import com.app.infrastructure.dto.ComplaintDto;
-import com.app.infrastructure.dto.CustomerDto;
-import com.app.infrastructure.dto.ManagerDto;
-import com.app.infrastructure.dto.ProductOrderDto;
+import com.app.infrastructure.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 
@@ -284,6 +281,23 @@ public interface MailTemplates {
     }
 
     static String generateHtmlInfoAboutCustomerAccountActivation(CustomerDto activatedCustomer) {
-        return null;
+        return document(html(
+                body(
+                        h1("Hello, " + activatedCustomer.getUsername() + ". Your account has been successfully activated").withStyle("text-align: center; background-color: yellow; margin-top 5vmin"),
+                        h5("Don't respond to this message.").withStyle("text-align: center; margin-top: 5vmin; background-color: white")
+                )
+        ));
+    }
+
+    static String generateHtmlInfoAboutCompletionDate(ProductFailureOnGuaranteeReportDto saved) {
+        return document(html(
+                body(
+                        h1("Hello, " + saved.getProductOrderDto().getCustomerDto().getUsername()).withStyle("text-align: center; color: black; margin-bottom: 3vmin").withStyle("background-color: yellow"),
+                        div(h2("Your request has been accepted. Selected service type for product: "
+                                + saved.getProductOrderDto().getProductDto().getName() + " is: " + saved.getSelectedService()).withStyle("text-align: center; color: yellow"),
+                        h2("You can pick up your product on: " + saved.getCompletionDate()).withStyle("text-align: center; color: blue")).withStyle("background-color: pink"),
+                        h5("Don't respond to this message.").withStyle("text-align: center; margin-top: 5vmin; background-color: white")
+                )
+        ));
     }
 }
