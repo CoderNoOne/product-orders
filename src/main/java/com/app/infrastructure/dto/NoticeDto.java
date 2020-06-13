@@ -16,4 +16,6 @@ public class NoticeDto {
     private Long id;
     private String content;
     private String tittle;
+
+    private MeetingDto meetingDto;
 }

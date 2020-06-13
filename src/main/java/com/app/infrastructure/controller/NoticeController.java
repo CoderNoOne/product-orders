@@ -35,11 +35,8 @@ public class NoticeController {
                 .data(savedNotice.getId())
                 .build();
 
-
-
-        // TODO: 18.05.2020 send mail to manager and customer
-        emailService.sendAsHtml(null, userService.getEmailForUsername(managerUsername), MailTemplates.notifyManagerAboutAddedNotice(),"");
-        emailService.sendAsHtml(null, userService.getEmailForUsername(managerUsername), MailTemplates.notifyManagerAboutAddedNotice(),"");
+        emailService.sendAsHtml(null, userService.getEmailForUsername(managerUsername), MailTemplates.notifyManagerAboutAddedNotice(managerUsername, savedNotice),"Notice added");
+        emailService.sendAsHtml(null, userService.getEmailForUsername(savedNotice.getMeetingDto().getCustomerDto().getEmail()), MailTemplates.notifyCustomerAboutAddedNotice(savedNotice),"Notice added");
 
         return body;
     }

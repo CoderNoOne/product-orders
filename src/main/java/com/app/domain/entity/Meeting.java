@@ -23,14 +23,6 @@ public class Meeting extends BaseEntity {
     @OneToMany(mappedBy = "meeting")
     private List<Notice> notices;
 
-//    @ManyToOne
-//    @JoinColumn(name = "customer_id")
-//    private Customer customer;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "manager_id")
-//    private Manager manager;
-
     @OneToOne
     @JoinColumn(name = "proposal_id")
     private ProductOrderProposal orderProposal;

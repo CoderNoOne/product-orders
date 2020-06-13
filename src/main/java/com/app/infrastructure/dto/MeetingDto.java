@@ -17,4 +17,5 @@ public class MeetingDto {
     private LocalDate meetingDate;
     private String status;
     private Long orderProposalId;
+    private CustomerDto customerDto;
 }

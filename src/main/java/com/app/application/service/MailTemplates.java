@@ -261,7 +261,24 @@ public interface MailTemplates {
         return null;
     }
 
-    static String notifyManagerAboutAddedNotice() {
+    static String notifyManagerAboutAddedNotice(String managerUsername, NoticeDto savedNotice) {
+
+
+        return document(html(
+                body(
+
+                        h1("Hello manager - " + managerUsername).withStyle("text-align: center"),
+                        h2("A notice has been added to meeting on day: " + savedNotice.getMeetingDto().getMeetingDate() + " with customer: " + savedNotice.getMeetingDto().getCustomerDto().getUsername())
+                                .withStyle("text-align: center"),
+
+                        h2("Tittle: " + savedNotice.getTittle()).withStyle("text-align: center"),
+                        p(savedNotice.getContent()).withStyle("text-align: center")
+
+                )
+        ));
+    }
+
+    static String notifyCustomerAboutAddedNotice(NoticeDto savedNotice) {
 
 
         return null;
@@ -272,9 +289,7 @@ public interface MailTemplates {
         return document(html(
                 body(
                         h1("Hello, " + activatedManager.getUsername()).withStyle("text-align: center; color: black"),
-                        h3("Your account has been activated by admin_manager").withStyle("text-align:center; color: red"),
-
-                        a("You can now log in here").withHref(/*serverProperties.getAddress() +*/ "/login")
+                        h3("Your account has been activated by admin_manager").withStyle("text-align:center; color: red")
 
                 )
         ));
@@ -283,8 +298,10 @@ public interface MailTemplates {
     static String generateHtmlInfoAboutCustomerAccountActivation(CustomerDto activatedCustomer) {
         return document(html(
                 body(
-                        h1("Hello, " + activatedCustomer.getUsername() + ". Your account has been successfully activated").withStyle("text-align: center; background-color: yellow; margin-top 5vmin"),
-                        h5("Don't respond to this message.").withStyle("text-align: center; margin-top: 5vmin; background-color: white")
+                        div(
+                                h1("Hello, " + activatedCustomer.getUsername() + ". Your account has been successfully activated").withStyle("text-align: center; background-color: yellow;")
+                        ).withStyle("display: inline-block; margin-top 5vmin"),
+                        h5("Don't respond to this message.").withStyle("text-align: center; margin-top: 5vmin;")
                 )
         ));
     }
@@ -294,8 +311,8 @@ public interface MailTemplates {
                 body(
                         h1("Hello, " + saved.getProductOrderDto().getCustomerDto().getUsername()).withStyle("text-align: center; color: black; margin-bottom: 3vmin").withStyle("background-color: yellow"),
                         div(h2("Your request has been accepted. Selected service type for product: "
-                                + saved.getProductOrderDto().getProductDto().getName() + " is: " + saved.getSelectedService()).withStyle("text-align: center; color: yellow"),
-                        h2("You can pick up your product on: " + saved.getCompletionDate()).withStyle("text-align: center; color: blue")).withStyle("background-color: pink"),
+                                        + saved.getProductOrderDto().getProductDto().getName() + " is: " + saved.getSelectedService()).withStyle("text-align: center; color: yellow"),
+                                h2("You can pick up your product on: " + saved.getCompletionDate()).withStyle("text-align: center; color: blue")).withStyle("background-color: pink"),
                         h5("Don't respond to this message.").withStyle("text-align: center; margin-top: 5vmin; background-color: white")
                 )
         ));
