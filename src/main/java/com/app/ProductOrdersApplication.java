@@ -25,15 +25,8 @@ import java.util.TimeZone;
 public class ProductOrdersApplication {
 
     public static void main(String[] args) {
-        var ctx = SpringApplication.run(ProductOrdersApplication.class, args);
+       SpringApplication.run(ProductOrdersApplication.class, args);
 
-        var emailService = ctx.getBean("emailService", EmailService.class);
-
-        emailService.sendAsHtml(null,"firelight.code@gmail.com",
-                MailTemplates.generateHtmlInfoAboutTotalPrice("usernbame", new BigDecimal("100.20"), OrderDateBoundaryDto.builder()
-
-                        .from(LocalDate.of(2002,10,20))
-                        .build()), "ttile");
     }
 
     @PostConstruct
