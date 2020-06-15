@@ -261,27 +261,103 @@ public interface MailTemplates {
         return null;
     }
 
-    static String notifyManagerAboutAddedNotice(String managerUsername, NoticeDto savedNotice) {
+    static String notifyManagerAboutAddedNotice(String managerUsername, NoticeDto savedNotice, ProductOrderProposalDto productOrderProposal) {
 
 
         return document(html(
                 body(
 
-                        h1("Hello manager - " + managerUsername).withStyle("text-align: center"),
+                        h1("Hello manager - " + managerUsername).withStyle("text-align: center; background-color: yellow"),
                         h2("A notice has been added to meeting on day: " + savedNotice.getMeetingDto().getMeetingDate() + " with customer: " + savedNotice.getMeetingDto().getCustomerDto().getUsername())
                                 .withStyle("text-align: center"),
 
                         h2("Tittle: " + savedNotice.getTittle()).withStyle("text-align: center"),
-                        p(savedNotice.getContent()).withStyle("text-align: center")
+                        p(savedNotice.getContent()).withStyle("text-align: center"),
+
+                        h2("Product order details").withStyle("text-align: center"),
+                        table(
+                                thead(
+                                        th("Product"),
+                                        th("Quantity"),
+                                        th("Shop"),
+                                        th("Discount"),
+                                        th("Delivery address")
+                                ).withStyle("text-align: center; border: solid 1px green"),
+                                tbody(
+                                        tr(
+                                                td(productOrderProposal.getProductInfo().getName() + ":" + productOrderProposal.getProductInfo().getProducerName()),
+                                                td(productOrderProposal.getQuantity().toString()),
+                                                td(productOrderProposal.getShopName()),
+                                                td(productOrderProposal.getDiscount().toString()),
+                                                td(productOrderProposal.getAddress())
+                                        )
+                                ).withStyle("text-align: center; border: solid 1px green")
+                        ).withStyle("width: 100%; background-color: white; margin-left:auto;margin-right:auto; border-collapse: collapse;"),
+                        h2("Remarks").withStyle("text-align: center; margin-top: 5vmin; margin-bottom: 5vmin"),
+                        table(thead(
+                                th("Tittle"),
+                                th("Content")
+                                ).withStyle("text-align: center; border: solid 1px green"),
+                                tbody(
+                                        each(productOrderProposal.getRemarks(), remark ->
+                                                tr(
+                                                        td(remark.getTittle()),
+                                                        td(remark.getContent())
+                                                ).withStyle("text-align: center")
+                                        )
+                                ).withStyle("text-align: center; border: solid 1px green")
+                        ).withStyle("width: 100%; background-color: white; margin-left:auto;margin-right:auto; border-collapse: collapse;")
 
                 )
         ));
     }
 
-    static String notifyCustomerAboutAddedNotice(NoticeDto savedNotice) {
+    static String notifyCustomerAboutAddedNotice(NoticeDto savedNotice, ProductOrderProposalDto productOrderProposal) {
 
+        return document(html(
+                body(
+                        h1("Hello, " + savedNotice.getMeetingDto().getCustomerDto().getUsername()).withStyle("text-align: center"),
+                        h2("A notice has been added to meeting on day: " + savedNotice.getMeetingDto().getMeetingDate()).withStyle("text-align: center"),
+                        h3("Tittle " + savedNotice.getTittle()).withStyle("text-align: center"),
+                        p(savedNotice.getContent()).withStyle("text-align: center"),
 
-        return null;
+                        h2("Product order details").withStyle("text-align: center"),
+                        table(
+                                thead(
+                                        th("Product"),
+                                        th("Quantity"),
+                                        th("Shop"),
+                                        th("Discount"),
+                                        th("Delivery address")
+                                ).withStyle("text-align: center; border: solid 1px green"),
+                                tbody(
+                                        tr(
+                                                td(productOrderProposal.getProductInfo().getName() + ":" + productOrderProposal.getProductInfo().getProducerName()),
+                                                td(productOrderProposal.getQuantity().toString()),
+                                                td(productOrderProposal.getShopName()),
+                                                td(productOrderProposal.getDiscount().toString()),
+                                                td(productOrderProposal.getAddress())
+                                        )
+                                ).withStyle("text-align: center; border: solid 1px green")
+                        ).withStyle("width: 100%; background-color: white; margin-left:auto;margin-right:auto; border-collapse: collapse;"),
+                        h2("Remarks").withStyle("text-align: center; margin-top: 5vmin; margin-bottom: 5vmin"),
+                        table(thead(
+                                th("Tittle"),
+                                th("Content")
+                                ).withStyle("text-align: center; border: solid 1px green"),
+                                tbody(
+                                        each(productOrderProposal.getRemarks(), remark ->
+                                                tr(
+                                                        td(remark.getTittle()),
+                                                        td(remark.getContent())
+                                                ).withStyle("text-align: center")
+                                        )
+                                ).withStyle("text-align: center; border: solid 1px green")
+                        ).withStyle("width: 100%; background-color: white; margin-left:auto;margin-right:auto; border-collapse: collapse;")
+
+                )
+                )
+        ));
     }
 
     static String generateHtmlInfoAboutManagerAccountActivation(ManagerDto activatedManager) {

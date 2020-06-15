@@ -1,16 +1,10 @@
 package com.app.infrastructure.controller;
 
-import com.app.application.service.EmailService;
-import com.app.application.service.MailTemplates;
-import com.app.application.service.NoticeService;
-import com.app.application.service.UserService;
+import com.app.application.service.*;
 import com.app.infrastructure.dto.CreateNoticeDto;
-import com.app.infrastructure.dto.NoticeDto;
 import com.app.infrastructure.dto.ResponseData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +16,7 @@ public class NoticeController {
     private final NoticeService noticeService;
     private final EmailService emailService;
     private final UserService userService;
+    private final ProductOrderProposalService productOrderProposalService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -35,8 +30,12 @@ public class NoticeController {
                 .data(savedNotice.getId())
                 .build();
 
-        emailService.sendAsHtml(null, userService.getEmailForUsername(managerUsername), MailTemplates.notifyManagerAboutAddedNotice(managerUsername, savedNotice),"Notice added");
-        emailService.sendAsHtml(null, userService.getEmailForUsername(savedNotice.getMeetingDto().getCustomerDto().getEmail()), MailTemplates.notifyCustomerAboutAddedNotice(savedNotice),"Notice added");
+        var productOrderProposal = productOrderProposalService.getById(savedNotice.getMeetingDto().getOrderProposalId());
+
+        emailService.sendBulk(
+                emailService.createMimeMessage(userService.getEmailForUsername(managerUsername), MailTemplates.notifyManagerAboutAddedNotice(managerUsername, savedNotice, productOrderProposal), "Notice added"),
+                emailService.createMimeMessage(userService.getEmailForUsername(savedNotice.getMeetingDto().getCustomerDto().getEmail()), MailTemplates.notifyCustomerAboutAddedNotice(savedNotice, productOrderProposal), "Notice added")
+        );
 
         return body;
     }

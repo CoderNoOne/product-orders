@@ -29,13 +29,34 @@ public class EmailService {
         mailSender.send(mailMessage);
     }
 
+
+    public MimeMessage createMimeMessage(String to, String htmlContent, String title) {
+
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, false);
+            messageHelper.setText(htmlContent, true);
+            messageHelper.setTo(to);
+            messageHelper.setSubject(title);
+            return mimeMessage;
+        } catch (MessagingException e) {
+            log.info("Exception during message generation");
+            log.error(e.getMessage());
+            throw new MailException(e.getMessage());
+        }
+    }
+
+    @Async
+    public void sendBulk(MimeMessage... messages) {
+        mailSender.send(messages);
+    }
+
     @Async
     public void sendAsHtml(String from, String to, String htmlContent, String title) {
 
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper messageHelper = null;
-            messageHelper = new MimeMessageHelper(mimeMessage, false);
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, false);
             messageHelper.setText(htmlContent, true);
             messageHelper.setFrom(Objects.requireNonNullElse(from, "noreply@domain.com"));
             messageHelper.setTo(to);
