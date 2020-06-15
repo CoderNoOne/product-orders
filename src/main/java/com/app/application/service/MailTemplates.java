@@ -258,7 +258,17 @@ public interface MailTemplates {
     }
 
     static String generateHtmlInfoAboutRegisteringManager(String username) {
-        return null;
+        return document(
+                html(
+                        body(
+                                h1("Hello, " + username).withStyle("background-color: yellow; text-align: center"),
+                                h2("You have been registered. Your account will be soon activated by admin").withStyle("text-align: center"),
+
+                                p("See you soon ;)").withStyle("text-align: center")
+
+                        )
+                )
+        );
     }
 
     static String notifyManagerAboutAddedNotice(String managerUsername, NoticeDto savedNotice, ProductOrderProposalDto productOrderProposal) {
@@ -357,7 +367,7 @@ public interface MailTemplates {
 
                 )
                 )
-        ));
+        );
     }
 
     static String generateHtmlInfoAboutManagerAccountActivation(ManagerDto activatedManager) {

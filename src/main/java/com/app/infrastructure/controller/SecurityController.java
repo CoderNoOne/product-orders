@@ -39,10 +39,18 @@ public class SecurityController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseData<Long> signUpManager(@RequestBody RegisterManagerDto registerManagerDto) {
 
-        return ResponseData
+        var data = ResponseData
                 .<Long>builder()
                 .data(securityService.registerManager(registerManagerDto))
                 .build();
+
+        emailService.sendAsHtml(
+                null,
+                registerManagerDto.getEmail(),
+                MailTemplates.generateHtmlInfoAboutRegisteringManager(registerManagerDto.getUsername()),
+                "Manger account created");
+
+        return data;
     }
 
     @PostMapping("/refresh-tokens")
