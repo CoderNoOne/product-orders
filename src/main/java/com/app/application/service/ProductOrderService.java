@@ -357,7 +357,7 @@ public class ProductOrderService {
                 .collect(Collectors.toList());
     }
 
-    public Long addProductOrder(String managerUsername, CreateProductOrderDto createProductOrderDto) {
+    public ProductOrderDto addProductOrder(String managerUsername, CreateProductOrderDto createProductOrderDto) {
 
         if (Objects.nonNull(createProductOrderDto)) {
             createProductOrderDto.setManagerUsername(managerUsername);
@@ -427,7 +427,7 @@ public class ProductOrderService {
 
         reservedProductRepository.saveAll(reservedProductsToSave);
 
-        return savedProductOrder.getId();
+        return savedProductOrder.toDto();
     }
 
 

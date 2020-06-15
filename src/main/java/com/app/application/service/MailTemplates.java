@@ -1,21 +1,18 @@
 package com.app.application.service;
 
 import com.app.infrastructure.dto.*;
-import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static j2html.TagCreator.*;
-import static j2html.TagCreator.td;
 
-// TODO: 10.06.2020
 public interface MailTemplates {
 
     static String generateHtmlInfoAboutSuccessfulPayment(String username, ProductOrderDto productOrderDto) {
@@ -129,7 +126,7 @@ public interface MailTemplates {
         );
     }
 
-    static String generateHtmlInfoAboutComplaint(String username, ComplaintDto complaintDto) {
+    static String generateHtmlInfoAboutSendingComplaint(String username, ComplaintDto complaintDto) {
 
         ProductOrderDto productOrderDto = complaintDto.getProductOrderDto();
 
@@ -198,14 +195,14 @@ public interface MailTemplates {
                 ));
     }
 
-    static String generateHtmlInfoAboutProductOrder(String username, ProductOrderDto productOrderDto) {
+    static String generateHtmlInfoAboutProductOrder(ProductOrderDto productOrderDto) {
         BigDecimal totalPrice = productOrderDto.getProductDto().getPrice().multiply(BigDecimal.valueOf(productOrderDto.getQuantity()))
                 .multiply(BigDecimal.valueOf(1).subtract(productOrderDto.getDiscount().divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP)));
         return
                 document(html(
                         head(),
                         body(
-                                h1("Hello, " + username + ". Product has been ordered").withStyle("text-align: center; color: red"),
+                                h1("Hello, " + productOrderDto.getCustomerDto().getUsername() + ". Product has been ordered").withStyle("text-align: center; color: red"),
                                 div(
                                         h2("Product details are as follows").withStyle("margin-top: 10vmin; text-align: center; color: black"),
                                         table(thead(
@@ -400,6 +397,40 @@ public interface MailTemplates {
                                         + saved.getProductOrderDto().getProductDto().getName() + " is: " + saved.getSelectedService()).withStyle("text-align: center; color: yellow"),
                                 h2("You can pick up your product on: " + saved.getCompletionDate()).withStyle("text-align: center; color: blue")).withStyle("background-color: pink"),
                         h5("Don't respond to this message.").withStyle("text-align: center; margin-top: 5vmin; background-color: white")
+                )
+        ));
+    }
+
+    static String generateHtmlInfoAboutTotalPrice(String username, BigDecimal totalPrice, OrderDateBoundaryDto orderDateBoundaryDto) {
+
+        boolean isFrom = Objects.nonNull(orderDateBoundaryDto.getFrom());
+        boolean isTo = Objects.nonNull(orderDateBoundaryDto.getTo());
+
+
+        var sb = new StringBuilder("Total price of bought products ");
+
+        if (isFrom && isTo) {
+            sb
+                    .append("between dates: ")
+                    .append(orderDateBoundaryDto.getFrom())
+                    .append(",  ")
+                    .append(orderDateBoundaryDto.getTo());
+        } else if (isFrom) {
+            sb
+                    .append("from date: ")
+                    .append(orderDateBoundaryDto.getFrom());
+        } else if (isTo) {
+            sb
+                    .append("to date: ")
+                    .append(orderDateBoundaryDto.getTo());
+        }
+        sb.append(" is: ")
+                .append(totalPrice);
+
+        return document(html(
+                body(
+                        h1("Hello, " + username).withStyle("text-align: center"),
+                        h3(sb.toString()).withStyle("text-align: center; background-color: yellow")
                 )
         ));
     }

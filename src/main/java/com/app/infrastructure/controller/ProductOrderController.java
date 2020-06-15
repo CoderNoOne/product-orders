@@ -27,14 +27,22 @@ public class ProductOrderController { /*USER_CUSTOMER*/
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseData<Long> addProduct(@RequestBody CreateProductOrderDto createProductOrderDto) {
+    public ResponseData<Long> addProductOrder(@RequestBody CreateProductOrderDto createProductOrderDto) {
 
         var managerUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-//        emailService.sendAsHtml(null, userService.getEmailForUsername(username), MailTemplates.generateHtmlInfoAboutProductOrder(username, productOrderService.getById(body.getData())), "Product order information");
 
-        return ResponseData.<Long>builder()
-                .data(productOrderService.addProductOrder(managerUsername, createProductOrderDto))
+        var productOrderDto = productOrderService.addProductOrder(managerUsername, createProductOrderDto);
+
+        var data = ResponseData.<Long>builder()
+                .data(productOrderDto.getId())
                 .build();
+
+        emailService.sendAsHtml(null,
+                productOrderDto.getCustomerDto().getEmail(),
+                MailTemplates.generateHtmlInfoAboutProductOrder(productOrderDto),
+                "Product has been ordered by your manager");
+
+        return data;
 
     }
 
@@ -81,14 +89,22 @@ public class ProductOrderController { /*USER_CUSTOMER*/
     @GetMapping("/totalPrice/date")
     @ResponseStatus(HttpStatus.OK)
     public ResponseData<BigDecimal> getTotalPriceByOrderDate(
-            RequestEntity<OrderDateBoundaryDto> requestEntity) {
+            @RequestBody OrderDateBoundaryDto orderDateBoundaryDto) {
 
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
 
 
+        var totalPrice = productOrderService.getTotalPriceByOrderDateForUsername(orderDateBoundaryDto, username);
         var body = ResponseData.<BigDecimal>builder()
-                .data(productOrderService.getTotalPriceByOrderDateForUsername(requestEntity.getBody(), username))
+                .data(totalPrice)
                 .build();
+
+        emailService.sendAsHtml(
+                null,
+                userService.getEmailForUsername(username),
+                MailTemplates.generateHtmlInfoAboutTotalPrice(username, totalPrice, orderDateBoundaryDto),
+                "Product order summary - total price by date"
+        );
 
         return body;
     }
