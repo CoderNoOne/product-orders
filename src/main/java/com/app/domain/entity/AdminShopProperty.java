@@ -42,4 +42,8 @@ public class AdminShopProperty extends BaseEntity {
     public BigDecimal getValue() {
         return value;
     }
+
+    public AdminShopPropertyName getProperty() {
+        return property;
+    }
 }
