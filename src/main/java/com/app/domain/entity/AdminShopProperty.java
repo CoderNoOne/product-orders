@@ -4,7 +4,9 @@ import com.app.domain.enums.AdminShopPropertyName;
 import com.app.domain.generic.BaseEntity;
 import com.app.infrastructure.dto.AdminShopPropertyDto;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
@@ -16,6 +18,8 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@EqualsAndHashCode(callSuper = true)
+@ToString
 public class AdminShopProperty extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
