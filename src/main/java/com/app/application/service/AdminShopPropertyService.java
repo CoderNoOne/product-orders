@@ -81,7 +81,7 @@ public class AdminShopPropertyService {
         adminShopPropertyRepository.findByProperty(AdminShopPropertyName.valueOf(propertyName))
                 .ifPresentOrElse(property -> valueWrapper.set(property.getValue()),
                         () -> {
-                            throw new NotFoundException("No value for propery: " + propertyName + " found");
+                            throw new NotFoundException("No value for property: " + propertyName + " found");
                         });
 
         return valueWrapper.get();
