@@ -6,10 +6,8 @@ import com.app.infrastructure.dto.CreateAdminShopPropertyDto;
 import com.app.infrastructure.dto.ResponseData;
 import com.app.infrastructure.dto.UpdateAdminShopPropertyDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;

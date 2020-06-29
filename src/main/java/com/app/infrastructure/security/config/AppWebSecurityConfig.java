@@ -80,7 +80,7 @@ public class AppWebSecurityConfig extends WebSecurityConfigurerAdapter {
                     HttpServletResponse response,
                     AccessDeniedException e) throws IOException, ServletException {
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                response.setStatus(422);
+                response.setStatus(403);
                 response.getWriter().write(new ObjectMapper().writeValueAsString(AppError
                         .builder()
                         .error(e.getMessage())
@@ -119,6 +119,9 @@ public class AppWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/swagger-resources/configuration/ui", "/swagger-ui.html").permitAll()
                 .antMatchers("/swagger-ui/**", "/swagger/**", "/v3/**").permitAll()
 
+                .antMatchers(HttpMethod.POST, "/adminShopProperties").hasAnyRole("ADMIN_SHOP")
+                .antMatchers(HttpMethod.PATCH, "/adminShopProperties").hasAnyRole("ADMIN_SHOP")
+                .antMatchers(HttpMethod.DELETE, "/adminShopProperties/**").hasAnyRole("ADMIN_SHOP")
                 .antMatchers(HttpMethod.GET, "/shops**").hasAnyRole("USER_CUSTOMER", "USER_MANAGER", "ADMIN_SHOP")
                 .antMatchers(HttpMethod.GET, "/products/**").hasAnyRole("USER_CUSTOMER", "ADMIN_PRODUCT", "USER_MANAGER")
                 .antMatchers(HttpMethod.GET, "/producers**").hasAnyRole("USER_CUSTOMER", "ADMIN_PRODUCT")

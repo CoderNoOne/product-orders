@@ -1,12 +1,8 @@
 package com.app.infrastructure.security.filter;
 
 import com.app.infrastructure.dto.ResponseData;
-import com.app.infrastructure.exception.AppAuthenticationFilterException;
-import com.app.infrastructure.exception.NotFoundException;
-import com.app.infrastructure.exception_handlers.ExceptionsHandler;
 import com.app.infrastructure.security.dto.AuthenticationDto;
 import com.app.infrastructure.security.dto.TokensDto;
-import com.app.infrastructure.security.remember_me.RememberMeServiceImpl;
 import com.app.infrastructure.security.tokens.TokenManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -16,13 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.servlet.HandlerExceptionResolver;
-import org.springframework.web.util.UrlPathHelper;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -33,7 +23,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Objects;
 
-// reaguje automatycznie na zadanie /login POST
+
 @RequiredArgsConstructor
 public class AppAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -65,16 +55,12 @@ public class AppAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         return null;
     }
 
-    // kiedy logowanie sie powiedzie wtedy zostanie wywolana metoda ponizej
     @Override
     protected void successfulAuthentication(
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain chain,
             Authentication authResult) throws IOException, ServletException {
-        // metoda posiada czwarty argument - authResult
-        // przechowuje on informacje na temat zalogowanego usera
-        // na jego podstawie wygenerujemy token
 
         TokensDto tokensDto = tokenManager.generateTokens(authResult);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

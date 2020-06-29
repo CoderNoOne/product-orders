@@ -39,7 +39,7 @@ public class UpdateAdminShopPropertyDtoValidator extends AbstractValidator<Updat
         }
 
         if (Objects.isNull(updateAdminShopPropertyDto.getValue())) {
-            errors.put("Value", "is nul");
+            errors.put("Value", "is null");
         } else if (!isValueValid(updateAdminShopPropertyDto.getValue())) {
             errors.put("Value", "is not valid");
         }

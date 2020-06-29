@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
-// ten filter bedzie wykonywal sie dla kazdego requesta
 public class AppAuthorizationFilter extends BasicAuthenticationFilter {
 
     private final TokenManager tokenManager;
