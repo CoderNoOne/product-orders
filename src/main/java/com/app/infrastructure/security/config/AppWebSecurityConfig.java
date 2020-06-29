@@ -60,7 +60,7 @@ public class AppWebSecurityConfig extends WebSecurityConfigurerAdapter {
                     AuthenticationException e) throws IOException, ServletException {
 
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                response.setStatus(422);
+                response.setStatus(401);
                 response.getWriter().write(new ObjectMapper().writeValueAsString(AppError
                         .builder()
                         .error(e.getMessage())
