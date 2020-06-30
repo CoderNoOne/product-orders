@@ -3,9 +3,9 @@ package com.app.domain.entity;
 import com.app.domain.enums.MeetingStatus;
 import com.app.domain.generic.BaseEntity;
 import com.app.infrastructure.dto.MeetingDto;
-import com.app.infrastructure.dto.NoticeDto;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
@@ -18,6 +18,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @SuperBuilder
 @Table(name = "meetings")
+@ToString
 public class Meeting extends BaseEntity {
 
     @OneToMany(mappedBy = "meeting")

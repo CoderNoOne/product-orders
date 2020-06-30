@@ -1,13 +1,10 @@
 package com.app.infrastructure.controller;
 
 import com.app.ProductOrdersApplication;
-import com.app.domain.entity.Producer;
 import com.app.infrastructure.dto.ProducerDto;
 import com.app.infrastructure.dto.ResponseData;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,13 +19,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -86,7 +79,6 @@ class ProducerControllerIntegrationTest {
 
         //when
         var mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/producers")
-//                .with(user("user").password("pass").roles("USER_MANAGER"))
                         .param("trade", (String) null)
         )
                 .andExpect(status().isUnauthorized())

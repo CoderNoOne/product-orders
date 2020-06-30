@@ -40,8 +40,8 @@ public class MeetingService {
         return meetingRepository.findAll()
                 .stream()
                 .filter(meeting -> Objects.isNull(status) || Objects.equals(meeting.getStatus().name(), status))
-//                .filter(meeting -> isManager ? Objects.equals(meeting.getProposalProductOrder().getCustomer().getManager().getUsername(), username) :
-//                        Objects.equals(meeting.getProposalProductOrder().getCustomer().getUsername(), username))
+                .filter(meeting -> isManager ? meeting.getProposalProductOrder().getManager().getUsername().equals(username)
+                        : meeting.getProposalProductOrder().getCustomer().getUsername().equals(username))
                 .map(Meeting::toDto)
                 .collect(Collectors.toList());
     }
@@ -54,13 +54,14 @@ public class MeetingService {
             throw new ValidationException(Validations.createErrorMessage(errors));
         }
 
+
         var productOrderProposal = productOrderProposalRepository.findOne(createMeetingDto.getProductOrderProposalId())
                 .orElseThrow(() ->
                         new NotFoundException("No productOrderProposal with id: " + createMeetingDto.getProductOrderProposalId()));
 
-//        if (!Objects.equals(productOrderProposal.getCustomer().getManager().getUsername(), managerUsername)) {
-//            throw new ValidationException("Proposal is associated with customer who is not your client!");
-//        }
+        if (!productOrderProposal.getManager().getUsername().equals(managerUsername)) {
+            throw new ValidationException("You cannot add meeting regarding this productOrder proposal.");
+        }
 
         var meeting = createMeetingDto.toEntity();
 
@@ -76,13 +77,14 @@ public class MeetingService {
         }
 
         var meeting = meetingRepository.findOne(id).orElseThrow(() -> new NotFoundException("No meeting with id: " + id));
-//
-//        if (!Objects.equals(meeting.getProposalProductOrder().getCustomer().getManager().getUsername(), managerUsername)) {
-//            throw new ValidationException("Proposal do not belong to your client");
-//        }
+
 
         if (meeting.getStatus().equals(MeetingStatus.FINISHED)) {
             throw new ValidationException("Meeting has been finished. Cannot be canceled");
+        }
+
+        if (!meeting.getProposalProductOrder().getManager().getUsername().equals(managerUsername)) {
+            throw new ValidationException("You have no permission to delete this meeting");
         }
 
         meetingRepository.delete(meeting);
@@ -90,14 +92,19 @@ public class MeetingService {
 
     public List<NoticeDto> getAllNotices(Long id, String username, boolean isManager) {
 
+        if (Objects.isNull(id)) {
+            throw new NullIdValueException("Id is null");
+        }
+
         var meeting = meetingRepository.findOne(id).orElseThrow(() -> new NotFoundException("No meeting with id: " + id));
 
-//        var doBelongToUser = isManager ? Objects.equals(meeting.getProposalProductOrder().getCustomer().getManager().getUsername(), username) :
-//                Objects.equals(meeting.getProposalProductOrder().getCustomer().getUsername(), username);
+        if (isManager && !meeting.getProposalProductOrder().getManager().getUsername().equals(username)) {
+            throw new ValidationException("No permission. You are not manager of this meeting");
 
-//        if (!doBelongToUser) {
-//            throw new ValidationException("You have no access to that notices");
-//        }
+        } else if (!isManager && !meeting.getProposalProductOrder().getCustomer().getUsername().equals(username)) {
+            throw new ValidationException("No permission. You are not customer of this meeting");
+        }
+
 
         return meeting.getNotices()
                 .stream()
@@ -116,12 +123,13 @@ public class MeetingService {
         Optional<Meeting> meeting;
         if ((meeting = meetingRepository.findOne(id)).isEmpty()) {
             errors.put("Meeting id", "No meeting with id " + id);
-        }/* else if (!Objects.equals(meeting.get().getProposalProductOrder().getCustomer().getManager().getUsername(), managerUsername)) {
-            errors.put("Manager username", "That meeting is not managed by you");
-        }*/
-
+        }
         if (createNoticeForMeetingDtoValidator.hasErrors()) {
             throw new ValidationException(Validations.createErrorMessage(errors));
+        }
+
+        if (!(meeting.isPresent() && meeting.get().getProposalProductOrder().getManager().getUsername().equals(managerUsername))) {
+            throw new ValidationException("No permission. You are not manager of this meeting");
         }
 
         var notice = createNoticeForMeetingDto.toEntity();
@@ -129,5 +137,6 @@ public class MeetingService {
         meeting.ifPresent(value -> value.getNotices().add(savedNotice));
 
         return savedNotice.getId();
+
     }
 }
