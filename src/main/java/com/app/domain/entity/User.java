@@ -4,6 +4,7 @@ import com.app.domain.generic.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
@@ -15,6 +16,7 @@ import javax.persistence.*;
 @EqualsAndHashCode(callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "users")
+@ToString(callSuper = true)
 public class User extends BaseEntity {
 
     private String username;

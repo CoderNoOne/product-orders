@@ -4,7 +4,11 @@ import com.app.domain.generic.BaseEntity;
 import com.app.infrastructure.dto.StockDto;
 import com.app.infrastructure.dto.createShop.ProductInfo;
 import com.app.infrastructure.dto.createShop.ProductQuantityDto;
+import com.app.infrastructure.jackson.ArrayToMapDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -16,6 +20,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "stocks", uniqueConstraints = @UniqueConstraint(columnNames = {"shop_id", "address_id"}))
 public class Stock extends BaseEntity {
 
@@ -31,6 +36,8 @@ public class Stock extends BaseEntity {
     @CollectionTable(name = "products_quantity")
     @MapKeyJoinColumn(name = "product_id", referencedColumnName = "id")
     @Column(name = "quantity")
+    @JsonDeserialize(using = ArrayToMapDeserializer.class,
+            keyAs = Product.class, contentAs = Integer.class)
     private Map<Product, Integer> productsQuantity;
 
 
@@ -40,10 +47,6 @@ public class Stock extends BaseEntity {
 
     public void setAddress(Address address) {
         this.address = address;
-    }
-
-    public void setProductsQuantity(Map<Product, Integer> productsQuantity) {
-        this.productsQuantity = productsQuantity;
     }
 
     public Map<Product, Integer> getProductsQuantity() {

@@ -8,6 +8,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-@ToString
+@ToString(callSuper = true)
 public class Manager extends User {
 
     @OneToMany

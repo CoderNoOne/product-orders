@@ -4,6 +4,7 @@ import com.app.domain.enums.MeetingStatus;
 import com.app.domain.generic.BaseEntity;
 import com.app.infrastructure.dto.MeetingDto;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
@@ -17,8 +18,9 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "meetings")
-@ToString
+@ToString(callSuper = true)
 public class Meeting extends BaseEntity {
 
     @OneToMany(mappedBy = "meeting")
@@ -40,6 +42,7 @@ public class Meeting extends BaseEntity {
                 .meetingDate(meetingDate)
                 .status(Objects.nonNull(status) ? status.name() : null)
                 .orderProposalId(Objects.nonNull(orderProposal) ? orderProposal.getId() : null)
+                .customerDto(Objects.nonNull(orderProposal) ? orderProposal.getCustomer().toDto() : null)
                 .build();
     }
 

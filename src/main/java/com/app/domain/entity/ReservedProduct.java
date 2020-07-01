@@ -2,6 +2,7 @@ package com.app.domain.entity;
 
 import com.app.domain.generic.BaseEntity;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -15,6 +16,7 @@ import javax.persistence.Table;
 @SuperBuilder
 @Entity
 @Table(name = "reserved_products")
+@EqualsAndHashCode(callSuper = true)
 public class ReservedProduct extends BaseEntity {
 
     @ManyToOne
