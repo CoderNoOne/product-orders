@@ -137,6 +137,6 @@ public class MeetingService {
         meeting.ifPresent(value -> value.getNotices().add(savedNotice));
 
         return savedNotice.getId();
-
     }
+
 }
