@@ -78,7 +78,7 @@ public class ShopService {
     public void delete(Long id) {
 
         if (Objects.isNull(id)) {
-            throw new NullReferenceException("Shop id is null");
+            throw new NullIdValueException("Shop id is null");
         }
 
         shopRepository.findOne(id)
@@ -108,7 +108,7 @@ public class ShopService {
     public ShopDto getShopById(Long id) {
 
         if (Objects.isNull(id)) {
-            throw new NullReferenceException("Id is null");
+            throw new NullIdValueException("Id is null");
         }
 
         return shopRepository.findOne(id)
