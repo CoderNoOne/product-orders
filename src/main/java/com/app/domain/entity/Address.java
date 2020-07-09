@@ -2,7 +2,9 @@ package com.app.domain.entity;
 
 import com.app.domain.generic.BaseEntity;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.Column;
@@ -13,6 +15,7 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "addresses")
 public class Address extends BaseEntity {
 
@@ -22,4 +25,5 @@ public class Address extends BaseEntity {
     public String getAddress() {
         return address;
     }
+
 }
