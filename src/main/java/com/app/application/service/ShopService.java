@@ -300,6 +300,10 @@ public class ShopService {
 
     public Map<String, Integer> findProductQuantityGroupByShop(Long id) {
 
+        if (Objects.isNull(id)) {
+            throw new NullIdValueException("Id is null");
+        }
+
         return shopRepository.findAllShopsWithProductInStore(id)
                 .stream()
                 .collect(Collectors.groupingBy(

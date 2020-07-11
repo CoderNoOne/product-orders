@@ -4,6 +4,7 @@ import com.app.application.validators.impl.AddStockToShopDtoValidator;
 import com.app.application.validators.impl.CreateShopDtoValidator;
 import com.app.application.validators.impl.UpdateShopDtoValidator;
 import com.app.domain.entity.Address;
+import com.app.domain.entity.Product;
 import com.app.domain.entity.Shop;
 import com.app.domain.entity.Stock;
 import com.app.domain.repository.AddressRepository;
@@ -28,6 +29,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import javax.validation.constraints.Null;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.*;
@@ -913,6 +915,174 @@ class ShopServiceTest {
                 .build())));
 
     }
+
+    @Test
+    @DisplayName("delete stock - stockId and shopId are null")
+    void test29() {
+
+        //given
+        Long shopId = null;
+        Long stockId = null;
+        var expectedExceptionMessage = "ShopId is null, StockId is null";
+
+
+        //when
+        NullIdValueException exception = assertThrows(NullIdValueException.class, () -> shopService.deleteStock(shopId, stockId));
+
+        //then
+
+        assertThat(exception.getMessage(), is(equalTo(expectedExceptionMessage)));
+    }
+
+    @Test
+    @DisplayName("delete stock - no stock")
+    void test30() {
+
+        //given
+        Long shopId = 1L;
+        Long stockId = 1L;
+        var expectedExceptionMessage = "Validations errors: [Stock object:is not present]";
+
+        given(stockRepository.findByIdAndShopId(stockId, shopId)).willReturn(Optional.empty());
+
+        //when
+        ValidationException exception = assertThrows(ValidationException.class, () -> shopService.deleteStock(shopId, stockId));
+
+        //then
+
+        assertThat(exception.getMessage(), is(equalTo(expectedExceptionMessage)));
+    }
+
+    @Test
+    @DisplayName("delete stock - there are present products in given stock")
+    void test31() {
+
+        //given
+        Long shopId = 1L;
+        Long stockId = 1L;
+        var expectedExceptionMessage = "Validations errors: [Stock products:There are products in store. Move them in another store before removing a stock]";
+
+        given(stockRepository.findByIdAndShopId(stockId, shopId)).willReturn(
+                Optional.of(
+                        Stock.builder()
+                                .id(stockId)
+                                .address(Address.builder().address("Long").build())
+                                .productsQuantity(Map.of(
+                                        Product.builder().name("y51 x").build(), 2
+                                ))
+
+
+                                .build()));
+
+        //when
+        ValidationException exception = assertThrows(ValidationException.class, () -> shopService.deleteStock(shopId, stockId));
+
+        //then
+        then(stockRepository).should(times(1)).findByIdAndShopId(stockId, shopId);
+        then(stockRepository).shouldHaveNoMoreInteractions();
+
+        assertThat(exception.getMessage(), is(equalTo(expectedExceptionMessage)));
+    }
+
+    @Test
+    @DisplayName("delete stock - successful")
+    void test32() {
+
+        //given
+        Long shopId = 1L;
+        Long stockId = 1L;
+
+        var shopIdCaptor = ArgumentCaptor.forClass(Long.class);
+        var stockIdCaptor = ArgumentCaptor.forClass(Long.class);
+        var stockCaptor = ArgumentCaptor.forClass(Stock.class);
+
+        Stock stockFromDb = Stock.builder()
+                .id(stockId)
+                .address(Address.builder().address("Long").build())
+                .productsQuantity(Collections.emptyMap())
+                .build();
+
+        given(stockRepository.findByIdAndShopId(stockId, shopId)).willReturn(
+                Optional.of(
+                        stockFromDb));
+
+        //when
+        assertDoesNotThrow(() -> shopService.deleteStock(shopId, stockId));
+
+        //then
+
+        InOrder inOrder = inOrder(stockRepository);
+        inOrder.verify(stockRepository).findByIdAndShopId(shopIdCaptor.capture(), stockIdCaptor.capture());
+        inOrder.verify(stockRepository).delete(stockCaptor.capture());
+        inOrder.verifyNoMoreInteractions();
+
+
+        assertThat(shopIdCaptor.getValue(), is(shopId));
+        assertThat(stockIdCaptor.getValue(), is(stockId));
+        assertThat(stockCaptor.getValue(), is(stockFromDb));
+    }
+
+    @Test
+    @DisplayName("find product quantity group by shop - id is null")
+    void test33() {
+
+        //given
+        Long productId = null;
+        var expectedExceptionMessage = "Id is null";
+
+        //when
+        NullIdValueException exception = assertThrows(NullIdValueException.class, () -> shopService.findProductQuantityGroupByShop(productId));
+
+        //then
+
+        assertThat(exception.getMessage(), is(equalTo(expectedExceptionMessage)));
+
+    }
+
+    @Test
+    @DisplayName("find product quantity group by shop - successful")
+    void test34() {
+
+        //given
+        var productId = 1L;
+        Map<String, Integer> expectedResult = Map.of(
+                "Samsung", 10,
+                "Lenovo", 2
+        );
+
+        given(shopRepository.findAllShopsWithProductInStore(productId))
+                .willReturn(Set.of(
+                        Shop.builder()
+                                .id(1L)
+                                .name("Samsung")
+                                .stocks(Set.of(
+                                        Stock.builder()
+                                                .productsQuantity(Map.of(Product.builder().id(productId).build(), 10))
+                                                .build()
+                                ))
+                                .build(),
+                        Shop.builder()
+                                .id(2L)
+                                .name("Lenovo")
+                                .stocks(Set.of(
+                                        Stock.builder()
+                                                .productsQuantity(Map.of(Product.builder().id(productId).build(), 2))
+                                                .build()
+                                ))
+                                .build()
+                ));
+
+        //when
+        Map<String, Integer> actual = assertDoesNotThrow(() -> shopService.findProductQuantityGroupByShop(productId));
+
+        //then
+        then(shopRepository).should(times(1)).findAllShopsWithProductInStore(productId);
+        then(shopRepository).shouldHaveNoMoreInteractions();
+
+        assertThat(actual, is(equalTo(expectedResult)));
+
+    }
+
 
 }
 
