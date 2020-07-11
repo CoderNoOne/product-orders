@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @Table(name = "stocks", uniqueConstraints = @UniqueConstraint(columnNames = {"shop_id", "address_id"}))
+@ToString
 public class Stock extends BaseEntity {
 
     @OneToOne()

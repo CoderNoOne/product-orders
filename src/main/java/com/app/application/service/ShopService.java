@@ -238,7 +238,7 @@ public class ShopService {
         }
 
         if (Objects.isNull(createStockDto)) {
-            throw new ValidationException("No body");
+            throw new ValidationException("createStockDto is null");
         }
 
         var addStockToShopDto = AddStockToShopDto.builder()
