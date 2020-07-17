@@ -90,4 +90,8 @@ public class Stock extends BaseEntity {
         sb.append('}');
         return sb.toString();
     }
+
+    public void setProductsQuantity(Map<Product, Integer> productsQuantity) {
+        this.productsQuantity = productsQuantity;
+    }
 }

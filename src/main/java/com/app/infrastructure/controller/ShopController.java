@@ -45,10 +45,10 @@ public class ShopController {
     @PostMapping(
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseData<Long> add(RequestEntity<CreateShopDto> requestEntity) {
+    public ResponseData<Long> add(@RequestBody CreateShopDto createShopDto) {
 
         return ResponseData.<Long>builder()
-                .data(shopService.addShop(requestEntity.getBody()))
+                .data(shopService.addShop(createShopDto))
                 .build();
     }
 
@@ -60,10 +60,10 @@ public class ShopController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseData<Long> update(@PathVariable Long id, RequestEntity<UpdateShopDto> requestEntity) {
+    public ResponseData<Long> update(@PathVariable Long id, @RequestBody UpdateShopDto updateShopDto) {
 
         return ResponseData.<Long>builder()
-                .data(shopService.updateShop(id, requestEntity.getBody()))
+                .data(shopService.updateShop(id, updateShopDto))
                 .build();
 
     }
@@ -72,11 +72,11 @@ public class ShopController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseData<Long> addStockToExistingShop(
             @PathVariable Long shopId,
-            RequestEntity<CreateStockDto> requestEntity
+            @RequestBody CreateStockDto createStockDto
     ) {
 
         return ResponseData.<Long>builder()
-                .data(shopService.createStockForShop(shopId, requestEntity.getBody()))
+                .data(shopService.createStockForShop(shopId, createStockDto))
                 .build();
     }
 
@@ -85,10 +85,10 @@ public class ShopController {
     public ResponseData<Long> updateStock(
             @PathVariable Long shopId,
             @PathVariable Long stockId,
-            RequestEntity<Map<String, String>> requestEntity) {
+            @RequestBody Map<String, String> properties) {
 
         return ResponseData.<Long>builder()
-                .data(shopService.updateStock(shopId, stockId, requestEntity.getBody()))
+                .data(shopService.updateStock(shopId, stockId, properties))
                 .build();
 
     }

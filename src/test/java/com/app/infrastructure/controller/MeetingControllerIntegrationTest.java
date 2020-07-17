@@ -46,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 )
 @AutoConfigureMockMvc
 @ActiveProfiles(value = "test")
-class MeetingControllerIntegrationTest extends Throwable {
+class MeetingControllerIntegrationTest {
 
     @Autowired
     private ObjectMapper mapper;

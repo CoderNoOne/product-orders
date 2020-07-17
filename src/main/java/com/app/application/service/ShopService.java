@@ -17,6 +17,7 @@ import com.app.infrastructure.dto.createShop.CreateShopDto;
 import com.app.infrastructure.dto.createShop.CreateStockDto;
 import com.app.infrastructure.exception.*;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -185,6 +186,8 @@ public class ShopService {
                 .ifPresentOrElse(
                         stockFromDb -> {
                             if (params.containsKey("address")) {
+
+                                if(Strings.isBlank(params.get("address"))) throw new ValidationException("Address cannot be blank");
 
                                 stockRepository.findByAddressAndShopId(params.get("address"), shopId).ifPresent((stock) -> {
                                     if (!Objects.equals(stock.getId(), stockId)) {
