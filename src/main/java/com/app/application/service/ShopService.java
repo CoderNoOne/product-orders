@@ -85,7 +85,7 @@ public class ShopService {
                 .ifPresentOrElse(
                         shopFromDb -> {
                             Set<Stock> stocks = shopFromDb.getStocks();
-                            stockRepository.deleteAll(stocks);
+                            if (stocks != null) stockRepository.deleteAll(stocks);
                         },
                         () -> {
                             throw new NotFoundException("No shop with id: " + id);

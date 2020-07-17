@@ -22,6 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
@@ -166,7 +167,142 @@ class ShopControllerTest {
 
         //then
 
-       assertThat(result.getError(), is(equalTo(expectedExceptionMessage)));
+        assertThat(result.getError(), is(equalTo(expectedExceptionMessage)));
     }
 
+    @Test
+    @DisplayName("get one - no shop with id")
+    void test5() throws Exception {
+
+        //given
+        Long id = 123L;
+        var expectedExceptionMessage = "No shop with id: " + id;
+
+        //when
+        var mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/shops/{id}", id)
+                .with(user("user").password("pass").roles("ADMIN_SHOP")))
+                .andExpect(status().is(404))
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        ResponseData<ShopDto> result = mapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {
+        });
+
+        //then
+
+        assertThat(result.getError(), is(equalTo(expectedExceptionMessage)));
+    }
+
+    @Test
+    @DisplayName("get one - access denied")
+    void test6() throws Exception {
+
+        //given
+        Long id = 123L;
+        var expectedExceptionMessage = "Access is denied";
+
+        //when
+        var mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/shops/{id}", id)
+                .with(user("user").password("pass").roles("USER_CUSTOMER")))
+                .andExpect(status().is(403))
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        ResponseData<ShopDto> result = mapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {
+        });
+
+        //then
+
+        assertThat(result.getError(), is(equalTo(expectedExceptionMessage)));
+    }
+
+    @Test
+    @DisplayName("get one - successful")
+    @Transactional
+    void test7() throws Exception {
+
+        //given
+
+        Shop shop = Shop.builder().name("Shop x").build();
+        entityManager.persist(shop);
+
+        //when
+        var mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/shops/{id}", shop.getId())
+                .with(user("user").password("pass").roles("ADMIN_SHOP")))
+                .andExpect(status().is(200))
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        ResponseData<ShopDto> result = mapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {
+        });
+
+        //then
+
+        assertThat(result.getData(), is(equalTo(shop.toDto())));
+    }
+
+    @Test
+    @DisplayName("delete - successful")
+    @Transactional
+    void test8() throws Exception {
+
+        //given
+        Shop shop = Shop.builder().name("Samsung").build();
+        entityManager.persist(shop);
+
+        //when
+        mockMvc.perform(MockMvcRequestBuilders.delete("/shops/{id}", shop.getId())
+                .with(user("user").password("pass").roles("ADMIN_SHOP")))
+                //then
+                .andExpect(status().isNoContent());
+
+    }
+
+    @Test
+    @DisplayName("delete - no shop with id")
+    void test9() throws Exception {
+
+        //given
+        Long id = 2L;
+        var expectedExceptionMessage = "No shop with id: " + id;
+
+        //when
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete("/shops/{id}", id)
+                .with(user("user").password("pass").roles("ADMIN_SHOP")))
+                //then
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        ResponseData<ShopDto> result = mapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {
+        });
+
+        //then
+
+        assertThat(result.getError(), is(equalTo(expectedExceptionMessage)));
+
+    }
+
+    @Test
+    @DisplayName("delete - access denied")
+    void test10() throws Exception {
+
+        //given
+        Long id = 2L;
+        var expectedExceptionMessage = "Access is denied";
+
+        //when
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete("/shops/{id}", id)
+                .with(user("user").password("pass").roles("USER_CUSTOMER")))
+                //then
+                .andExpect(status().isForbidden())
+                .andReturn();
+
+        ResponseData<ShopDto> result = mapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {
+        });
+
+        //then
+
+        assertThat(result.getError(), is(equalTo(expectedExceptionMessage)));
+
+    }
 }
