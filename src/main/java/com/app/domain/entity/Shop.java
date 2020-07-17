@@ -82,4 +82,8 @@ public class Shop extends BaseEntity {
     public String getName() {
         return name;
     }
+
+    public void setStocks(Set<Stock> stocks) {
+        this.stocks = stocks;
+    }
 }

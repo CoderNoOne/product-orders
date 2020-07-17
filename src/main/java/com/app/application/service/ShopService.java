@@ -225,6 +225,7 @@ public class ShopService {
             throw new NotFoundException("No product with id: " + id);
         }
 
+
         return shopRepository.findAllShopsWithProductInStore(id)
                 .stream()
                 .map(Shop::toDto)

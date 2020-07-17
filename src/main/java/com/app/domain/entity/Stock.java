@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @Table(name = "stocks", uniqueConstraints = @UniqueConstraint(columnNames = {"shop_id", "address_id"}))
-@ToString
 public class Stock extends BaseEntity {
 
     @OneToOne()
@@ -81,5 +80,14 @@ public class Stock extends BaseEntity {
         return shop;
     }
 
-
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Stock{");
+        sb.append("address=").append(address);
+        sb.append(", shop=").append(shop);
+        sb.append(", productsQuantity=").append(productsQuantity);
+        sb.append(", id=").append(super.getId());
+        sb.append('}');
+        return sb.toString();
+    }
 }
