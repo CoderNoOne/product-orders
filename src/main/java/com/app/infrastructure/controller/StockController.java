@@ -40,10 +40,10 @@ public class StockController {
 
     @PutMapping(value = "/products")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseData<Long> relocateProductsBetweenStores2(RequestEntity<TransferProductDto> requestEntity) {
+    public ResponseData<Long> relocateProductsBetweenStores2(@RequestBody TransferProductDto transferProductDto) {
 
         return ResponseData.<Long>builder()
-                .data(stockService.relocateProducts(requestEntity.getBody()))
+                .data(stockService.relocateProducts(transferProductDto))
                 .build();
     }
 }

@@ -95,9 +95,19 @@ public class TransferProductDtoValidator extends AbstractValidator<TransferProdu
         Product product = productRepository.findByNameAndProducerName(productInfo.getName(), productInfo.getProducerName())
                 .get();
 
-        Integer productQuantity = stockRepository.findOne(stockFrom)
+        System.out.println("Product:" + product);
+
+        Map<Product, Integer> productsQuantity = stockRepository.findOne(stockFrom)
                 .get()
-                .getProductsQuantity().get(product);
+                .getProductsQuantity();
+
+        System.out.println(productsQuantity);
+
+        Integer productQuantity = productsQuantity.get(product);
+
+        // TODO: 18.07.2020 delete
+        System.out.println("Products quantity: " +  productQuantity);
+        System.out.println("Quantity: " + quantity);
 
         return Objects.nonNull(productQuantity)
                 && productQuantity >= quantity;

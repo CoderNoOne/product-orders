@@ -1,11 +1,9 @@
 package com.app.domain.entity;
 
-import com.app.domain.entity.Category;
-import com.app.domain.entity.Guarantee;
-import com.app.domain.entity.Producer;
 import com.app.domain.generic.BaseEntity;
 import com.app.infrastructure.dto.ProductDto;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
@@ -18,6 +16,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @SuperBuilder
 @ToString
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "products", uniqueConstraints = @UniqueConstraint(columnNames = {"producer_id", "name"}))
 public class Product extends BaseEntity {
 
