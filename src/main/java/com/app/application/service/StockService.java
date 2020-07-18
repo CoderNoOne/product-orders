@@ -36,7 +36,6 @@ public class StockService {
 
     private final StockRepository stockRepository;
     private final ProductRepository productRepository;
-    private final ProductQuantityDtoValidator productQuantityDtoValidator;
     private final TransferProductDtoValidator transferProductDtoValidator;
     private final AddProductToStockDtoValidator addProductToStockDtoValidator;
     private final AdminShopPropertyRepository adminShopPropertyRepository;
