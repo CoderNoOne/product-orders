@@ -5,7 +5,9 @@ import com.app.domain.entity.*;
 import com.app.domain.enums.AdminShopPropertyName;
 import com.app.infrastructure.dto.AddProductToStockDto;
 import com.app.infrastructure.dto.ResponseData;
+import com.app.infrastructure.dto.TransferProductDto;
 import com.app.infrastructure.dto.createShop.ProductInfo;
+import com.app.infrastructure.dto.createShop.ProductQuantityDto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -25,11 +27,14 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -238,6 +243,195 @@ class StockControllerIntegrationTest {
         //then
         assertThat(result.getError(), is(nullValue()));
         assertThat(result.getData(), is(notNullValue()));
+
+    }
+
+    @Test
+    @DisplayName("getProducts - access denied")
+    @Transactional
+    void test6() throws Exception {
+
+
+        //given
+        var expectedExceptionMessage = "Access is denied";
+
+        //when
+        var mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/stocks/{id}/products", 1L)
+                .with(user("user").password("pass").roles("USER_CUSTOMER")))
+                .andExpect(status().isForbidden())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+
+        ResponseData<Long> result = mapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {
+        });
+
+        //then
+        assertThat(result.getError(), is(equalTo(expectedExceptionMessage)));
+
+    }
+
+    @Test
+    @DisplayName("getProducts - no stock with id")
+    @Transactional
+    void test7() throws Exception {
+
+        //given
+        Long stockId = 1L;
+        var expectedExceptionMessage = "No stock with id: " + stockId;
+
+        //when
+        var mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/stocks/{id}/products", stockId)
+                .with(user("user").password("pass").roles("USER_MANAGER")))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        ResponseData<List<ProductQuantityDto>> result = mapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {
+        });
+
+//        //then
+        assertThat(result.getError(), is(equalTo(expectedExceptionMessage)));
+
+    }
+
+    @Test
+    @DisplayName("getProducts - successful")
+    @Transactional
+    void test8() throws Exception {
+
+        //given
+        var expectedResult = List.of(ProductQuantityDto.builder()
+                .productInfo(ProductInfo.builder()
+                        .name("y510p")
+                        .producerName("Lenovo")
+                        .build())
+                .quantity(10)
+                .build());
+
+        Producer producer = Producer.builder().name("Lenovo").build();
+        Product product = Product.builder().name("y510p").producer(producer).build();
+        Stock stock = Stock.builder().productsQuantity(Map.of(product, 10)).build();
+        producer.setProducts(Set.of(product));
+
+        entityManager.persist(stock);
+        entityManager.persist(product);
+        entityManager.persist(producer);
+
+        //when
+        var mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/stocks/{id}/products", stock.getId())
+                .with(user("user").password("pass").roles("USER_MANAGER")))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        ResponseData<List<ProductQuantityDto>> result = mapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {
+        });
+
+//        //then
+        assertThat(result.getError(), is(nullValue()));
+        assertThat(result.getData(), is(equalTo(expectedResult)));
+
+    }
+
+    @Test
+    @DisplayName("relocate products - access denied")
+    void test9() throws Exception {
+
+        //given
+        var expectedExceptionMessage = "Access is denied";
+
+        //when
+        var mvcResult = mockMvc.perform(MockMvcRequestBuilders.put("/stocks/products")
+                .with(user("user").password("pass").roles("USER_CUSTOMER")))
+                .andExpect(status().isForbidden())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        ResponseData<Long> result = mapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {
+        });
+
+//        //then
+        assertThat(result.getError(), is(expectedExceptionMessage));
+
+    }
+
+    @Test
+    @DisplayName("relocate products - validation errors")
+    void test10() throws Exception {
+
+        //given
+        var expectedExceptionMessage = "Validations errors: [Stock objects:Stock ids must be specified, Product quantity:must be specified, ProductInfo object:is null]";
+
+        var transferProductDto = TransferProductDto.builder().build();
+
+        //when
+        var mvcResult = mockMvc.perform(MockMvcRequestBuilders.put("/stocks/products")
+                .with(user("user").password("pass").roles("USER_MANAGER"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(transferProductDto))
+        )
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        ResponseData<Long> result = mapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {
+        });
+
+//        //then
+        assertThat(result.getError(), is(expectedExceptionMessage));
+
+    }
+
+    @Test
+    @DisplayName("relocate products - successful")
+    @Transactional
+    void test11() throws Exception {
+
+        //given
+        Shop shop = Shop.builder().name("Samsung").build();
+        Producer producer = Producer.builder().name("Lenovo").build();
+        Product product = Product.builder().name("y510p").producer(producer).build();
+        producer.setProducts(Set.of(product));
+
+        Stock stockFrom = Stock.builder().shop(shop).productsQuantity(new HashMap<>()).build();
+        Stock stockTo = Stock.builder().shop(shop).productsQuantity(new HashMap<>(Map.of(product, 10))).build();
+        shop.setStocks(Set.of(stockFrom, stockTo));
+
+        entityManager.persist(product);
+        entityManager.persist(producer);
+        entityManager.persist(stockTo);
+        entityManager.persist(stockFrom);
+        entityManager.persist(shop);
+        entityManager.flush();
+
+        stockFrom.setProductsQuantity(new HashMap<>(Map.of(product, 12)));
+
+        var transferProductDto = TransferProductDto.builder()
+                .stockTo(stockTo.getId())
+                .stockFrom(stockFrom.getId())
+                .productInfo(ProductInfo.builder()
+                        .producerName("Lenovo")
+                        .name("y510p")
+                        .build())
+                .quantity(2)
+                .build();
+
+        //when
+        var mvcResult = mockMvc.perform(MockMvcRequestBuilders.put("/stocks/products")
+                .with(user("user").password("pass").roles("USER_MANAGER"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(transferProductDto))
+        )
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        ResponseData<Long> result = mapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {
+        });
+
+//        //then
+        assertThat(result.getError(), is(nullValue()));
 
     }
 }

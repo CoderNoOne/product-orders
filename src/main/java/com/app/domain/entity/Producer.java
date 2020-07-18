@@ -3,6 +3,7 @@ package com.app.domain.entity;
 import com.app.domain.generic.BaseEntity;
 import com.app.infrastructure.dto.ProducerDto;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "producers")
 public class Producer extends BaseEntity {
 
@@ -27,6 +29,7 @@ public class Producer extends BaseEntity {
     private Trade trade;
 
     @OneToMany(mappedBy = "producer")
+    @EqualsAndHashCode.Exclude
     private Set<Product> products;
 
     @OneToMany(mappedBy = "producer")
