@@ -60,4 +60,8 @@ public class Producer extends BaseEntity {
     public void setGuarantees(Set<Guarantee> guarantees) {
         this.guarantees = guarantees;
     }
+
+    public void setProducts(Set<Product> products) {
+        this.products = products;
+    }
 }

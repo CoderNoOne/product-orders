@@ -21,10 +21,10 @@ public class StockController {
 
     @PostMapping(value = "/products")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseData<Long> addProductToStock(RequestEntity<AddProductToStockDto> requestEntity) {
+    public ResponseData<Long> addProductToStock(@RequestBody AddProductToStockDto addProductToStockDto) {
 
         return ResponseData.<Long>builder()
-                .data(stockService.addProductToStock(requestEntity.getBody()))
+                .data(stockService.addProductToStock(addProductToStockDto))
                 .build();
 
     }
