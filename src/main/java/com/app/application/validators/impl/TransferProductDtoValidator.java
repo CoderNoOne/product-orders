@@ -80,7 +80,6 @@ public class TransferProductDtoValidator extends AbstractValidator<TransferProdu
 
         }
 
-
         return errors;
 
     }
