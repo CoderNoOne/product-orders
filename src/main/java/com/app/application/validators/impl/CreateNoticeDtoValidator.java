@@ -15,8 +15,6 @@ import java.util.Objects;
 @Component
 public class CreateNoticeDtoValidator extends AbstractValidator<CreateNoticeDto> {
 
-    private final MeetingRepository meetingRepository;
-
     @Override
     public Map<String, String> validate(CreateNoticeDto createNoticeDto) {
 

@@ -31,9 +31,9 @@ public class NoticeService {
         var meeting = meetingRepository.findOne(createNoticeDto.getMeetingId())
                 .orElseThrow(() -> new NotFoundException("No meeting with id: " + createNoticeDto.getMeetingId()));
 
-//        if (!Objects.equals(meeting.getProposalProductOrder().getCustomer().getManager().getUsername(), managerUsername)) {
-//            throw new ValidationException("Meeting with id: " + createNoticeDto.getMeetingId() + " is not managed by you");
-//        }
+        if (!Objects.equals(meeting.getProposalProductOrder().getCustomer().getManager().getUsername(), managerUsername)) {
+            throw new ValidationException("Meeting with id: " + createNoticeDto.getMeetingId() + " is not managed by you");
+        }
 
         var notice = createNoticeDto.toEntity();
         notice.setMeeting(meeting);
