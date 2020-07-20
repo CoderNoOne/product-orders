@@ -34,7 +34,7 @@ public class NoticeController {
 
         emailService.sendBulk(
                 emailService.createMimeMessage(userService.getEmailForUsername(managerUsername), MailTemplates.notifyManagerAboutAddedNotice(managerUsername, savedNotice, productOrderProposal), "Notice added"),
-                emailService.createMimeMessage(userService.getEmailForUsername(savedNotice.getMeetingDto().getCustomerDto().getEmail()), MailTemplates.notifyCustomerAboutAddedNotice(savedNotice, productOrderProposal), "Notice added")
+                emailService.createMimeMessage(userService.getEmailForUsername(savedNotice.getMeetingDto().getCustomerDto().getUsername()), MailTemplates.notifyCustomerAboutAddedNotice(savedNotice, productOrderProposal), "Notice added")
         );
 
         return body;

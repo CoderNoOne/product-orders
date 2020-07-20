@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -26,7 +27,7 @@ public class UserService {
         }
 
         return userRepository.findEmailByUsername(username)
-                .orElseThrow(() -> new NotFoundException("No user with username: " + username));
+                .orElseThrow(() -> new NotFoundException("No email for username: " + username));
 
     }
 

@@ -133,6 +133,7 @@ public class AppWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/product-failure-reports").hasAnyRole("USER_CUSTOMER", "USER_MANAGER")
 
                 .antMatchers(HttpMethod.POST, "/complaints").hasRole("USER_CUSTOMER")
+                .antMatchers(HttpMethod.POST, "/notices").hasRole("USER_MANAGER")
 
                 .antMatchers("/customer/product-order-proposals/**").hasRole("USER_CUSTOMER")
                 .antMatchers("/manager/product-order-proposals/**").hasRole("USER_MANAGER")

@@ -36,6 +36,7 @@ public class NoticeService {
         }
 
         var notice = createNoticeDto.toEntity();
+
         notice.setMeeting(meeting);
 
         var savedNotice = noticeRepository.save(notice);

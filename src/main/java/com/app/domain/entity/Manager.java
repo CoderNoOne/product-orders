@@ -44,6 +44,10 @@ public class Manager extends User {
                 .enabled(super.getEnabled())
                 .build();
     }
+
+    public void setCustomers(List<Customer> customers) {
+        this.customers = customers;
+    }
 }
 
 

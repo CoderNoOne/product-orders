@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @NoArgsConstructor
@@ -31,10 +32,15 @@ public class Notice extends BaseEntity {
                 .id(getId())
                 .content(content)
                 .tittle(tittle)
+                .meetingDto(Objects.nonNull(meeting) ? meeting.toDto() : null)
                 .build();
     }
 
     public void setMeeting(Meeting meeting) {
         this.meeting = meeting;
+    }
+
+    public Meeting getMeeting() {
+        return meeting;
     }
 }
